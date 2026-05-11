@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Radio, Activity, ShieldAlert, Info, RefreshCw } from "lucide-react";
+import { Radio, Activity, ShieldAlert, Info } from "lucide-react";
 import { DataBadge } from "@/components/ui/DataBadge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
@@ -11,7 +11,7 @@ import { IntelligenceCard } from "@/components/intelligence/IntelligenceCard";
 import { IntelligenceFilters } from "@/components/intelligence/IntelligenceFilters";
 import { IntelligenceDetailsModal } from "@/components/intelligence/IntelligenceDetailsModal";
 import { RiskScoreCard } from "@/components/intelligence/RiskScoreCard";
-import { fetchIntelligence, isNewsConfigured, clearNewsCache, type NewsStatus } from "@/services/newsApi";
+import { fetchIntelligence, isNewsConfigured } from "@/services/newsApi";
 import { getEarthquakes } from "@/services/earthquakesApi";
 import { buildCountryRiskIndex, RISK_WEIGHTS } from "@/services/riskService";
 import { supabaseService, isSupabaseConfigured } from "@/services/supabaseService";
@@ -27,27 +27,12 @@ export const Route = createFileRoute("/intelligence")({
   component: IntelligencePage,
 });
 
-const REFRESH_COOLDOWN_MS = 60_000;
+// Re-exported as a "page" path some teams expect
+export { IntelligencePage as default };
 
-function statusLabel(s: NewsStatus): string {
-  switch (s) {
-    case "live": return "LIVE API";
-    case "cached": return "CACHED LIVE DATA";
-    case "rate_limited": return "RATE LIMITED";
-    case "error": return "API ERROR";
-    case "demo": return "DEMO DATA";
-  }
-}
-function statusVariant(s: NewsStatus): "live" | "demo" | "error" | "neutral" {
-  if (s === "live") return "live";
-  if (s === "cached") return "neutral";
-  if (s === "rate_limited" || s === "error") return "error";
-  return "demo";
-}
-
-export default function IntelligencePage() {
+function IntelligencePage() {
   const [items, setItems] = useState<IntelligenceItem[] | null>(null);
-  const [status, setStatus] = useState<NewsStatus>("demo");
+  const [status, setStatus] = useState<"live" | "demo" | "error">("demo");
   const [statusMsg, setStatusMsg] = useState<string | undefined>();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<IntelligenceCategory | "all">("all");
@@ -55,26 +40,16 @@ export default function IntelligencePage() {
   const [active, setActive] = useState<IntelligenceItem | null>(null);
   const [updated, setUpdated] = useState(new Date());
   const [risks, setRisks] = useState<CountryRisk[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [cooldownUntil, setCooldownUntil] = useState(0);
-  const [nowTick, setNowTick] = useState(Date.now());
 
-  // Tick every second so the cooldown countdown re-renders.
-  useEffect(() => {
-    const t = setInterval(() => setNowTick(Date.now()), 1000);
-    return () => clearInterval(t);
-  }, []);
-
-  async function load(searchQuery?: string, opts?: { force?: boolean }) {
-    setLoading(true);
-    if (opts?.force) setItems(null);
-    const r = await fetchIntelligence({ query: searchQuery, max: 30, force: opts?.force });
+  async function load(searchQuery?: string) {
+    setItems(null);
+    const r = await fetchIntelligence({ query: searchQuery, max: 30 });
     setItems(r.items);
     setStatus(r.status);
     setStatusMsg(r.message);
     setUpdated(new Date());
-    setLoading(false);
 
+    // Build risk index
     let quakes: Earthquake[] = [];
     let saved: SavedAlert[] = [];
     try { quakes = await getEarthquakes("day"); } catch {}
@@ -85,19 +60,6 @@ export default function IntelligencePage() {
   }
 
   useEffect(() => { load(); }, []);
-
-  function handleRefresh() {
-    if (loading) return;
-    if (nowTick < cooldownUntil) {
-      toast.message("Please wait before refreshing again.");
-      return;
-    }
-    setCooldownUntil(Date.now() + REFRESH_COOLDOWN_MS);
-    load(query.trim() || undefined, { force: true });
-  }
-
-  const cooldownLeft = Math.max(0, Math.ceil((cooldownUntil - nowTick) / 1000));
-  const refreshDisabled = loading || cooldownLeft > 0;
 
   const filtered = useMemo(() => {
     if (!items) return [];
@@ -132,31 +94,15 @@ export default function IntelligencePage() {
           <p className="text-xs text-muted-foreground">Global headlines normalized into actionable intelligence items</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <DataBadge variant={statusVariant(status)}>{statusLabel(status)}</DataBadge>
-          {!isNewsConfigured() && <DataBadge variant="neutral">Configure GNews key</DataBadge>}
+          <DataBadge variant={status === "live" ? "live" : status === "error" ? "error" : "demo"}>
+            {status === "live" ? "Live API" : status === "error" ? "API error" : "Demo data"}
+          </DataBadge>
+          {!isNewsConfigured() && <DataBadge variant="neutral">Set VITE_GNEWS_API_KEY</DataBadge>}
           <DataBadge variant="neutral">Updated {updated.toLocaleTimeString()}</DataBadge>
-          <button
-            onClick={handleRefresh}
-            disabled={refreshDisabled}
-            title={cooldownLeft > 0 ? `Please wait ${cooldownLeft}s before refreshing again.` : "Refresh"}
-            className="inline-flex items-center gap-1.5 rounded-md border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs text-primary disabled:opacity-50"
-          >
-            <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
-            {cooldownLeft > 0 ? `Please wait ${cooldownLeft}s` : "Refresh"}
-          </button>
-          {import.meta.env.DEV && (
-            <button
-              onClick={() => { clearNewsCache(); toast.success("News cache cleared."); load(undefined, { force: true }); }}
-              className="rounded-md border border-border/60 bg-background/40 px-2 py-1.5 text-[10px] uppercase tracking-wider text-muted-foreground hover:text-foreground"
-              title="Development only — clears cache, rate-limit lock, and last-request timestamp"
-            >
-              Clear News Cache
-            </button>
-          )}
         </div>
       </div>
 
-      {statusMsg && status !== "live" && <ErrorMessage message={statusMsg} />}
+      {statusMsg && <ErrorMessage message={statusMsg} />}
 
       {/* Summary tiles */}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
