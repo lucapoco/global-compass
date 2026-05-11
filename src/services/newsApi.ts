@@ -212,20 +212,35 @@ export async function fetchIntelligence(opts: FetchOpts = {}): Promise<NewsResul
     return doSearch(query.trim(), max);
   }
 
+  // Serve the newest in-memory result first so dashboard widgets mounted on the
+  // same page do not each touch GNews or re-parse storage during presentations.
+  if (!force && !query && lastSharedResult && Date.now() - lastSharedResultAt < CACHE_TTL_MS) {
+    log("shared in-memory hit", { ageMs: Date.now() - lastSharedResultAt });
+    return { ...lastSharedResult, items: lastSharedResult.items.slice(0, max) };
+  }
+
+  // Coalesce concurrent callers before any cache/lock branch so React
+  // StrictMode and dashboard panels all await the same shared result.
+  if (activeRequest) {
+    log("joining in-flight request");
+    const r = await activeRequest;
+    return { ...r, items: r.items.slice(0, max) };
+  }
+
   // Serve fresh cache unless force=true
   if (!force) {
     const ts = cacheTs();
     const cached = readCachedItems();
     if (cached && Date.now() - ts < CACHE_TTL_MS) {
       log("cache hit", { ageMs: Date.now() - ts });
-      return {
+      return rememberResult({
         items: cached.slice(0, max),
         status: "cached",
         source: "Cache",
         cachedAt: ts,
         lastUpdated: new Date(ts).toISOString(),
         message: `Cached live data from ${new Date(ts).toLocaleTimeString()}`,
-      };
+      });
     }
   }
 
@@ -243,14 +258,7 @@ export async function fetchIntelligence(opts: FetchOpts = {}): Promise<NewsResul
     return fallbackWhenBlocked(undefined, "cached", max);
   }
 
-  // Coalesce concurrent callers
-  if (activeRequest) {
-    log("joining in-flight request");
-    const r = await activeRequest;
-    return { ...r, items: r.items.slice(0, max) };
-  }
-
-  activeRequest = doHeadlinesFetch().finally(() => { activeRequest = null; });
+  activeRequest = doHeadlinesFetch().then(rememberResult).finally(() => { activeRequest = null; });
   const result = await activeRequest;
   return { ...result, items: result.items.slice(0, max) };
 }
