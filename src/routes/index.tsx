@@ -9,7 +9,7 @@ import { IntelligenceCard } from "@/components/intelligence/IntelligenceCard";
 import { RiskScoreCard } from "@/components/intelligence/RiskScoreCard";
 import { getEarthquakes } from "@/services/earthquakesApi";
 import { getAllCountries } from "@/services/countriesApi";
-import { fetchIntelligence } from "@/services/newsApi";
+import { fetchIntelligence, type NewsStatus } from "@/services/newsApi";
 import { buildCountryRiskIndex } from "@/services/riskService";
 import { supabaseService, isSupabaseConfigured } from "@/services/supabaseService";
 import type { Earthquake, IntelligenceItem, CountryRisk } from "@/types";
@@ -32,7 +32,7 @@ function DashboardPage() {
   const [alertCount, setAlertCount] = useState<number | null>(null);
   const [updated, setUpdated] = useState<Date>(new Date());
   const [intel, setIntel] = useState<IntelligenceItem[] | null>(null);
-  const [intelStatus, setIntelStatus] = useState<"live" | "demo" | "error">("demo");
+  const [intelStatus, setIntelStatus] = useState<NewsStatus>("demo");
   const [risks, setRisks] = useState<CountryRisk[]>([]);
 
   useEffect(() => {
@@ -100,7 +100,7 @@ function DashboardPage() {
         <StatCard label="Countries monitored" value={countryCount ?? "—"} hint="REST Countries API" icon={<Flag className="h-4 w-4" />} accent="cyan" />
         <StatCard label="Earthquakes today" value={quakes ? today : "—"} hint="USGS feed" icon={<Activity className="h-4 w-4" />} accent="amber" />
         <StatCard label="Highest magnitude" value={quakes ? maxMag.toFixed(1) : "—"} hint="USGS feed" icon={<Activity className="h-4 w-4" />} accent="rose" />
-        <StatCard label="Intel critical+high" value={intel ? intelCounts.critical + intelCounts.high : "—"} hint={intelStatus === "live" ? "GNews · Live" : "Demo feed"} icon={<Newspaper className="h-4 w-4" />} accent="rose" />
+        <StatCard label="Intel critical+high" value={intel ? intelCounts.critical + intelCounts.high : "—"} hint={intelStatus === "live" ? "GNews · Live" : intelStatus === "cached" ? "Cached live" : intelStatus === "rate_limited" ? "Rate limited" : "Demo feed"} icon={<Newspaper className="h-4 w-4" />} accent="rose" />
         <StatCard label="Saved countries" value={savedCount ?? "—"} hint="Supabase" icon={<Bookmark className="h-4 w-4" />} accent="emerald" />
         <StatCard label="Active alerts" value={alertCount ?? "—"} hint="Saved + USGS" icon={<AlertTriangle className="h-4 w-4" />} accent="amber" />
       </div>
@@ -136,8 +136,8 @@ function DashboardPage() {
             subtitle="Latest 5 normalized headlines"
             right={
               <div className="flex items-center gap-2">
-                <DataBadge variant={intelStatus === "live" ? "live" : intelStatus === "error" ? "error" : "demo"}>
-                  {intelStatus === "live" ? "Live" : intelStatus === "error" ? "API error" : "Demo"}
+                <DataBadge variant={intelStatus === "live" ? "live" : intelStatus === "cached" ? "neutral" : intelStatus === "error" || intelStatus === "rate_limited" ? "error" : "demo"}>
+                  {intelStatus === "live" ? "Live" : intelStatus === "cached" ? "Cached" : intelStatus === "rate_limited" ? "Rate limited" : intelStatus === "error" ? "API error" : "Demo"}
                 </DataBadge>
                 <Link to="/intelligence" className="text-[11px] text-primary hover:underline">Open feed →</Link>
               </div>
