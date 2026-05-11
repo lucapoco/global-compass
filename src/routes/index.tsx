@@ -32,7 +32,7 @@ function DashboardPage() {
   const [alertCount, setAlertCount] = useState<number | null>(null);
   const [updated, setUpdated] = useState<Date>(new Date());
   const [intel, setIntel] = useState<IntelligenceItem[] | null>(null);
-  const [intelStatus, setIntelStatus] = useState<"live" | "demo" | "error">("demo");
+  const [intelStatus, setIntelStatus] = useState<NewsStatus>("demo");
   const [risks, setRisks] = useState<CountryRisk[]>([]);
 
   useEffect(() => {
