@@ -23,12 +23,14 @@ export const Route = createFileRoute("/")({
 function DashboardPage() {
   const [quakes, setQuakes] = useState<Earthquake[] | null>(null);
   const [quakeError, setQuakeError] = useState(false);
+  const [countryCount, setCountryCount] = useState<number | null>(null);
   const [savedCount, setSavedCount] = useState<number | null>(null);
   const [alertCount, setAlertCount] = useState<number | null>(null);
   const [updated, setUpdated] = useState<Date>(new Date());
 
   useEffect(() => {
     getEarthquakes("day").then(setQuakes).catch(() => setQuakeError(true));
+    getAllCountries().then((c) => setCountryCount(c.length)).catch(() => setCountryCount(null));
     if (isSupabaseConfigured()) {
       supabaseService.listSavedCountries().then((d) => setSavedCount(d.length)).catch(() => setSavedCount(0));
       supabaseService.listSavedAlerts().then((d) => setAlertCount(d.length)).catch(() => setAlertCount(0));
