@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Radio, Activity, ShieldAlert, Info } from "lucide-react";
+import { Radio, Activity, ShieldAlert, Info, RefreshCw } from "lucide-react";
 import { DataBadge } from "@/components/ui/DataBadge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
