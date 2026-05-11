@@ -136,8 +136,8 @@ function DashboardPage() {
             subtitle="Latest 5 normalized headlines"
             right={
               <div className="flex items-center gap-2">
-                <DataBadge variant={intelStatus === "live" ? "live" : intelStatus === "error" ? "error" : "demo"}>
-                  {intelStatus === "live" ? "Live" : intelStatus === "error" ? "API error" : "Demo"}
+                <DataBadge variant={intelStatus === "live" ? "live" : intelStatus === "cached" ? "neutral" : intelStatus === "error" || intelStatus === "rate_limited" ? "error" : "demo"}>
+                  {intelStatus === "live" ? "Live" : intelStatus === "cached" ? "Cached" : intelStatus === "rate_limited" ? "Rate limited" : intelStatus === "error" ? "API error" : "Demo"}
                 </DataBadge>
                 <Link to="/intelligence" className="text-[11px] text-primary hover:underline">Open feed →</Link>
               </div>
