@@ -121,12 +121,22 @@ export async function fetchIntelligence(opts: FetchOpts = {}): Promise<NewsResul
       else params.set("category", category);
       const url = `https://gnews.io/api/v4/${query ? "search" : "top-headlines"}?${params}`;
       const res = await fetch(url);
-      if (!res.ok) throw new Error(`GNews ${res.status}`);
+      if (!res.ok) {
+        let detail = "";
+        try { const j = await res.json(); detail = j?.errors?.[0] ?? j?.message ?? ""; } catch {}
+        throw new Error(`GNews ${res.status}${detail ? ` — ${detail}` : ""}`);
+      }
       const data = await res.json();
       return { items: normalizeGNews(data.articles ?? []), status: "live" };
     } catch (e: any) {
+      const raw = e?.message ?? String(e);
+      // Don't leak the API key into the UI message
+      const safe = raw.replace(GNEWS_KEY, "***");
+      const friendly = /Failed to fetch|NetworkError/i.test(safe)
+        ? "Could not reach gnews.io (network blocked, ad-blocker, or CORS). Showing demo data."
+        : `GNews error: ${safe}. Showing demo data.`;
       console.warn("GNews failed", e);
-      return { items: demoNews, status: "demo", message: "GNews API failed — showing demo data." };
+      return { items: demoNews, status: "error", message: friendly };
     }
   }
 

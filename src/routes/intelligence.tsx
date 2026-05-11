@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Radio, Activity, ShieldAlert, Info } from "lucide-react";
+import { Radio, Activity, ShieldAlert, Info, RefreshCw } from "lucide-react";
 import { DataBadge } from "@/components/ui/DataBadge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
@@ -96,10 +96,17 @@ export default function IntelligencePage() {
           </DataBadge>
           {!isNewsConfigured() && <DataBadge variant="neutral">Set VITE_GNEWS_API_KEY</DataBadge>}
           <DataBadge variant="neutral">Updated {updated.toLocaleTimeString()}</DataBadge>
+          <button
+            onClick={() => load(query.trim() || undefined)}
+            disabled={items === null}
+            className="inline-flex items-center gap-1.5 rounded-md border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs text-primary disabled:opacity-50"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${items === null ? "animate-spin" : ""}`} /> Refresh
+          </button>
         </div>
       </div>
 
-      {statusMsg && <ErrorMessage message={statusMsg} />}
+      {statusMsg && status !== "live" && <ErrorMessage message={statusMsg} />}
 
       {/* Summary tiles */}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
