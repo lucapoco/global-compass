@@ -8,11 +8,9 @@ interface Props {
   height?: string;
 }
 
-const MAPBOX_TOKEN =
-  (import.meta.env.VITE_MAPBOX_TOKEN as string | undefined) ||
-  "pk.eyJ1IjoibHVjYXBvY28iLCJhIjoiY21wMWsycTE1MDRiejJxcjFoN3d0Nmt5NyJ9.MQ-Nu5ZbYdCdBagfpinCKQ";
+const MAPBOX_TOKEN = (import.meta.env.VITE_MAPBOX_TOKEN as string | undefined)?.trim() ?? "";
 
-mapboxgl.accessToken = MAPBOX_TOKEN;
+if (MAPBOX_TOKEN) mapboxgl.accessToken = MAPBOX_TOKEN;
 
 const COLORS: Record<MapEvent["type"], string> = {
   earthquake: "#f59e0b",
