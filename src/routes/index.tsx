@@ -6,6 +6,7 @@ import { DataBadge } from "@/components/ui/DataBadge";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { EarthquakeMagnitudeChart } from "@/components/charts/EarthquakeMagnitudeChart";
 import { getEarthquakes } from "@/services/earthquakesApi";
+import { getAllCountries } from "@/services/countriesApi";
 import { supabaseService, isSupabaseConfigured } from "@/services/supabaseService";
 import type { Earthquake } from "@/types";
 
@@ -22,12 +23,14 @@ export const Route = createFileRoute("/")({
 function DashboardPage() {
   const [quakes, setQuakes] = useState<Earthquake[] | null>(null);
   const [quakeError, setQuakeError] = useState(false);
+  const [countryCount, setCountryCount] = useState<number | null>(null);
   const [savedCount, setSavedCount] = useState<number | null>(null);
   const [alertCount, setAlertCount] = useState<number | null>(null);
   const [updated, setUpdated] = useState<Date>(new Date());
 
   useEffect(() => {
     getEarthquakes("day").then(setQuakes).catch(() => setQuakeError(true));
+    getAllCountries().then((c) => setCountryCount(c.length)).catch(() => setCountryCount(null));
     if (isSupabaseConfigured()) {
       supabaseService.listSavedCountries().then((d) => setSavedCount(d.length)).catch(() => setSavedCount(0));
       supabaseService.listSavedAlerts().then((d) => setAlertCount(d.length)).catch(() => setAlertCount(0));
@@ -68,7 +71,7 @@ function DashboardPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-        <StatCard label="Countries monitored" value="195+" hint="REST Countries API" icon={<Flag className="h-4 w-4" />} accent="cyan" />
+        <StatCard label="Countries monitored" value={countryCount ?? "—"} hint="REST Countries API" icon={<Flag className="h-4 w-4" />} accent="cyan" />
         <StatCard label="Earthquakes today" value={quakes ? today : "—"} hint="USGS feed" icon={<Activity className="h-4 w-4" />} accent="amber" />
         <StatCard label="Highest magnitude" value={quakes ? maxMag.toFixed(1) : "—"} hint="USGS feed" icon={<Activity className="h-4 w-4" />} accent="rose" />
         <StatCard label="Saved countries" value={savedCount ?? "—"} hint="Supabase" icon={<Bookmark className="h-4 w-4" />} accent="emerald" />
