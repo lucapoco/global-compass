@@ -266,7 +266,7 @@ export async function fetchIntelligence(opts: FetchOpts = {}): Promise<NewsResul
 function fallbackWhenBlocked(msg: string | undefined, status: NewsStatus, max: number): NewsResult {
   const cached = readCachedItems();
   if (cached && cached.length) {
-    return {
+    return rememberResult({
       items: cached.slice(0, max),
       status: status === "rate_limited" ? "rate_limited" : "cached",
       source: "Cache",
@@ -274,15 +274,15 @@ function fallbackWhenBlocked(msg: string | undefined, status: NewsStatus, max: n
       lastUpdated: new Date(cacheTs()).toISOString(),
       message: msg,
       errorMessage: status === "rate_limited" ? msg : undefined,
-    };
+    });
   }
-  return {
+  return rememberResult({
     items: demoNews.slice(0, max),
     status: status === "rate_limited" ? "rate_limited" : "demo",
     source: "Demo",
     message: msg ?? "Showing demo data.",
     errorMessage: status === "rate_limited" ? msg : undefined,
-  };
+  });
 }
 
 async function doHeadlinesFetch(): Promise<NewsResult> {
@@ -296,6 +296,8 @@ async function doHeadlinesFetch(): Promise<NewsResult> {
   }
 
   markRequest();
+  sessionGNewsCalls += 1;
+  emitDebugUpdate();
   // ONE shared request — top headlines, English, US. Categories are
   // classified locally so we never need a per-category API call.
   const params = new URLSearchParams({
@@ -306,7 +308,7 @@ async function doHeadlinesFetch(): Promise<NewsResult> {
     apikey: GNEWS_KEY,
   });
   const url = `https://gnews.io/api/v4/top-headlines?${params}`;
-  log("GNews fetch (top-headlines)");
+  log("GNews fetch (top-headlines)", { sessionGNewsCalls });
 
   try {
     const res = await fetch(url);
@@ -384,6 +386,8 @@ async function doSearch(query: string, max: number): Promise<NewsResult> {
   if (!GNEWS_KEY) return fallbackWhenBlocked("No news API key configured.", "demo", max);
 
   markRequest();
+  sessionGNewsCalls += 1;
+  emitDebugUpdate();
   const params = new URLSearchParams({ q: query, lang: "en", max: String(max), apikey: GNEWS_KEY });
   const url = `https://gnews.io/api/v4/search?${params}`;
   log("GNews search", { query });
