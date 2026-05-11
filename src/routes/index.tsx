@@ -1,20 +1,24 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { Globe2, Activity, Flag, Bookmark, AlertTriangle, CloudSun, ArrowRight } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Globe2, Activity, Flag, Bookmark, AlertTriangle, CloudSun, ArrowRight, Newspaper, ShieldAlert } from "lucide-react";
 import { StatCard } from "@/components/ui/StatCard";
 import { DataBadge } from "@/components/ui/DataBadge";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { EarthquakeMagnitudeChart } from "@/components/charts/EarthquakeMagnitudeChart";
+import { IntelligenceCard } from "@/components/intelligence/IntelligenceCard";
+import { RiskScoreCard } from "@/components/intelligence/RiskScoreCard";
 import { getEarthquakes } from "@/services/earthquakesApi";
 import { getAllCountries } from "@/services/countriesApi";
+import { fetchIntelligence } from "@/services/newsApi";
+import { buildCountryRiskIndex } from "@/services/riskService";
 import { supabaseService, isSupabaseConfigured } from "@/services/supabaseService";
-import type { Earthquake } from "@/types";
+import type { Earthquake, IntelligenceItem, CountryRisk } from "@/types";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Dashboard — Global Pulse" },
-      { name: "description", content: "Live planetary monitoring dashboard: earthquakes, alerts and saved data." },
+      { name: "description", content: "Live planetary monitoring dashboard: earthquakes, intelligence, alerts and saved data." },
     ],
   }),
   component: DashboardPage,
