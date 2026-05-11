@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
-import maplibregl, { type Map as MlMap, Marker, Popup } from "maplibre-gl";
+import mapboxgl, { type Map as MbMap, Marker, Popup } from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
 import type { MapEvent } from "@/types";
 
 interface Props {
@@ -7,7 +8,11 @@ interface Props {
   height?: string;
 }
 
-const STYLE_DARK = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
+const MAPBOX_TOKEN =
+  (import.meta.env.VITE_MAPBOX_TOKEN as string | undefined) ||
+  "pk.eyJ1IjoibHVjYXBvY28iLCJhIjoiY21wMWsycTE1MDRiejJxcjFoN3d0Nmt5NyJ9.MQ-Nu5ZbYdCdBagfpinCKQ";
+
+mapboxgl.accessToken = MAPBOX_TOKEN;
 
 const COLORS: Record<MapEvent["type"], string> = {
   earthquake: "#f59e0b",
@@ -27,28 +32,31 @@ function severityColor(sev?: string) {
 
 export function ProfessionalWorldMap({ events, height = "70vh" }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<MlMap | null>(null);
+  const mapRef = useRef<MbMap | null>(null);
   const markersRef = useRef<Marker[]>([]);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
-    // Try Mapbox style if token is provided, else fall back to MapLibre dark tiles.
-    const mapboxToken =
-      (import.meta.env.VITE_MAPBOX_TOKEN as string | undefined) ||
-      "pk.eyJ1IjoibHVjYXBvY28iLCJhIjoiY21wMWsycTE1MDRiejJxcjFoN3d0Nmt5NyJ9.MQ-Nu5ZbYdCdBagfpinCKQ";
-    const style = mapboxToken
-      ? { version: 8, sources: { mb: { type: "raster", tiles: [`https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/256/{z}/{x}/{y}@2x?access_token=${mapboxToken}`], tileSize: 256 } }, layers: [{ id: "mb", type: "raster", source: "mb" }] } as any
-      : STYLE_DARK;
-
     try {
-      mapRef.current = new maplibregl.Map({
+      mapRef.current = new mapboxgl.Map({
         container: containerRef.current,
-        style,
+        style: "mapbox://styles/mapbox/dark-v11",
         center: [10, 20],
         zoom: 1.6,
+        projection: "globe" as any,
+        attributionControl: { compact: true },
       });
-      mapRef.current.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
+      mapRef.current.addControl(new mapboxgl.NavigationControl({ showCompass: false }), "top-right");
+      mapRef.current.on("style.load", () => {
+        mapRef.current?.setFog({
+          color: "rgb(15, 23, 42)",
+          "high-color": "rgb(36, 92, 223)",
+          "horizon-blend": 0.02,
+          "space-color": "rgb(8, 12, 24)",
+          "star-intensity": 0.6,
+        } as any);
+      });
     } catch (e) {
       console.error("Map init failed", e);
     }
