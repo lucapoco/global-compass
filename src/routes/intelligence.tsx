@@ -133,7 +133,7 @@ export default function IntelligencePage() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <DataBadge variant={statusVariant(status)}>{statusLabel(status)}</DataBadge>
-          {!isNewsConfigured() && <DataBadge variant="neutral">Set VITE_GNEWS_API_KEY</DataBadge>}
+          {!isNewsConfigured() && <DataBadge variant="neutral">Configure GNews key</DataBadge>}
           <DataBadge variant="neutral">Updated {updated.toLocaleTimeString()}</DataBadge>
           <button
             onClick={handleRefresh}
