@@ -48,6 +48,10 @@ function SavedPage() {
     try { await supabaseService.deleteSavedAlert(a.id, a.title); toast.success("Removed."); refresh(); }
     catch (e: any) { toast.error(e.message ?? "Delete failed"); }
   }
+  async function delIntel(i: SavedIntelligence) {
+    try { await supabaseService.deleteSavedIntelligence(i.id, i.title); toast.success("Removed."); refresh(); }
+    catch (e: any) { toast.error(e.message ?? "Delete failed"); }
+  }
 
   return (
     <div className="space-y-6">
