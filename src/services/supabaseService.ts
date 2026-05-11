@@ -1,5 +1,5 @@
 import { supabase, isSupabaseConfigured } from "@/lib/supabaseClient";
-import type { SavedCountry, SavedAlert, FeedbackMessage, ProjectLog } from "@/types";
+import type { SavedCountry, SavedAlert, FeedbackMessage, ProjectLog, SavedIntelligence, IntelligenceItem } from "@/types";
 
 export { isSupabaseConfigured };
 
@@ -79,5 +79,36 @@ export const supabaseService = {
       .limit(20);
     if (error) throw error;
     return (data ?? []) as FeedbackMessage[];
+  },
+
+  // ---- Saved intelligence
+  async listSavedIntelligence(): Promise<SavedIntelligence[]> {
+    const { data, error } = await (supabase as any)
+      .from("saved_intelligence")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) throw error;
+    return (data ?? []) as SavedIntelligence[];
+  },
+  async saveIntelligence(item: IntelligenceItem) {
+    const payload = {
+      title: item.title,
+      description: item.description,
+      category: item.category,
+      severity: item.severity,
+      country: item.country ?? null,
+      source: item.source,
+      url: item.url ?? null,
+      image_url: item.imageUrl ?? null,
+      published_at: item.publishedAt,
+    };
+    const { error } = await (supabase as any).from("saved_intelligence").insert(payload);
+    if (error) throw error;
+    await logAction("save_intelligence", item.title);
+  },
+  async deleteSavedIntelligence(id: string, title?: string) {
+    const { error } = await (supabase as any).from("saved_intelligence").delete().eq("id", id);
+    if (error) throw error;
+    await logAction("delete_intelligence", title ?? id);
   },
 };

@@ -4,6 +4,7 @@ import { useState } from "react";
 
 const items = [
   { to: "/", label: "Dashboard" },
+  { to: "/intelligence", label: "Intel" },
   { to: "/map", label: "Map" },
   { to: "/countries", label: "Countries" },
   { to: "/earthquakes", label: "Earthquakes" },

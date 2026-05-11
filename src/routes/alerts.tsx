@@ -6,16 +6,21 @@ import { DataBadge } from "@/components/ui/DataBadge";
 import { SeverityBadge } from "@/components/ui/SeverityBadge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { getEarthquakes, magnitudeSeverity } from "@/services/earthquakesApi";
+import { fetchIntelligence } from "@/services/newsApi";
 import { supabaseService, isSupabaseConfigured } from "@/services/supabaseService";
 import { demoAlerts } from "@/data/demoAlerts";
-import type { AlertItem, SavedAlert } from "@/types";
+import type { AlertItem, SavedAlert, IntelligenceSeverity, Severity } from "@/types";
 
 export const Route = createFileRoute("/alerts")({
   head: () => ({ meta: [{ title: "Global Alerts — Global Pulse" }] }),
   component: AlertsPage,
 });
 
-const TYPES = ["all", "earthquake", "weather", "infrastructure", "saved"] as const;
+const TYPES = ["all", "earthquake", "intelligence", "weather", "infrastructure", "saved"] as const;
+
+const intelToSeverity: Record<IntelligenceSeverity, Severity> = {
+  critical: "Critical", high: "High", medium: "Medium", low: "Low",
+};
 
 function AlertsPage() {
   const [alerts, setAlerts] = useState<AlertItem[] | null>(null);
@@ -36,6 +41,22 @@ function AlertsPage() {
           });
         }
       } catch {}
+
+      try {
+        const news = await fetchIntelligence({ max: 30 });
+        for (const n of news.items.filter((n) => n.severity === "high" || n.severity === "critical")) {
+          list.push({
+            id: `intel-${n.id}`,
+            title: n.title,
+            type: "intelligence",
+            severity: intelToSeverity[n.severity],
+            location: n.country,
+            description: n.description,
+            source: n.isLive ? n.source : "Demo",
+          });
+        }
+      } catch {}
+
       for (const d of demoAlerts) list.push(d);
       setAlerts(list);
 

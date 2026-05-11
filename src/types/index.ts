@@ -96,10 +96,63 @@ export interface MapEvent {
   id: string;
   lat: number;
   lng: number;
-  type: "earthquake" | "weather" | "country" | "alert";
+  type: "earthquake" | "weather" | "country" | "alert" | "intelligence";
   title: string;
   description?: string;
   severity?: Severity;
+  category?: IntelligenceCategory;
 }
 
 export type ApiState = "idle" | "loading" | "success" | "error";
+
+// ---------------- Intelligence ----------------
+export type IntelligenceCategory =
+  | "geopolitics"
+  | "military"
+  | "economy"
+  | "technology"
+  | "energy"
+  | "climate"
+  | "disaster"
+  | "cyber"
+  | "health"
+  | "general";
+
+export type IntelligenceSeverity = "low" | "medium" | "high" | "critical";
+
+export interface IntelligenceItem {
+  id: string;
+  title: string;
+  description: string;
+  category: IntelligenceCategory;
+  severity: IntelligenceSeverity;
+  country?: string;
+  source: string;
+  url?: string;
+  imageUrl?: string;
+  publishedAt: string;
+  latitude?: number;
+  longitude?: number;
+  isLive: boolean;
+}
+
+export interface SavedIntelligence {
+  id: string;
+  title: string;
+  description: string | null;
+  category: string | null;
+  severity: string | null;
+  country: string | null;
+  source: string | null;
+  url: string | null;
+  image_url: string | null;
+  published_at: string | null;
+  created_at: string | null;
+}
+
+export interface CountryRisk {
+  country: string;
+  score: number;
+  label: Severity;
+  factors: string[];
+}

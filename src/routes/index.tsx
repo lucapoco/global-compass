@@ -1,20 +1,24 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { Globe2, Activity, Flag, Bookmark, AlertTriangle, CloudSun, ArrowRight } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Globe2, Activity, Flag, Bookmark, AlertTriangle, CloudSun, ArrowRight, Newspaper, ShieldAlert } from "lucide-react";
 import { StatCard } from "@/components/ui/StatCard";
 import { DataBadge } from "@/components/ui/DataBadge";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { EarthquakeMagnitudeChart } from "@/components/charts/EarthquakeMagnitudeChart";
+import { IntelligenceCard } from "@/components/intelligence/IntelligenceCard";
+import { RiskScoreCard } from "@/components/intelligence/RiskScoreCard";
 import { getEarthquakes } from "@/services/earthquakesApi";
 import { getAllCountries } from "@/services/countriesApi";
+import { fetchIntelligence } from "@/services/newsApi";
+import { buildCountryRiskIndex } from "@/services/riskService";
 import { supabaseService, isSupabaseConfigured } from "@/services/supabaseService";
-import type { Earthquake } from "@/types";
+import type { Earthquake, IntelligenceItem, CountryRisk } from "@/types";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Dashboard — Global Pulse" },
-      { name: "description", content: "Live planetary monitoring dashboard: earthquakes, alerts and saved data." },
+      { name: "description", content: "Live planetary monitoring dashboard: earthquakes, intelligence, alerts and saved data." },
     ],
   }),
   component: DashboardPage,
@@ -27,19 +31,41 @@ function DashboardPage() {
   const [savedCount, setSavedCount] = useState<number | null>(null);
   const [alertCount, setAlertCount] = useState<number | null>(null);
   const [updated, setUpdated] = useState<Date>(new Date());
+  const [intel, setIntel] = useState<IntelligenceItem[] | null>(null);
+  const [intelStatus, setIntelStatus] = useState<"live" | "demo" | "error">("demo");
+  const [risks, setRisks] = useState<CountryRisk[]>([]);
 
   useEffect(() => {
-    getEarthquakes("day").then(setQuakes).catch(() => setQuakeError(true));
-    getAllCountries().then((c) => setCountryCount(c.length)).catch(() => setCountryCount(null));
-    if (isSupabaseConfigured()) {
-      supabaseService.listSavedCountries().then((d) => setSavedCount(d.length)).catch(() => setSavedCount(0));
-      supabaseService.listSavedAlerts().then((d) => setAlertCount(d.length)).catch(() => setAlertCount(0));
-    }
-    setUpdated(new Date());
+    (async () => {
+      const qP = getEarthquakes("day").then((q) => { setQuakes(q); return q; }).catch(() => { setQuakeError(true); return [] as Earthquake[]; });
+      getAllCountries().then((c) => setCountryCount(c.length)).catch(() => setCountryCount(null));
+      let savedAlerts: any[] = [];
+      if (isSupabaseConfigured()) {
+        supabaseService.listSavedCountries().then((d) => setSavedCount(d.length)).catch(() => setSavedCount(0));
+        try { savedAlerts = await supabaseService.listSavedAlerts(); setAlertCount(savedAlerts.length); }
+        catch { setAlertCount(0); }
+      }
+      const news = await fetchIntelligence({ max: 20 });
+      setIntel(news.items);
+      setIntelStatus(news.status);
+      const quakesNow = await qP;
+      setRisks(buildCountryRiskIndex({ intel: news.items, quakes: quakesNow, saved: savedAlerts }));
+      setUpdated(new Date());
+    })();
   }, []);
 
   const today = quakes?.length ?? 0;
   const maxMag = quakes && quakes.length ? Math.max(...quakes.map((q) => q.magnitude)) : 0;
+  const intelCounts = useMemo(() => {
+    const r = { critical: 0, high: 0, medium: 0, low: 0 } as Record<string, number>;
+    for (const i of intel ?? []) r[i.severity]++;
+    return r;
+  }, [intel]);
+  const categoryCounts = useMemo(() => {
+    const r = new Map<string, number>();
+    for (const i of intel ?? []) r.set(i.category, (r.get(i.category) ?? 0) + 1);
+    return Array.from(r.entries()).sort((a, b) => b[1] - a[1]);
+  }, [intel]);
 
   return (
     <div className="space-y-6">
@@ -74,9 +100,9 @@ function DashboardPage() {
         <StatCard label="Countries monitored" value={countryCount ?? "—"} hint="REST Countries API" icon={<Flag className="h-4 w-4" />} accent="cyan" />
         <StatCard label="Earthquakes today" value={quakes ? today : "—"} hint="USGS feed" icon={<Activity className="h-4 w-4" />} accent="amber" />
         <StatCard label="Highest magnitude" value={quakes ? maxMag.toFixed(1) : "—"} hint="USGS feed" icon={<Activity className="h-4 w-4" />} accent="rose" />
+        <StatCard label="Intel critical+high" value={intel ? intelCounts.critical + intelCounts.high : "—"} hint={intelStatus === "live" ? "GNews · Live" : "Demo feed"} icon={<Newspaper className="h-4 w-4" />} accent="rose" />
         <StatCard label="Saved countries" value={savedCount ?? "—"} hint="Supabase" icon={<Bookmark className="h-4 w-4" />} accent="emerald" />
         <StatCard label="Active alerts" value={alertCount ?? "—"} hint="Saved + USGS" icon={<AlertTriangle className="h-4 w-4" />} accent="amber" />
-        <StatCard label="Weather lookups" value="On demand" hint="OpenWeather" icon={<CloudSun className="h-4 w-4" />} accent="cyan" />
       </div>
 
       {/* Chart + activity */}
@@ -102,9 +128,51 @@ function DashboardPage() {
         </div>
       </div>
 
+      {/* Intelligence + Risk */}
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="glass-card p-4 lg:col-span-2">
+          <SectionHeader
+            title="Live Intelligence Feed"
+            subtitle="Latest 5 normalized headlines"
+            right={
+              <div className="flex items-center gap-2">
+                <DataBadge variant={intelStatus === "live" ? "live" : intelStatus === "error" ? "error" : "demo"}>
+                  {intelStatus === "live" ? "Live" : intelStatus === "error" ? "API error" : "Demo"}
+                </DataBadge>
+                <Link to="/intelligence" className="text-[11px] text-primary hover:underline">Open feed →</Link>
+              </div>
+            }
+          />
+          {!intel ? <div className="h-40 animate-pulse rounded bg-secondary/40" /> : (
+            <div className="grid gap-2 sm:grid-cols-2">
+              {intel.slice(0, 5).map((i) => <IntelligenceCard key={i.id} item={i} />)}
+            </div>
+          )}
+          {intel && categoryCounts.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {categoryCounts.map(([cat, n]) => (
+                <span key={cat} className="rounded-full border border-border/60 px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+                  {cat} · {n}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="glass-card p-4">
+          <SectionHeader title="Country Risk" subtitle="Top 5 by combined risk" right={<ShieldAlert className="h-4 w-4 text-amber-glow" />} />
+          <div className="space-y-2">
+            {risks.length === 0
+              ? <div className="text-xs text-muted-foreground">Computing risk index…</div>
+              : risks.slice(0, 5).map((r, idx) => <RiskScoreCard key={r.country} rank={idx + 1} risk={r} />)}
+          </div>
+          <Link to="/intelligence" className="mt-2 inline-block text-[11px] text-primary hover:underline">See full index →</Link>
+        </div>
+      </div>
+
       {/* Quick links */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {[
+          { to: "/intelligence", label: "Intelligence Feed", icon: Newspaper },
           { to: "/map", label: "Live World Map", icon: Globe2 },
           { to: "/countries", label: "Countries", icon: Flag },
           { to: "/earthquakes", label: "Earthquakes", icon: Activity },

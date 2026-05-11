@@ -19,6 +19,7 @@ const COLORS: Record<MapEvent["type"], string> = {
   weather: "#22d3ee",
   country: "#a78bfa",
   alert: "#fb7185",
+  intelligence: "#38bdf8",
 };
 
 function severityColor(sev?: string) {

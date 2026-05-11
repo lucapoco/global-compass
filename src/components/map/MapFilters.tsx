@@ -1,4 +1,4 @@
-export type MapFilterKey = "earthquake" | "weather" | "country" | "alert" | "highOnly";
+export type MapFilterKey = "earthquake" | "weather" | "country" | "alert" | "intelligence" | "highOnly";
 
 interface Props {
   value: Record<MapFilterKey, boolean>;
@@ -10,6 +10,7 @@ const ITEMS: { k: MapFilterKey; label: string }[] = [
   { k: "weather", label: "Weather" },
   { k: "country", label: "Capitals" },
   { k: "alert", label: "Saved alerts" },
+  { k: "intelligence", label: "Intelligence" },
   { k: "highOnly", label: "High severity only" },
 ];
 

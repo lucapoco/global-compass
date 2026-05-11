@@ -1,11 +1,12 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard, Globe2, Flag, Activity, CloudSun,
-  AlertTriangle, GitCompareArrows, Bookmark, Info, Radio,
+  AlertTriangle, GitCompareArrows, Bookmark, Info, Radio, Newspaper,
 } from "lucide-react";
 
 const items = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/intelligence", label: "Intelligence Feed", icon: Newspaper },
   { to: "/map", label: "Live World Map", icon: Globe2 },
   { to: "/countries", label: "Countries", icon: Flag },
   { to: "/earthquakes", label: "Earthquakes", icon: Activity },

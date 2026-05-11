@@ -16,7 +16,7 @@ function MapPage() {
   const [events, setEvents] = useState<MapEvent[]>([]);
   const [updated, setUpdated] = useState(new Date());
   const [filters, setFilters] = useState<Record<MapFilterKey, boolean>>({
-    earthquake: true, weather: true, country: true, alert: true, highOnly: false,
+    earthquake: true, weather: true, country: true, alert: true, intelligence: true, highOnly: false,
   });
 
   useEffect(() => {

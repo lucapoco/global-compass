@@ -104,6 +104,48 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_intelligence: {
+        Row: {
+          category: string | null
+          country: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          published_at: string | null
+          severity: string | null
+          source: string | null
+          title: string
+          url: string | null
+        }
+        Insert: {
+          category?: string | null
+          country?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          published_at?: string | null
+          severity?: string | null
+          source?: string | null
+          title: string
+          url?: string | null
+        }
+        Update: {
+          category?: string | null
+          country?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          published_at?: string | null
+          severity?: string | null
+          source?: string | null
+          title?: string
+          url?: string | null
+        }
+        Relationships: []
+      }
       user_feedback: {
         Row: {
           created_at: string | null

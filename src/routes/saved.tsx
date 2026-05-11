@@ -8,7 +8,7 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { SeverityBadge } from "@/components/ui/SeverityBadge";
 import { supabaseService, isSupabaseConfigured } from "@/services/supabaseService";
-import type { SavedCountry, SavedAlert, ProjectLog } from "@/types";
+import type { SavedCountry, SavedAlert, ProjectLog, SavedIntelligence } from "@/types";
 
 export const Route = createFileRoute("/saved")({
   head: () => ({ meta: [{ title: "Saved Data — Global Pulse" }] }),
@@ -18,18 +18,20 @@ export const Route = createFileRoute("/saved")({
 function SavedPage() {
   const [countries, setCountries] = useState<SavedCountry[] | null>(null);
   const [alerts, setAlerts] = useState<SavedAlert[] | null>(null);
+  const [intel, setIntel] = useState<SavedIntelligence[] | null>(null);
   const [logs, setLogs] = useState<ProjectLog[] | null>(null);
   const configured = isSupabaseConfigured();
 
   async function refresh() {
     if (!configured) return;
     try {
-      const [c, a, l] = await Promise.all([
+      const [c, a, i, l] = await Promise.all([
         supabaseService.listSavedCountries(),
         supabaseService.listSavedAlerts(),
+        supabaseService.listSavedIntelligence().catch(() => []),
         supabaseService.listLogs(),
       ]);
-      setCountries(c); setAlerts(a); setLogs(l);
+      setCountries(c); setAlerts(a); setIntel(i as SavedIntelligence[]); setLogs(l);
     } catch (e: any) { toast.error(e.message ?? "Failed to load"); }
   }
   useEffect(() => { refresh(); }, []);
@@ -44,6 +46,10 @@ function SavedPage() {
   }
   async function delAlert(a: SavedAlert) {
     try { await supabaseService.deleteSavedAlert(a.id, a.title); toast.success("Removed."); refresh(); }
+    catch (e: any) { toast.error(e.message ?? "Delete failed"); }
+  }
+  async function delIntel(i: SavedIntelligence) {
+    try { await supabaseService.deleteSavedIntelligence(i.id, i.title); toast.success("Removed."); refresh(); }
     catch (e: any) { toast.error(e.message ?? "Delete failed"); }
   }
 
@@ -87,6 +93,30 @@ function SavedPage() {
                   <div className="text-[11px] text-muted-foreground">{a.type} · {a.source ?? "—"} · {a.location ?? "—"} · {a.created_at && new Date(a.created_at).toLocaleString()}</div>
                 </div>
                 <button onClick={() => delAlert(a)} className="rounded-md border border-rose-glow/30 px-2 py-1 text-rose-glow hover:bg-rose-glow/10"><Trash2 className="h-3.5 w-3.5" /></button>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section>
+        <SectionHeader title="Saved Intelligence" subtitle={intel ? `${intel.length} entries` : ""} />
+        {!intel ? <LoadingSpinner /> : intel.length === 0 ? <EmptyState title="No saved intelligence yet" hint="Open the Intelligence Feed and click Save on any item." /> : (
+          <div className="space-y-2">
+            {intel.map((i) => (
+              <div key={i.id} className="glass-card flex flex-wrap items-center justify-between gap-2 p-3">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="rounded-full border border-border/60 px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">{i.category ?? "general"}</span>
+                    <SeverityBadge severity={(i.severity ?? "low").charAt(0).toUpperCase() + (i.severity ?? "low").slice(1)} />
+                    <span className="truncate">{i.title}</span>
+                  </div>
+                  <div className="text-[11px] text-muted-foreground truncate">{i.source ?? "—"} · {i.country ?? "—"} · {i.published_at && new Date(i.published_at).toLocaleString()}</div>
+                </div>
+                <div className="flex items-center gap-2">
+                  {i.url && <a href={i.url} target="_blank" rel="noreferrer" className="rounded-md border border-border/60 px-2 py-1 text-[10px] text-muted-foreground hover:text-foreground">Open</a>}
+                  <button onClick={() => delIntel(i)} className="rounded-md border border-rose-glow/30 px-2 py-1 text-rose-glow hover:bg-rose-glow/10"><Trash2 className="h-3.5 w-3.5" /></button>
+                </div>
               </div>
             ))}
           </div>
