@@ -37,6 +37,7 @@ const MIN_INTERVAL_MS = 3 * 1000;         // 3 s between real API hits
 
 const DEV = !!import.meta.env.DEV;
 const log = (...a: any[]) => { if (DEV) console.log("[newsApi]", ...a); };
+const redactKey = (value: string) => GNEWS_KEY ? value.replace(GNEWS_KEY, "***") : value;
 
 export type NewsStatus = "live" | "cached" | "demo" | "error" | "rate_limited";
 export type NewsSource = "GNews" | "Cache" | "Demo";
@@ -209,7 +210,7 @@ export async function fetchIntelligence(opts: FetchOpts = {}): Promise<NewsResul
 
   // Serve the newest in-memory result first so dashboard widgets mounted on the
   // same page do not each touch GNews or re-parse storage during presentations.
-  if (!force && !query && lastSharedResult && Date.now() - lastSharedResultAt < CACHE_TTL_MS) {
+  if (!force && !normalizedQuery && lastSharedResult && Date.now() - lastSharedResultAt < CACHE_TTL_MS) {
     log("shared in-memory hit", { ageMs: Date.now() - lastSharedResultAt });
     return applyQueryAndLimit(lastSharedResult, normalizedQuery, max);
   }
@@ -361,7 +362,7 @@ async function doHeadlinesFetch(): Promise<NewsResult> {
     };
   } catch (e: any) {
     const raw = e?.message ?? String(e);
-    const safe = raw.replace(GNEWS_KEY, "***");
+    const safe = redactKey(raw);
     log("GNews error", safe);
 
     if (NEWS_API_KEY) {
