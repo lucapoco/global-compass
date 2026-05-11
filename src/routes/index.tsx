@@ -170,6 +170,8 @@ function DashboardPage() {
         </div>
       </div>
 
+      <ApiHealthPanel />
+
       {/* Quick links */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {[
