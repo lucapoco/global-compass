@@ -24,13 +24,7 @@ export const Route = createFileRoute("/intelligence")({
       { name: "description", content: "Real-time global intelligence feed: news, geopolitics, conflict, cyber, climate." },
     ],
   }),
-  component: IntelligencePage,
-});
-
-// Re-exported as a "page" path some teams expect
-export { IntelligencePage as default };
-
-function IntelligencePage() {
+export default function IntelligencePage() {
   const [items, setItems] = useState<IntelligenceItem[] | null>(null);
   const [status, setStatus] = useState<"live" | "demo" | "error">("demo");
   const [statusMsg, setStatusMsg] = useState<string | undefined>();
