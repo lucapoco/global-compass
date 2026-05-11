@@ -6,6 +6,7 @@ import { DataBadge } from "@/components/ui/DataBadge";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { EarthquakeMagnitudeChart } from "@/components/charts/EarthquakeMagnitudeChart";
 import { getEarthquakes } from "@/services/earthquakesApi";
+import { getAllCountries } from "@/services/countriesApi";
 import { supabaseService, isSupabaseConfigured } from "@/services/supabaseService";
 import type { Earthquake } from "@/types";
 
