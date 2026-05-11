@@ -100,6 +100,30 @@ function SavedPage() {
       </section>
 
       <section>
+        <SectionHeader title="Saved Intelligence" subtitle={intel ? `${intel.length} entries` : ""} />
+        {!intel ? <LoadingSpinner /> : intel.length === 0 ? <EmptyState title="No saved intelligence yet" hint="Open the Intelligence Feed and click Save on any item." /> : (
+          <div className="space-y-2">
+            {intel.map((i) => (
+              <div key={i.id} className="glass-card flex flex-wrap items-center justify-between gap-2 p-3">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="rounded-full border border-border/60 px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">{i.category ?? "general"}</span>
+                    <SeverityBadge severity={(i.severity ?? "low").charAt(0).toUpperCase() + (i.severity ?? "low").slice(1)} />
+                    <span className="truncate">{i.title}</span>
+                  </div>
+                  <div className="text-[11px] text-muted-foreground truncate">{i.source ?? "—"} · {i.country ?? "—"} · {i.published_at && new Date(i.published_at).toLocaleString()}</div>
+                </div>
+                <div className="flex items-center gap-2">
+                  {i.url && <a href={i.url} target="_blank" rel="noreferrer" className="rounded-md border border-border/60 px-2 py-1 text-[10px] text-muted-foreground hover:text-foreground">Open</a>}
+                  <button onClick={() => delIntel(i)} className="rounded-md border border-rose-glow/30 px-2 py-1 text-rose-glow hover:bg-rose-glow/10"><Trash2 className="h-3.5 w-3.5" /></button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section>
         <SectionHeader title="Project Logs" subtitle="Recent activity audit trail" />
         {!logs ? <LoadingSpinner /> : logs.length === 0 ? <EmptyState title="No activity yet" /> : (
           <div className="glass-card max-h-64 overflow-auto p-3 text-xs">
