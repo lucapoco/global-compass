@@ -63,6 +63,8 @@ export interface NewsDebugSnapshot {
   rateLimitUntil: number | null;
   cacheAgeMs: number | null;
   cacheItems: number;
+  keyConfigured: boolean;
+  keyLength: number;
 }
 
 let sessionGNewsCalls = 0;
