@@ -42,6 +42,7 @@ export function ApiHealthPanel() {
     { name: "USGS Earthquake", status: "checking" },
     { name: "GNews", status: "checking" },
     { name: "OpenWeather", status: "checking" },
+    { name: "Mapbox", status: "checking" },
     { name: "Supabase", status: "checking" },
   ]);
 
@@ -86,13 +87,12 @@ export function ApiHealthPanel() {
         next.push({ name: "GNews", status: "error", detail: e?.message });
       }
 
-      // OpenWeather — only check if key present (avoid wasting quota: shallow ping)
+      // OpenWeather — never log/expose the key. Only ping if configured.
       if (!hasWeatherKey()) {
         next.push({ name: "OpenWeather", status: "not_configured", detail: "Set VITE_OPENWEATHER_API_KEY" });
       } else {
         try {
-          // Public ping endpoint with the key — minimal payload
-          const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY as string;
+          const apiKey = (import.meta.env.VITE_OPENWEATHER_API_KEY as string).trim();
           const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=London&appid=${apiKey}`);
           if (res.status === 429) next.push({ name: "OpenWeather", status: "rate_limited" });
           else if (!res.ok) next.push({ name: "OpenWeather", status: "error", detail: `HTTP ${res.status}` });
@@ -101,6 +101,15 @@ export function ApiHealthPanel() {
           next.push({ name: "OpenWeather", status: "error", detail: e?.message });
         }
       }
+
+      // Mapbox — env-only check (no network ping required to know it's configured)
+      const mapboxToken = ((import.meta.env.VITE_MAPBOX_TOKEN as string | undefined) ?? "").trim();
+      if (!mapboxToken) {
+        next.push({ name: "Mapbox", status: "not_configured", detail: "Set VITE_MAPBOX_TOKEN" });
+      } else {
+        next.push({ name: "Mapbox", status: "online", lastOk: Date.now(), detail: `Token configured (${mapboxToken.length} chars)` });
+      }
+
 
       // Supabase
       if (!isSupabaseConfigured()) {

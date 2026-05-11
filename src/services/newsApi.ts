@@ -63,6 +63,8 @@ export interface NewsDebugSnapshot {
   rateLimitUntil: number | null;
   cacheAgeMs: number | null;
   cacheItems: number;
+  keyConfigured: boolean;
+  keyLength: number;
 }
 
 let sessionGNewsCalls = 0;
@@ -174,6 +176,8 @@ export function getNewsDebugSnapshot(): NewsDebugSnapshot {
     rateLimitUntil: rlUntil || null,
     cacheAgeMs: cached && ts ? Date.now() - ts : null,
     cacheItems: cached?.length ?? 0,
+    keyConfigured: Boolean(GNEWS_KEY),
+    keyLength: GNEWS_KEY ? GNEWS_KEY.length : 0,
   };
 }
 
