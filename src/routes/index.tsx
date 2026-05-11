@@ -1,26 +1,124 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { Globe2, Activity, Flag, Bookmark, AlertTriangle, CloudSun, ArrowRight } from "lucide-react";
+import { StatCard } from "@/components/ui/StatCard";
+import { DataBadge } from "@/components/ui/DataBadge";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import { EarthquakeMagnitudeChart } from "@/components/charts/EarthquakeMagnitudeChart";
+import { getEarthquakes } from "@/services/earthquakesApi";
+import { supabaseService, isSupabaseConfigured } from "@/services/supabaseService";
+import type { Earthquake } from "@/types";
 
 export const Route = createFileRoute("/")({
-  component: Index,
+  head: () => ({
+    meta: [
+      { title: "Dashboard — Global Pulse" },
+      { name: "description", content: "Live planetary monitoring dashboard: earthquakes, alerts and saved data." },
+    ],
+  }),
+  component: DashboardPage,
 });
 
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
+function DashboardPage() {
+  const [quakes, setQuakes] = useState<Earthquake[] | null>(null);
+  const [quakeError, setQuakeError] = useState(false);
+  const [savedCount, setSavedCount] = useState<number | null>(null);
+  const [alertCount, setAlertCount] = useState<number | null>(null);
+  const [updated, setUpdated] = useState<Date>(new Date());
+
+  useEffect(() => {
+    getEarthquakes("day").then(setQuakes).catch(() => setQuakeError(true));
+    if (isSupabaseConfigured()) {
+      supabaseService.listSavedCountries().then((d) => setSavedCount(d.length)).catch(() => setSavedCount(0));
+      supabaseService.listSavedAlerts().then((d) => setAlertCount(d.length)).catch(() => setAlertCount(0));
+    }
+    setUpdated(new Date());
+  }, []);
+
+  const today = quakes?.length ?? 0;
+  const maxMag = quakes && quakes.length ? Math.max(...quakes.map((q) => q.magnitude)) : 0;
+
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="space-y-6">
+      {/* Hero */}
+      <div className="glass-card panel-grid relative overflow-hidden p-6 lg:p-8">
+        <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-cyan-glow/15 blur-3xl" />
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <DataBadge variant="live">Live</DataBadge>
+              {quakeError && <DataBadge variant="error">API error</DataBadge>}
+              {!isSupabaseConfigured() && <DataBadge variant="demo">Supabase not configured</DataBadge>}
+            </div>
+            <h1 className="mt-3 text-3xl font-semibold tracking-tight lg:text-4xl">Global Pulse</h1>
+            <p className="mt-1 text-sm text-muted-foreground">Real-time insights about our planet</p>
+            <p className="mt-2 text-[11px] uppercase tracking-wider text-muted-foreground">
+              Last updated · {updated.toLocaleTimeString()}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Link to="/map" className="rounded-md border border-primary/40 bg-primary/10 px-3 py-2 text-xs text-primary">Explore Map</Link>
+            <Link to="/countries" className="rounded-md border border-border/60 px-3 py-2 text-xs">Search Country</Link>
+            <Link to="/earthquakes" className="rounded-md border border-border/60 px-3 py-2 text-xs">View Earthquakes</Link>
+            <Link to="/compare" className="rounded-md border border-border/60 px-3 py-2 text-xs">Compare</Link>
+            <Link to="/saved" className="rounded-md border border-border/60 px-3 py-2 text-xs">Saved Data</Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+        <StatCard label="Countries monitored" value="195+" hint="REST Countries API" icon={<Flag className="h-4 w-4" />} accent="cyan" />
+        <StatCard label="Earthquakes today" value={quakes ? today : "—"} hint="USGS feed" icon={<Activity className="h-4 w-4" />} accent="amber" />
+        <StatCard label="Highest magnitude" value={quakes ? maxMag.toFixed(1) : "—"} hint="USGS feed" icon={<Activity className="h-4 w-4" />} accent="rose" />
+        <StatCard label="Saved countries" value={savedCount ?? "—"} hint="Supabase" icon={<Bookmark className="h-4 w-4" />} accent="emerald" />
+        <StatCard label="Active alerts" value={alertCount ?? "—"} hint="Saved + USGS" icon={<AlertTriangle className="h-4 w-4" />} accent="amber" />
+        <StatCard label="Weather lookups" value="On demand" hint="OpenWeather" icon={<CloudSun className="h-4 w-4" />} accent="cyan" />
+      </div>
+
+      {/* Chart + activity */}
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="glass-card p-4 lg:col-span-2">
+          <SectionHeader title="Earthquake magnitudes — last 24h" subtitle="Distribution by Richter bucket" right={<DataBadge variant="source">USGS</DataBadge>} />
+          {quakes ? <EarthquakeMagnitudeChart data={quakes} /> : <div className="h-56 animate-pulse rounded bg-secondary/40" />}
+        </div>
+        <div className="glass-card p-4">
+          <SectionHeader title="World activity feed" subtitle="Most recent quakes" right={<DataBadge variant="live">Live</DataBadge>} />
+          <div className="space-y-2 max-h-56 overflow-auto pr-1">
+            {(quakes ?? []).slice(0, 8).map((q) => (
+              <div key={q.id} className="flex items-center justify-between rounded-md border border-border/40 bg-secondary/20 px-3 py-2">
+                <div className="min-w-0">
+                  <div className="truncate text-xs font-medium">{q.place}</div>
+                  <div className="text-[10px] text-muted-foreground">{new Date(q.time).toLocaleTimeString()}</div>
+                </div>
+                <span className="tabular-nums text-sm font-semibold text-amber-glow">M{q.magnitude.toFixed(1)}</span>
+              </div>
+            ))}
+            {quakes && quakes.length === 0 && <p className="text-xs text-muted-foreground">No earthquakes in the last day.</p>}
+          </div>
+        </div>
+      </div>
+
+      {/* Quick links */}
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {[
+          { to: "/map", label: "Live World Map", icon: Globe2 },
+          { to: "/countries", label: "Countries", icon: Flag },
+          { to: "/earthquakes", label: "Earthquakes", icon: Activity },
+          { to: "/alerts", label: "Global Alerts", icon: AlertTriangle },
+        ].map((q) => {
+          const I = q.icon;
+          return (
+            <Link key={q.to} to={q.to} className="glass-card group flex items-center justify-between p-4 hover:border-primary/40">
+              <div className="flex items-center gap-3">
+                <I className="h-4 w-4 text-primary" />
+                <span className="text-sm">{q.label}</span>
+              </div>
+              <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
+            </Link>
+          );
+        })}
+      </div>
     </div>
   );
-}
-
-function Index() {
-  return <PlaceholderIndex />;
 }
