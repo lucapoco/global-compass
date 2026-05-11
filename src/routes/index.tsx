@@ -100,9 +100,9 @@ function DashboardPage() {
         <StatCard label="Countries monitored" value={countryCount ?? "—"} hint="REST Countries API" icon={<Flag className="h-4 w-4" />} accent="cyan" />
         <StatCard label="Earthquakes today" value={quakes ? today : "—"} hint="USGS feed" icon={<Activity className="h-4 w-4" />} accent="amber" />
         <StatCard label="Highest magnitude" value={quakes ? maxMag.toFixed(1) : "—"} hint="USGS feed" icon={<Activity className="h-4 w-4" />} accent="rose" />
+        <StatCard label="Intel critical+high" value={intel ? intelCounts.critical + intelCounts.high : "—"} hint={intelStatus === "live" ? "GNews · Live" : "Demo feed"} icon={<Newspaper className="h-4 w-4" />} accent="rose" />
         <StatCard label="Saved countries" value={savedCount ?? "—"} hint="Supabase" icon={<Bookmark className="h-4 w-4" />} accent="emerald" />
         <StatCard label="Active alerts" value={alertCount ?? "—"} hint="Saved + USGS" icon={<AlertTriangle className="h-4 w-4" />} accent="amber" />
-        <StatCard label="Weather lookups" value="On demand" hint="OpenWeather" icon={<CloudSun className="h-4 w-4" />} accent="cyan" />
       </div>
 
       {/* Chart + activity */}
