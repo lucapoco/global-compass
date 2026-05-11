@@ -11,7 +11,7 @@ import { IntelligenceCard } from "@/components/intelligence/IntelligenceCard";
 import { IntelligenceFilters } from "@/components/intelligence/IntelligenceFilters";
 import { IntelligenceDetailsModal } from "@/components/intelligence/IntelligenceDetailsModal";
 import { RiskScoreCard } from "@/components/intelligence/RiskScoreCard";
-import { fetchIntelligence, isNewsConfigured } from "@/services/newsApi";
+import { fetchIntelligence, isNewsConfigured, type NewsStatus } from "@/services/newsApi";
 import { getEarthquakes } from "@/services/earthquakesApi";
 import { buildCountryRiskIndex, RISK_WEIGHTS } from "@/services/riskService";
 import { supabaseService, isSupabaseConfigured } from "@/services/supabaseService";
