@@ -45,7 +45,7 @@ export function ProfessionalWorldMap({ events, height = "70vh" }: Props) {
         center: [10, 20],
         zoom: 1.6,
         projection: "globe" as any,
-        attributionControl: { compact: true },
+        attributionControl: true,
       });
       mapRef.current.addControl(new mapboxgl.NavigationControl({ showCompass: false }), "top-right");
       mapRef.current.on("style.load", () => {
