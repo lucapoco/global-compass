@@ -128,9 +128,51 @@ function DashboardPage() {
         </div>
       </div>
 
+      {/* Intelligence + Risk */}
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="glass-card p-4 lg:col-span-2">
+          <SectionHeader
+            title="Live Intelligence Feed"
+            subtitle="Latest 5 normalized headlines"
+            right={
+              <div className="flex items-center gap-2">
+                <DataBadge variant={intelStatus === "live" ? "live" : intelStatus === "error" ? "error" : "demo"}>
+                  {intelStatus === "live" ? "Live" : intelStatus === "error" ? "API error" : "Demo"}
+                </DataBadge>
+                <Link to="/intelligence" className="text-[11px] text-primary hover:underline">Open feed →</Link>
+              </div>
+            }
+          />
+          {!intel ? <div className="h-40 animate-pulse rounded bg-secondary/40" /> : (
+            <div className="grid gap-2 sm:grid-cols-2">
+              {intel.slice(0, 5).map((i) => <IntelligenceCard key={i.id} item={i} />)}
+            </div>
+          )}
+          {intel && categoryCounts.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {categoryCounts.map(([cat, n]) => (
+                <span key={cat} className="rounded-full border border-border/60 px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+                  {cat} · {n}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="glass-card p-4">
+          <SectionHeader title="Country Risk" subtitle="Top 5 by combined risk" right={<ShieldAlert className="h-4 w-4 text-amber-glow" />} />
+          <div className="space-y-2">
+            {risks.length === 0
+              ? <div className="text-xs text-muted-foreground">Computing risk index…</div>
+              : risks.slice(0, 5).map((r, idx) => <RiskScoreCard key={r.country} rank={idx + 1} risk={r} />)}
+          </div>
+          <Link to="/intelligence" className="mt-2 inline-block text-[11px] text-primary hover:underline">See full index →</Link>
+        </div>
+      </div>
+
       {/* Quick links */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {[
+          { to: "/intelligence", label: "Intelligence Feed", icon: Newspaper },
           { to: "/map", label: "Live World Map", icon: Globe2 },
           { to: "/countries", label: "Countries", icon: Flag },
           { to: "/earthquakes", label: "Earthquakes", icon: Activity },
