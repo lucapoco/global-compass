@@ -233,14 +233,15 @@ export async function fetchIntelligence(opts: FetchOpts = {}): Promise<NewsResul
     const cached = readCachedItems();
     if (cached && Date.now() - ts < CACHE_TTL_MS) {
       log("cache hit", { ageMs: Date.now() - ts });
-      return rememberResult({
-        items: cached.slice(0, max),
+      const result = rememberResult({
+        items: cached,
         status: "cached",
         source: "Cache",
         cachedAt: ts,
         lastUpdated: new Date(ts).toISOString(),
         message: `Cached live data from ${new Date(ts).toLocaleTimeString()}`,
       });
+      return { ...result, items: result.items.slice(0, max) };
     }
   }
 
@@ -266,8 +267,8 @@ export async function fetchIntelligence(opts: FetchOpts = {}): Promise<NewsResul
 function fallbackWhenBlocked(msg: string | undefined, status: NewsStatus, max: number): NewsResult {
   const cached = readCachedItems();
   if (cached && cached.length) {
-    return rememberResult({
-      items: cached.slice(0, max),
+    const result = rememberResult({
+      items: cached,
       status: status === "rate_limited" ? "rate_limited" : "cached",
       source: "Cache",
       cachedAt: cacheTs(),
@@ -275,14 +276,16 @@ function fallbackWhenBlocked(msg: string | undefined, status: NewsStatus, max: n
       message: msg,
       errorMessage: status === "rate_limited" ? msg : undefined,
     });
+    return { ...result, items: result.items.slice(0, max) };
   }
-  return rememberResult({
-    items: demoNews.slice(0, max),
+  const result = rememberResult({
+    items: demoNews,
     status: status === "rate_limited" ? "rate_limited" : "demo",
     source: "Demo",
     message: msg ?? "Showing demo data.",
     errorMessage: status === "rate_limited" ? msg : undefined,
   });
+  return { ...result, items: result.items.slice(0, max) };
 }
 
 async function doHeadlinesFetch(): Promise<NewsResult> {
