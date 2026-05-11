@@ -15,11 +15,10 @@ function formatAge(ms: number | null): string {
 }
 
 export function GNewsDebugPanel() {
-  if (!import.meta.env.DEV) return null;
-
   const [snapshot, setSnapshot] = useState<NewsDebugSnapshot>(() => getNewsDebugSnapshot());
 
   useEffect(() => {
+    if (!import.meta.env.DEV) return;
     const unsubscribe = subscribeNewsDebug(setSnapshot);
     const tick = window.setInterval(() => setSnapshot(getNewsDebugSnapshot()), 1000);
     return () => {
@@ -27,6 +26,8 @@ export function GNewsDebugPanel() {
       window.clearInterval(tick);
     };
   }, []);
+
+  if (!import.meta.env.DEV) return null;
 
   const rows = [
     { label: "GNews API calls made this session", value: String(snapshot.sessionGNewsCalls), icon: Radio },
