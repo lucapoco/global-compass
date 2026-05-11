@@ -42,6 +42,7 @@ export function ApiHealthPanel() {
     { name: "USGS Earthquake", status: "checking" },
     { name: "GNews", status: "checking" },
     { name: "OpenWeather", status: "checking" },
+    { name: "Mapbox", status: "checking" },
     { name: "Supabase", status: "checking" },
   ]);
 
