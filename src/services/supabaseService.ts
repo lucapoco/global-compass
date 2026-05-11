@@ -1,5 +1,5 @@
 import { supabase, isSupabaseConfigured } from "@/lib/supabaseClient";
-import type { SavedCountry, SavedAlert, FeedbackMessage, ProjectLog } from "@/types";
+import type { SavedCountry, SavedAlert, FeedbackMessage, ProjectLog, SavedIntelligence, IntelligenceItem } from "@/types";
 
 export { isSupabaseConfigured };
 
