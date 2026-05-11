@@ -142,8 +142,17 @@ export default function IntelligencePage() {
             className="inline-flex items-center gap-1.5 rounded-md border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs text-primary disabled:opacity-50"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
-            {cooldownLeft > 0 ? `Wait ${cooldownLeft}s` : "Refresh"}
+            {cooldownLeft > 0 ? `Please wait ${cooldownLeft}s` : "Refresh"}
           </button>
+          {import.meta.env.DEV && (
+            <button
+              onClick={() => { clearNewsCache(); toast.success("News cache cleared."); load(undefined, { force: true }); }}
+              className="rounded-md border border-border/60 bg-background/40 px-2 py-1.5 text-[10px] uppercase tracking-wider text-muted-foreground hover:text-foreground"
+              title="Development only — clears cache, rate-limit lock, and last-request timestamp"
+            >
+              Clear News Cache
+            </button>
+          )}
         </div>
       </div>
 
