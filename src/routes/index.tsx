@@ -9,7 +9,7 @@ import { IntelligenceCard } from "@/components/intelligence/IntelligenceCard";
 import { RiskScoreCard } from "@/components/intelligence/RiskScoreCard";
 import { getEarthquakes } from "@/services/earthquakesApi";
 import { getAllCountries } from "@/services/countriesApi";
-import { fetchIntelligence } from "@/services/newsApi";
+import { fetchIntelligence, type NewsStatus } from "@/services/newsApi";
 import { buildCountryRiskIndex } from "@/services/riskService";
 import { supabaseService, isSupabaseConfigured } from "@/services/supabaseService";
 import type { Earthquake, IntelligenceItem, CountryRisk } from "@/types";
