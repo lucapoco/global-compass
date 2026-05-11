@@ -205,18 +205,13 @@ let activeRequest: Promise<NewsResult> | null = null;
 
 export async function fetchIntelligence(opts: FetchOpts = {}): Promise<NewsResult> {
   const { query, max = 25, force = false } = opts;
-
-  // Search queries are not cached (they are user-driven and rare). They still
-  // respect the rate-limit lock and minimum interval.
-  if (query && query.trim()) {
-    return doSearch(query.trim(), max);
-  }
+  const normalizedQuery = query?.trim() ?? "";
 
   // Serve the newest in-memory result first so dashboard widgets mounted on the
   // same page do not each touch GNews or re-parse storage during presentations.
   if (!force && !query && lastSharedResult && Date.now() - lastSharedResultAt < CACHE_TTL_MS) {
     log("shared in-memory hit", { ageMs: Date.now() - lastSharedResultAt });
-    return { ...lastSharedResult, items: lastSharedResult.items.slice(0, max) };
+    return applyQueryAndLimit(lastSharedResult, normalizedQuery, max);
   }
 
   // Coalesce concurrent callers before any cache/lock branch so React
@@ -224,7 +219,7 @@ export async function fetchIntelligence(opts: FetchOpts = {}): Promise<NewsResul
   if (activeRequest) {
     log("joining in-flight request");
     const r = await activeRequest;
-    return { ...r, items: r.items.slice(0, max) };
+    return applyQueryAndLimit(r, normalizedQuery, max);
   }
 
   // Serve fresh cache unless force=true
@@ -241,7 +236,7 @@ export async function fetchIntelligence(opts: FetchOpts = {}): Promise<NewsResul
         lastUpdated: new Date(ts).toISOString(),
         message: `Cached live data from ${new Date(ts).toLocaleTimeString()}`,
       });
-      return { ...result, items: result.items.slice(0, max) };
+      return applyQueryAndLimit(result, normalizedQuery, max);
     }
   }
 
@@ -249,19 +244,31 @@ export async function fetchIntelligence(opts: FetchOpts = {}): Promise<NewsResul
   const rlUntil = rateLimitUntil();
   if (Date.now() < rlUntil) {
     log("rate-limit lock active", { until: new Date(rlUntil).toISOString() });
-    return fallbackWhenBlocked("GNews rate limit reached. Using cached/demo data for now.", "rate_limited", max);
+    return applyQueryAndLimit(fallbackWhenBlocked("GNews rate limit reached. Using cached/demo data for now.", "rate_limited", Math.max(max, 25)), normalizedQuery, max);
   }
 
   // Minimum interval between real API calls (handles StrictMode + concurrent mounts)
   const sinceLast = Date.now() - lastRequestAt();
   if (sinceLast < MIN_INTERVAL_MS && !force) {
     log("min-interval guard", { sinceLast });
-    return fallbackWhenBlocked(undefined, "cached", max);
+    return applyQueryAndLimit(fallbackWhenBlocked(undefined, "cached", Math.max(max, 25)), normalizedQuery, max);
   }
 
   activeRequest = doHeadlinesFetch().then(rememberResult).finally(() => { activeRequest = null; });
   const result = await activeRequest;
-  return { ...result, items: result.items.slice(0, max) };
+  return applyQueryAndLimit(result, normalizedQuery, max);
+}
+
+function applyQueryAndLimit(result: NewsResult, query: string, max: number): NewsResult {
+  const q = query.toLowerCase();
+  const items = q
+    ? result.items.filter((item) => [item.title, item.description, item.source, item.country, item.category]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase()
+        .includes(q))
+    : result.items;
+  return { ...result, items: items.slice(0, max) };
 }
 
 function fallbackWhenBlocked(msg: string | undefined, status: NewsStatus, max: number): NewsResult {
