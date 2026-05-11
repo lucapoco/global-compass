@@ -22,15 +22,14 @@ import { demoNews } from "@/data/demoNews";
  * `fetchIntelligence()` — never call the API directly elsewhere.
  */
 
-const GNEWS_KEY =
-  (import.meta.env.VITE_GNEWS_API_KEY as string | undefined) ||
-  "554e73d2cc17d3bd98f183a3e033f43a";
+const GNEWS_KEY = (import.meta.env.VITE_GNEWS_API_KEY as string | undefined)?.trim();
 const NEWS_API_KEY = import.meta.env.VITE_NEWS_API_KEY as string | undefined;
 
 const CACHE_KEY = "global_pulse_gnews_cache";
 const CACHE_TS_KEY = "global_pulse_gnews_cache_timestamp";
 const RATE_LIMIT_KEY = "global_pulse_gnews_rate_limit_until";
 const LAST_REQ_KEY = "global_pulse_gnews_last_request_at";
+export const NEWS_DEBUG_EVENT = "global-pulse-gnews-debug";
 
 const CACHE_TTL_MS = 30 * 60 * 1000;      // 30 min
 const RATE_LIMIT_MS = 30 * 60 * 1000;     // 30 min
@@ -41,6 +40,7 @@ const log = (...a: any[]) => { if (DEV) console.log("[newsApi]", ...a); };
 
 export type NewsStatus = "live" | "cached" | "demo" | "error" | "rate_limited";
 export type NewsSource = "GNews" | "Cache" | "Demo";
+export type NewsDebugStatus = NewsStatus | "idle";
 
 export interface NewsResult {
   items: IntelligenceItem[];
@@ -53,6 +53,20 @@ export interface NewsResult {
   lastUpdated?: string;
   cachedAt?: number;
 }
+
+export interface NewsDebugSnapshot {
+  sessionGNewsCalls: number;
+  lastRequestAt: number | null;
+  currentStatus: NewsDebugStatus;
+  rateLimitActive: boolean;
+  rateLimitUntil: number | null;
+  cacheAgeMs: number | null;
+  cacheItems: number;
+}
+
+let sessionGNewsCalls = 0;
+let lastSharedResult: NewsResult | null = null;
+let lastSharedResultAt = 0;
 
 // ---------- Classification (local, so we only need ONE GNews request) ----------
 
