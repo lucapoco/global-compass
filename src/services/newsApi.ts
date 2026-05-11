@@ -22,15 +22,14 @@ import { demoNews } from "@/data/demoNews";
  * `fetchIntelligence()` — never call the API directly elsewhere.
  */
 
-const GNEWS_KEY =
-  (import.meta.env.VITE_GNEWS_API_KEY as string | undefined) ||
-  "554e73d2cc17d3bd98f183a3e033f43a";
+const GNEWS_KEY = (import.meta.env.VITE_GNEWS_API_KEY as string | undefined)?.trim();
 const NEWS_API_KEY = import.meta.env.VITE_NEWS_API_KEY as string | undefined;
 
 const CACHE_KEY = "global_pulse_gnews_cache";
 const CACHE_TS_KEY = "global_pulse_gnews_cache_timestamp";
 const RATE_LIMIT_KEY = "global_pulse_gnews_rate_limit_until";
 const LAST_REQ_KEY = "global_pulse_gnews_last_request_at";
+export const NEWS_DEBUG_EVENT = "global-pulse-gnews-debug";
 
 const CACHE_TTL_MS = 30 * 60 * 1000;      // 30 min
 const RATE_LIMIT_MS = 30 * 60 * 1000;     // 30 min
@@ -38,9 +37,11 @@ const MIN_INTERVAL_MS = 3 * 1000;         // 3 s between real API hits
 
 const DEV = !!import.meta.env.DEV;
 const log = (...a: any[]) => { if (DEV) console.log("[newsApi]", ...a); };
+const redactKey = (value: string) => GNEWS_KEY ? value.replace(GNEWS_KEY, "***") : value;
 
 export type NewsStatus = "live" | "cached" | "demo" | "error" | "rate_limited";
 export type NewsSource = "GNews" | "Cache" | "Demo";
+export type NewsDebugStatus = NewsStatus | "idle";
 
 export interface NewsResult {
   items: IntelligenceItem[];
@@ -53,6 +54,20 @@ export interface NewsResult {
   lastUpdated?: string;
   cachedAt?: number;
 }
+
+export interface NewsDebugSnapshot {
+  sessionGNewsCalls: number;
+  lastRequestAt: number | null;
+  currentStatus: NewsDebugStatus;
+  rateLimitActive: boolean;
+  rateLimitUntil: number | null;
+  cacheAgeMs: number | null;
+  cacheItems: number;
+}
+
+let sessionGNewsCalls = 0;
+let lastSharedResult: NewsResult | null = null;
+let lastSharedResultAt = 0;
 
 // ---------- Classification (local, so we only need ONE GNews request) ----------
 
@@ -139,10 +154,46 @@ function setRateLimit(ms = RATE_LIMIT_MS) { writeNum(RATE_LIMIT_KEY, Date.now() 
 function lastRequestAt(): number { return readNum(LAST_REQ_KEY); }
 function markRequest() { writeNum(LAST_REQ_KEY, Date.now()); }
 
+function rememberResult(result: NewsResult): NewsResult {
+  lastSharedResult = result;
+  lastSharedResultAt = Date.now();
+  emitDebugUpdate();
+  return result;
+}
+
+export function getNewsDebugSnapshot(): NewsDebugSnapshot {
+  const ts = cacheTs();
+  const cached = readCachedItems();
+  const rlUntil = rateLimitUntil();
+  const lastReq = lastRequestAt();
+  return {
+    sessionGNewsCalls,
+    lastRequestAt: lastReq || null,
+    currentStatus: lastSharedResult?.status ?? "idle",
+    rateLimitActive: Date.now() < rlUntil,
+    rateLimitUntil: rlUntil || null,
+    cacheAgeMs: cached && ts ? Date.now() - ts : null,
+    cacheItems: cached?.length ?? 0,
+  };
+}
+
+function emitDebugUpdate() {
+  if (!DEV || typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent(NEWS_DEBUG_EVENT, { detail: getNewsDebugSnapshot() }));
+}
+
+export function subscribeNewsDebug(listener: (snapshot: NewsDebugSnapshot) => void): () => void {
+  if (typeof window === "undefined") return () => {};
+  const handler = () => listener(getNewsDebugSnapshot());
+  window.addEventListener(NEWS_DEBUG_EVENT, handler);
+  listener(getNewsDebugSnapshot());
+  return () => window.removeEventListener(NEWS_DEBUG_EVENT, handler);
+}
+
 // ---------- Public API ----------
 
 export interface FetchOpts {
-  /** Optional search query — if provided, bypasses the shared top-headlines cache. */
+  /** Optional local filter. It does not make a separate GNews request. */
   query?: string;
   /** Slice size; the underlying fetch is always one shared headlines call. */
   max?: number;
@@ -155,11 +206,21 @@ let activeRequest: Promise<NewsResult> | null = null;
 
 export async function fetchIntelligence(opts: FetchOpts = {}): Promise<NewsResult> {
   const { query, max = 25, force = false } = opts;
+  const normalizedQuery = query?.trim() ?? "";
 
-  // Search queries are not cached (they are user-driven and rare). They still
-  // respect the rate-limit lock and minimum interval.
-  if (query && query.trim()) {
-    return doSearch(query.trim(), max);
+  // Serve the newest in-memory result first so dashboard widgets mounted on the
+  // same page do not each touch GNews or re-parse storage during presentations.
+  if (!force && !normalizedQuery && lastSharedResult && Date.now() - lastSharedResultAt < CACHE_TTL_MS) {
+    log("shared in-memory hit", { ageMs: Date.now() - lastSharedResultAt });
+    return applyQueryAndLimit(lastSharedResult, normalizedQuery, max);
+  }
+
+  // Coalesce concurrent callers before any cache/lock branch so React
+  // StrictMode and dashboard panels all await the same shared result.
+  if (activeRequest) {
+    log("joining in-flight request");
+    const r = await activeRequest;
+    return applyQueryAndLimit(r, normalizedQuery, max);
   }
 
   // Serve fresh cache unless force=true
@@ -168,14 +229,15 @@ export async function fetchIntelligence(opts: FetchOpts = {}): Promise<NewsResul
     const cached = readCachedItems();
     if (cached && Date.now() - ts < CACHE_TTL_MS) {
       log("cache hit", { ageMs: Date.now() - ts });
-      return {
-        items: cached.slice(0, max),
+      const result = rememberResult({
+        items: cached,
         status: "cached",
         source: "Cache",
         cachedAt: ts,
         lastUpdated: new Date(ts).toISOString(),
         message: `Cached live data from ${new Date(ts).toLocaleTimeString()}`,
-      };
+      });
+      return applyQueryAndLimit(result, normalizedQuery, max);
     }
   }
 
@@ -183,48 +245,55 @@ export async function fetchIntelligence(opts: FetchOpts = {}): Promise<NewsResul
   const rlUntil = rateLimitUntil();
   if (Date.now() < rlUntil) {
     log("rate-limit lock active", { until: new Date(rlUntil).toISOString() });
-    return fallbackWhenBlocked("GNews rate limit reached. Using cached/demo data for now.", "rate_limited", max);
+    return applyQueryAndLimit(fallbackWhenBlocked("GNews rate limit reached. Using cached/demo data for now.", "rate_limited", Math.max(max, 25)), normalizedQuery, max);
   }
 
   // Minimum interval between real API calls (handles StrictMode + concurrent mounts)
   const sinceLast = Date.now() - lastRequestAt();
   if (sinceLast < MIN_INTERVAL_MS && !force) {
     log("min-interval guard", { sinceLast });
-    return fallbackWhenBlocked(undefined, "cached", max);
+    return applyQueryAndLimit(fallbackWhenBlocked(undefined, "cached", Math.max(max, 25)), normalizedQuery, max);
   }
 
-  // Coalesce concurrent callers
-  if (activeRequest) {
-    log("joining in-flight request");
-    const r = await activeRequest;
-    return { ...r, items: r.items.slice(0, max) };
-  }
-
-  activeRequest = doHeadlinesFetch().finally(() => { activeRequest = null; });
+  activeRequest = doHeadlinesFetch().then(rememberResult).finally(() => { activeRequest = null; });
   const result = await activeRequest;
-  return { ...result, items: result.items.slice(0, max) };
+  return applyQueryAndLimit(result, normalizedQuery, max);
+}
+
+function applyQueryAndLimit(result: NewsResult, query: string, max: number): NewsResult {
+  const q = query.toLowerCase();
+  const items = q
+    ? result.items.filter((item) => [item.title, item.description, item.source, item.country, item.category]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase()
+        .includes(q))
+    : result.items;
+  return { ...result, items: items.slice(0, max) };
 }
 
 function fallbackWhenBlocked(msg: string | undefined, status: NewsStatus, max: number): NewsResult {
   const cached = readCachedItems();
   if (cached && cached.length) {
-    return {
-      items: cached.slice(0, max),
+    const result = rememberResult({
+      items: cached,
       status: status === "rate_limited" ? "rate_limited" : "cached",
       source: "Cache",
       cachedAt: cacheTs(),
       lastUpdated: new Date(cacheTs()).toISOString(),
       message: msg,
       errorMessage: status === "rate_limited" ? msg : undefined,
-    };
+    });
+    return { ...result, items: result.items.slice(0, max) };
   }
-  return {
-    items: demoNews.slice(0, max),
+  const result = rememberResult({
+    items: demoNews,
     status: status === "rate_limited" ? "rate_limited" : "demo",
     source: "Demo",
     message: msg ?? "Showing demo data.",
     errorMessage: status === "rate_limited" ? msg : undefined,
-  };
+  });
+  return { ...result, items: result.items.slice(0, max) };
 }
 
 async function doHeadlinesFetch(): Promise<NewsResult> {
@@ -233,11 +302,13 @@ async function doHeadlinesFetch(): Promise<NewsResult> {
       items: demoNews,
       status: "demo",
       source: "Demo",
-      message: "No news API key configured (set VITE_GNEWS_API_KEY) — showing demo intelligence feed.",
+      message: "No GNews API key configured — showing demo intelligence feed.",
     };
   }
 
   markRequest();
+  sessionGNewsCalls += 1;
+  emitDebugUpdate();
   // ONE shared request — top headlines, English, US. Categories are
   // classified locally so we never need a per-category API call.
   const params = new URLSearchParams({
@@ -248,7 +319,7 @@ async function doHeadlinesFetch(): Promise<NewsResult> {
     apikey: GNEWS_KEY,
   });
   const url = `https://gnews.io/api/v4/top-headlines?${params}`;
-  log("GNews fetch (top-headlines)");
+  log("GNews fetch (top-headlines)", { sessionGNewsCalls });
 
   try {
     const res = await fetch(url);
@@ -291,7 +362,7 @@ async function doHeadlinesFetch(): Promise<NewsResult> {
     };
   } catch (e: any) {
     const raw = e?.message ?? String(e);
-    const safe = raw.replace(GNEWS_KEY, "***");
+    const safe = redactKey(raw);
     log("GNews error", safe);
 
     if (NEWS_API_KEY) {
@@ -313,36 +384,6 @@ async function doHeadlinesFetch(): Promise<NewsResult> {
       ? "Could not reach gnews.io (network blocked, ad-blocker, or CORS). Showing demo data."
       : `GNews error: ${safe}. Showing demo data.`;
     return { items: demoNews, status: "error", source: "Demo", message: friendly, errorMessage: friendly };
-  }
-}
-
-async function doSearch(query: string, max: number): Promise<NewsResult> {
-  if (Date.now() < rateLimitUntil()) {
-    return fallbackWhenBlocked("GNews rate limit reached. Search disabled until lock clears.", "rate_limited", max);
-  }
-  if (Date.now() - lastRequestAt() < MIN_INTERVAL_MS) {
-    return fallbackWhenBlocked("Please wait a moment before searching again.", "cached", max);
-  }
-  if (!GNEWS_KEY) return fallbackWhenBlocked("No news API key configured.", "demo", max);
-
-  markRequest();
-  const params = new URLSearchParams({ q: query, lang: "en", max: String(max), apikey: GNEWS_KEY });
-  const url = `https://gnews.io/api/v4/search?${params}`;
-  log("GNews search", { query });
-
-  try {
-    const res = await fetch(url);
-    if (res.status === 429) { setRateLimit(); return fallbackWhenBlocked("GNews rate limit reached. Using cached/demo data for now.", "rate_limited", max); }
-    if (res.status === 403) { setRateLimit(); return fallbackWhenBlocked("GNews daily quota reached. Try again after the daily reset or use demo data.", "rate_limited", max); }
-    if (res.status === 401) return { items: demoNews.slice(0, max), status: "error", source: "Demo", message: "GNews API key is invalid or missing." };
-    if (!res.ok) throw new Error(`GNews ${res.status}`);
-    const data = await res.json();
-    const items = normalizeGNews(data.articles ?? []);
-    const ts = Date.now();
-    return { items, status: "live", source: "GNews", cachedAt: ts, lastUpdated: new Date(ts).toISOString() };
-  } catch (e: any) {
-    const safe = (e?.message ?? String(e)).replace(GNEWS_KEY, "***");
-    return fallbackWhenBlocked(`GNews search error: ${safe}`, "error", max);
   }
 }
 
@@ -386,4 +427,7 @@ export function clearNewsCache() {
     localStorage.removeItem(LAST_REQ_KEY);
   } catch {}
   activeRequest = null;
+  lastSharedResult = null;
+  lastSharedResultAt = 0;
+  emitDebugUpdate();
 }
