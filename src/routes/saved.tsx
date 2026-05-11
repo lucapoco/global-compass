@@ -18,18 +18,20 @@ export const Route = createFileRoute("/saved")({
 function SavedPage() {
   const [countries, setCountries] = useState<SavedCountry[] | null>(null);
   const [alerts, setAlerts] = useState<SavedAlert[] | null>(null);
+  const [intel, setIntel] = useState<SavedIntelligence[] | null>(null);
   const [logs, setLogs] = useState<ProjectLog[] | null>(null);
   const configured = isSupabaseConfigured();
 
   async function refresh() {
     if (!configured) return;
     try {
-      const [c, a, l] = await Promise.all([
+      const [c, a, i, l] = await Promise.all([
         supabaseService.listSavedCountries(),
         supabaseService.listSavedAlerts(),
+        supabaseService.listSavedIntelligence().catch(() => []),
         supabaseService.listLogs(),
       ]);
-      setCountries(c); setAlerts(a); setLogs(l);
+      setCountries(c); setAlerts(a); setIntel(i as SavedIntelligence[]); setLogs(l);
     } catch (e: any) { toast.error(e.message ?? "Failed to load"); }
   }
   useEffect(() => { refresh(); }, []);
