@@ -11,7 +11,7 @@ import { IntelligenceCard } from "@/components/intelligence/IntelligenceCard";
 import { IntelligenceFilters } from "@/components/intelligence/IntelligenceFilters";
 import { IntelligenceDetailsModal } from "@/components/intelligence/IntelligenceDetailsModal";
 import { RiskScoreCard } from "@/components/intelligence/RiskScoreCard";
-import { fetchIntelligence, isNewsConfigured, type NewsStatus } from "@/services/newsApi";
+import { fetchIntelligence, isNewsConfigured, clearNewsCache, type NewsStatus } from "@/services/newsApi";
 import { getEarthquakes } from "@/services/earthquakesApi";
 import { buildCountryRiskIndex, RISK_WEIGHTS } from "@/services/riskService";
 import { supabaseService, isSupabaseConfigured } from "@/services/supabaseService";
@@ -27,7 +27,7 @@ export const Route = createFileRoute("/intelligence")({
   component: IntelligencePage,
 });
 
-const REFRESH_COOLDOWN_MS = 30_000;
+const REFRESH_COOLDOWN_MS = 60_000;
 
 function statusLabel(s: NewsStatus): string {
   switch (s) {
@@ -142,8 +142,17 @@ export default function IntelligencePage() {
             className="inline-flex items-center gap-1.5 rounded-md border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs text-primary disabled:opacity-50"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
-            {cooldownLeft > 0 ? `Wait ${cooldownLeft}s` : "Refresh"}
+            {cooldownLeft > 0 ? `Please wait ${cooldownLeft}s` : "Refresh"}
           </button>
+          {import.meta.env.DEV && (
+            <button
+              onClick={() => { clearNewsCache(); toast.success("News cache cleared."); load(undefined, { force: true }); }}
+              className="rounded-md border border-border/60 bg-background/40 px-2 py-1.5 text-[10px] uppercase tracking-wider text-muted-foreground hover:text-foreground"
+              title="Development only — clears cache, rate-limit lock, and last-request timestamp"
+            >
+              Clear News Cache
+            </button>
+          )}
         </div>
       </div>
 
