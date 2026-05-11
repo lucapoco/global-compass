@@ -37,7 +37,7 @@ export function GNewsDebugPanel() {
   ];
 
   return (
-    <div className="glass-card border-dashed p-3">
+    <div className="glass-card mb-4 border-dashed p-3">
       <div className="mb-2 flex items-center justify-between gap-2">
         <div className="text-xs font-medium">GNews Debug</div>
         <DataBadge variant="neutral">Development only</DataBadge>
