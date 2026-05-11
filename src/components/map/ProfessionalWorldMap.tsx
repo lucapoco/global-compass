@@ -45,7 +45,6 @@ export function ProfessionalWorldMap({ events, height = "70vh" }: Props) {
         style,
         center: [10, 20],
         zoom: 1.6,
-        attributionControl: true,
       });
       mapRef.current.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
     } catch (e) {
