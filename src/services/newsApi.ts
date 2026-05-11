@@ -302,7 +302,7 @@ async function doHeadlinesFetch(): Promise<NewsResult> {
       items: demoNews,
       status: "demo",
       source: "Demo",
-      message: "No news API key configured (set VITE_GNEWS_API_KEY) — showing demo intelligence feed.",
+      message: "No GNews API key configured — showing demo intelligence feed.",
     };
   }
 
