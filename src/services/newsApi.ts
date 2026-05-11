@@ -193,7 +193,7 @@ export function subscribeNewsDebug(listener: (snapshot: NewsDebugSnapshot) => vo
 // ---------- Public API ----------
 
 export interface FetchOpts {
-  /** Optional search query — if provided, bypasses the shared top-headlines cache. */
+  /** Optional local filter. It does not make a separate GNews request. */
   query?: string;
   /** Slice size; the underlying fetch is always one shared headlines call. */
   max?: number;
@@ -384,38 +384,6 @@ async function doHeadlinesFetch(): Promise<NewsResult> {
       ? "Could not reach gnews.io (network blocked, ad-blocker, or CORS). Showing demo data."
       : `GNews error: ${safe}. Showing demo data.`;
     return { items: demoNews, status: "error", source: "Demo", message: friendly, errorMessage: friendly };
-  }
-}
-
-async function doSearch(query: string, max: number): Promise<NewsResult> {
-  if (Date.now() < rateLimitUntil()) {
-    return fallbackWhenBlocked("GNews rate limit reached. Search disabled until lock clears.", "rate_limited", max);
-  }
-  if (Date.now() - lastRequestAt() < MIN_INTERVAL_MS) {
-    return fallbackWhenBlocked("Please wait a moment before searching again.", "cached", max);
-  }
-  if (!GNEWS_KEY) return fallbackWhenBlocked("No news API key configured.", "demo", max);
-
-  markRequest();
-  sessionGNewsCalls += 1;
-  emitDebugUpdate();
-  const params = new URLSearchParams({ q: query, lang: "en", max: String(max), apikey: GNEWS_KEY });
-  const url = `https://gnews.io/api/v4/search?${params}`;
-  log("GNews search", { query });
-
-  try {
-    const res = await fetch(url);
-    if (res.status === 429) { setRateLimit(); return fallbackWhenBlocked("GNews rate limit reached. Using cached/demo data for now.", "rate_limited", max); }
-    if (res.status === 403) { setRateLimit(); return fallbackWhenBlocked("GNews daily quota reached. Try again after the daily reset or use demo data.", "rate_limited", max); }
-    if (res.status === 401) return { items: demoNews.slice(0, max), status: "error", source: "Demo", message: "GNews API key is invalid or missing." };
-    if (!res.ok) throw new Error(`GNews ${res.status}`);
-    const data = await res.json();
-    const items = normalizeGNews(data.articles ?? []);
-    const ts = Date.now();
-    return { items, status: "live", source: "GNews", cachedAt: ts, lastUpdated: new Date(ts).toISOString() };
-  } catch (e: any) {
-    const safe = (e?.message ?? String(e)).replace(GNEWS_KEY, "***");
-    return fallbackWhenBlocked(`GNews search error: ${safe}`, "error", max);
   }
 }
 
