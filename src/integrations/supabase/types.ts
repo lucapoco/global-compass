@@ -14,7 +14,120 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      project_logs: {
+        Row: {
+          action: string
+          created_at: string | null
+          details: string | null
+          id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          details?: string | null
+          id?: string
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          details?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
+      saved_alerts: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          location: string | null
+          severity: string
+          source: string | null
+          title: string
+          type: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          location?: string | null
+          severity: string
+          source?: string | null
+          title: string
+          type: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          location?: string | null
+          severity?: string
+          source?: string | null
+          title?: string
+          type?: string
+        }
+        Relationships: []
+      }
+      saved_countries: {
+        Row: {
+          capital: string | null
+          country_code: string | null
+          country_name: string
+          created_at: string | null
+          flag_url: string | null
+          id: string
+          notes: string | null
+          population: number | null
+          region: string | null
+        }
+        Insert: {
+          capital?: string | null
+          country_code?: string | null
+          country_name: string
+          created_at?: string | null
+          flag_url?: string | null
+          id?: string
+          notes?: string | null
+          population?: number | null
+          region?: string | null
+        }
+        Update: {
+          capital?: string | null
+          country_code?: string | null
+          country_name?: string
+          created_at?: string | null
+          flag_url?: string | null
+          id?: string
+          notes?: string | null
+          population?: number | null
+          region?: string | null
+        }
+        Relationships: []
+      }
+      user_feedback: {
+        Row: {
+          created_at: string | null
+          id: string
+          message: string
+          name: string | null
+          rating: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          message: string
+          name?: string | null
+          rating?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          message?: string
+          name?: string | null
+          rating?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
