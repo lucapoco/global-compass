@@ -448,4 +448,7 @@ export function clearNewsCache() {
     localStorage.removeItem(LAST_REQ_KEY);
   } catch {}
   activeRequest = null;
+  lastSharedResult = null;
+  lastSharedResultAt = 0;
+  emitDebugUpdate();
 }
