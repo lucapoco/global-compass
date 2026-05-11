@@ -34,7 +34,9 @@ export function ProfessionalWorldMap({ events, height = "70vh" }: Props) {
     if (!containerRef.current || mapRef.current) return;
 
     // Try Mapbox style if token is provided, else fall back to MapLibre dark tiles.
-    const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined;
+    const mapboxToken =
+      (import.meta.env.VITE_MAPBOX_TOKEN as string | undefined) ||
+      "pk.eyJ1IjoibHVjYXBvY28iLCJhIjoiY21wMWsycTE1MDRiejJxcjFoN3d0Nmt5NyJ9.MQ-Nu5ZbYdCdBagfpinCKQ";
     const style = mapboxToken
       ? { version: 8, sources: { mb: { type: "raster", tiles: [`https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/256/{z}/{x}/{y}@2x?access_token=${mapboxToken}`], tileSize: 256 } }, layers: [{ id: "mb", type: "raster", source: "mb" }] } as any
       : STYLE_DARK;
