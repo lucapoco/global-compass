@@ -153,6 +153,42 @@ function setRateLimit(ms = RATE_LIMIT_MS) { writeNum(RATE_LIMIT_KEY, Date.now() 
 function lastRequestAt(): number { return readNum(LAST_REQ_KEY); }
 function markRequest() { writeNum(LAST_REQ_KEY, Date.now()); }
 
+function rememberResult(result: NewsResult): NewsResult {
+  lastSharedResult = result;
+  lastSharedResultAt = Date.now();
+  emitDebugUpdate();
+  return result;
+}
+
+export function getNewsDebugSnapshot(): NewsDebugSnapshot {
+  const ts = cacheTs();
+  const cached = readCachedItems();
+  const rlUntil = rateLimitUntil();
+  const lastReq = lastRequestAt();
+  return {
+    sessionGNewsCalls,
+    lastRequestAt: lastReq || null,
+    currentStatus: lastSharedResult?.status ?? "idle",
+    rateLimitActive: Date.now() < rlUntil,
+    rateLimitUntil: rlUntil || null,
+    cacheAgeMs: cached && ts ? Date.now() - ts : null,
+    cacheItems: cached?.length ?? 0,
+  };
+}
+
+function emitDebugUpdate() {
+  if (!DEV || typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent(NEWS_DEBUG_EVENT, { detail: getNewsDebugSnapshot() }));
+}
+
+export function subscribeNewsDebug(listener: (snapshot: NewsDebugSnapshot) => void): () => void {
+  if (typeof window === "undefined") return () => {};
+  const handler = () => listener(getNewsDebugSnapshot());
+  window.addEventListener(NEWS_DEBUG_EVENT, handler);
+  listener(getNewsDebugSnapshot());
+  return () => window.removeEventListener(NEWS_DEBUG_EVENT, handler);
+}
+
 // ---------- Public API ----------
 
 export interface FetchOpts {
