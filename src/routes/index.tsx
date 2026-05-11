@@ -12,6 +12,7 @@ import { getAllCountries } from "@/services/countriesApi";
 import { fetchIntelligence, type NewsStatus } from "@/services/newsApi";
 import { buildCountryRiskIndex } from "@/services/riskService";
 import { supabaseService, isSupabaseConfigured } from "@/services/supabaseService";
+import { ApiHealthPanel } from "@/components/dashboard/ApiHealthPanel";
 import type { Earthquake, IntelligenceItem, CountryRisk } from "@/types";
 
 export const Route = createFileRoute("/")({
@@ -168,6 +169,8 @@ function DashboardPage() {
           <Link to="/intelligence" className="mt-2 inline-block text-[11px] text-primary hover:underline">See full index →</Link>
         </div>
       </div>
+
+      <ApiHealthPanel />
 
       {/* Quick links */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
