@@ -8,7 +8,7 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { SeverityBadge } from "@/components/ui/SeverityBadge";
 import { supabaseService, isSupabaseConfigured } from "@/services/supabaseService";
-import type { SavedCountry, SavedAlert, ProjectLog } from "@/types";
+import type { SavedCountry, SavedAlert, ProjectLog, SavedIntelligence } from "@/types";
 
 export const Route = createFileRoute("/saved")({
   head: () => ({ meta: [{ title: "Saved Data — Global Pulse" }] }),
