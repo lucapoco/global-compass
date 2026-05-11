@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WeatherRouteImport } from './routes/weather'
 import { Route as SavedRouteImport } from './routes/saved'
 import { Route as MapRouteImport } from './routes/map'
+import { Route as IntelligenceRouteImport } from './routes/intelligence'
 import { Route as EarthquakesRouteImport } from './routes/earthquakes'
 import { Route as CountriesRouteImport } from './routes/countries'
 import { Route as CompareRouteImport } from './routes/compare'
@@ -32,6 +33,11 @@ const SavedRoute = SavedRouteImport.update({
 const MapRoute = MapRouteImport.update({
   id: '/map',
   path: '/map',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IntelligenceRoute = IntelligenceRouteImport.update({
+  id: '/intelligence',
+  path: '/intelligence',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EarthquakesRoute = EarthquakesRouteImport.update({
@@ -72,6 +78,7 @@ export interface FileRoutesByFullPath {
   '/compare': typeof CompareRoute
   '/countries': typeof CountriesRoute
   '/earthquakes': typeof EarthquakesRoute
+  '/intelligence': typeof IntelligenceRoute
   '/map': typeof MapRoute
   '/saved': typeof SavedRoute
   '/weather': typeof WeatherRoute
@@ -83,6 +90,7 @@ export interface FileRoutesByTo {
   '/compare': typeof CompareRoute
   '/countries': typeof CountriesRoute
   '/earthquakes': typeof EarthquakesRoute
+  '/intelligence': typeof IntelligenceRoute
   '/map': typeof MapRoute
   '/saved': typeof SavedRoute
   '/weather': typeof WeatherRoute
@@ -95,6 +103,7 @@ export interface FileRoutesById {
   '/compare': typeof CompareRoute
   '/countries': typeof CountriesRoute
   '/earthquakes': typeof EarthquakesRoute
+  '/intelligence': typeof IntelligenceRoute
   '/map': typeof MapRoute
   '/saved': typeof SavedRoute
   '/weather': typeof WeatherRoute
@@ -108,6 +117,7 @@ export interface FileRouteTypes {
     | '/compare'
     | '/countries'
     | '/earthquakes'
+    | '/intelligence'
     | '/map'
     | '/saved'
     | '/weather'
@@ -119,6 +129,7 @@ export interface FileRouteTypes {
     | '/compare'
     | '/countries'
     | '/earthquakes'
+    | '/intelligence'
     | '/map'
     | '/saved'
     | '/weather'
@@ -130,6 +141,7 @@ export interface FileRouteTypes {
     | '/compare'
     | '/countries'
     | '/earthquakes'
+    | '/intelligence'
     | '/map'
     | '/saved'
     | '/weather'
@@ -142,6 +154,7 @@ export interface RootRouteChildren {
   CompareRoute: typeof CompareRoute
   CountriesRoute: typeof CountriesRoute
   EarthquakesRoute: typeof EarthquakesRoute
+  IntelligenceRoute: typeof IntelligenceRoute
   MapRoute: typeof MapRoute
   SavedRoute: typeof SavedRoute
   WeatherRoute: typeof WeatherRoute
@@ -168,6 +181,13 @@ declare module '@tanstack/react-router' {
       path: '/map'
       fullPath: '/map'
       preLoaderRoute: typeof MapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/intelligence': {
+      id: '/intelligence'
+      path: '/intelligence'
+      fullPath: '/intelligence'
+      preLoaderRoute: typeof IntelligenceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/earthquakes': {
@@ -222,6 +242,7 @@ const rootRouteChildren: RootRouteChildren = {
   CompareRoute: CompareRoute,
   CountriesRoute: CountriesRoute,
   EarthquakesRoute: EarthquakesRoute,
+  IntelligenceRoute: IntelligenceRoute,
   MapRoute: MapRoute,
   SavedRoute: SavedRoute,
   WeatherRoute: WeatherRoute,
@@ -229,3 +250,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
