@@ -30,6 +30,7 @@ export function GNewsDebugPanel() {
   if (!import.meta.env.DEV) return null;
 
   const rows = [
+    { label: "GNews API key", value: snapshot.keyConfigured ? `Configured (${snapshot.keyLength} chars)` : "Not configured", icon: Lock },
     { label: "GNews API calls made this session", value: String(snapshot.sessionGNewsCalls), icon: Radio },
     { label: "Last GNews request time", value: formatTime(snapshot.lastRequestAt), icon: Timer },
     { label: "Current news status", value: snapshot.currentStatus.replace("_", " ").toUpperCase(), icon: Activity },
