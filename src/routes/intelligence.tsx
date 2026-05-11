@@ -27,7 +27,7 @@ export const Route = createFileRoute("/intelligence")({
   component: IntelligencePage,
 });
 
-const REFRESH_COOLDOWN_MS = 30_000;
+const REFRESH_COOLDOWN_MS = 60_000;
 
 function statusLabel(s: NewsStatus): string {
   switch (s) {
