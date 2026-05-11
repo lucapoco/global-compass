@@ -31,19 +31,41 @@ function DashboardPage() {
   const [savedCount, setSavedCount] = useState<number | null>(null);
   const [alertCount, setAlertCount] = useState<number | null>(null);
   const [updated, setUpdated] = useState<Date>(new Date());
+  const [intel, setIntel] = useState<IntelligenceItem[] | null>(null);
+  const [intelStatus, setIntelStatus] = useState<"live" | "demo" | "error">("demo");
+  const [risks, setRisks] = useState<CountryRisk[]>([]);
 
   useEffect(() => {
-    getEarthquakes("day").then(setQuakes).catch(() => setQuakeError(true));
-    getAllCountries().then((c) => setCountryCount(c.length)).catch(() => setCountryCount(null));
-    if (isSupabaseConfigured()) {
-      supabaseService.listSavedCountries().then((d) => setSavedCount(d.length)).catch(() => setSavedCount(0));
-      supabaseService.listSavedAlerts().then((d) => setAlertCount(d.length)).catch(() => setAlertCount(0));
-    }
-    setUpdated(new Date());
+    (async () => {
+      const qP = getEarthquakes("day").then((q) => { setQuakes(q); return q; }).catch(() => { setQuakeError(true); return [] as Earthquake[]; });
+      getAllCountries().then((c) => setCountryCount(c.length)).catch(() => setCountryCount(null));
+      let savedAlerts: any[] = [];
+      if (isSupabaseConfigured()) {
+        supabaseService.listSavedCountries().then((d) => setSavedCount(d.length)).catch(() => setSavedCount(0));
+        try { savedAlerts = await supabaseService.listSavedAlerts(); setAlertCount(savedAlerts.length); }
+        catch { setAlertCount(0); }
+      }
+      const news = await fetchIntelligence({ max: 20 });
+      setIntel(news.items);
+      setIntelStatus(news.status);
+      const quakesNow = await qP;
+      setRisks(buildCountryRiskIndex({ intel: news.items, quakes: quakesNow, saved: savedAlerts }));
+      setUpdated(new Date());
+    })();
   }, []);
 
   const today = quakes?.length ?? 0;
   const maxMag = quakes && quakes.length ? Math.max(...quakes.map((q) => q.magnitude)) : 0;
+  const intelCounts = useMemo(() => {
+    const r = { critical: 0, high: 0, medium: 0, low: 0 } as Record<string, number>;
+    for (const i of intel ?? []) r[i.severity]++;
+    return r;
+  }, [intel]);
+  const categoryCounts = useMemo(() => {
+    const r = new Map<string, number>();
+    for (const i of intel ?? []) r.set(i.category, (r.get(i.category) ?? 0) + 1);
+    return Array.from(r.entries()).sort((a, b) => b[1] - a[1]);
+  }, [intel]);
 
   return (
     <div className="space-y-6">
