@@ -24,6 +24,9 @@ export const Route = createFileRoute("/intelligence")({
       { name: "description", content: "Real-time global intelligence feed: news, geopolitics, conflict, cyber, climate." },
     ],
   }),
+  component: IntelligencePage,
+});
+
 export default function IntelligencePage() {
   const [items, setItems] = useState<IntelligenceItem[] | null>(null);
   const [status, setStatus] = useState<"live" | "demo" | "error">("demo");
