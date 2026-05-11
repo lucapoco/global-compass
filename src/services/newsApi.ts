@@ -1,0 +1,159 @@
+import type { IntelligenceItem, IntelligenceCategory, IntelligenceSeverity } from "@/types";
+import { demoNews } from "@/data/demoNews";
+
+const GNEWS_KEY = import.meta.env.VITE_GNEWS_API_KEY as string | undefined;
+const NEWS_API_KEY = import.meta.env.VITE_NEWS_API_KEY as string | undefined;
+
+export type NewsStatus = "live" | "demo" | "error";
+export interface NewsResult {
+  items: IntelligenceItem[];
+  status: NewsStatus;
+  message?: string;
+}
+
+const GNEWS_CATEGORIES = [
+  "general", "world", "nation", "business", "technology", "science", "health", "sports", "entertainment",
+] as const;
+
+// --- Classification rules ---
+const CATEGORY_RULES: Array<[IntelligenceCategory, RegExp]> = [
+  ["military",   /\b(war|missile|attack|troops?|military|defense|invasion|airstrike|army|nato|navy)\b/i],
+  ["geopolitics",/\b(election|government|president|border|diplomacy|sanctions?|treaty|summit|parliament|prime minister)\b/i],
+  ["economy",    /\b(stock|inflation|markets?|economy|bank|oil|gas|gdp|recession|tariff|currency|trade)\b/i],
+  ["cyber",      /\b(cyber|hack(ed|ing)?|malware|ransomware|breach|phishing|exploit)\b/i],
+  ["disaster",   /\b(earthquake|flood|wildfire|storm|hurricane|tsunami|disaster|tornado|landslide)\b/i],
+  ["climate",    /\b(climate|heatwave|emissions|temperature|drought|warming|carbon)\b/i],
+  ["technology", /\b(\bai\b|chip|software|technology|startup|robot|silicon|semiconductor|data center)\b/i],
+  ["energy",     /\b(energy|nuclear|reactor|pipeline|grid|electricity|solar|wind farm)\b/i],
+  ["health",     /\b(virus|disease|hospital|health|outbreak|pandemic|vaccine)\b/i],
+];
+
+const CRITICAL = /\b(war|invasion|nuclear|missile|earthquake|dead|killed|emergency|attack|massacre|fatal)\b/i;
+const HIGH = /\b(crisis|warning|conflict|sanctions|cyberattack|explosion|flood|evacuat|airstrike)\b/i;
+const MEDIUM = /\b(protest|inflation|election|storm|outage|recall|strike|tension)\b/i;
+
+export function classifyCategory(text: string): IntelligenceCategory {
+  for (const [cat, rx] of CATEGORY_RULES) if (rx.test(text)) return cat;
+  return "general";
+}
+
+export function classifySeverity(text: string): IntelligenceSeverity {
+  if (CRITICAL.test(text)) return "critical";
+  if (HIGH.test(text)) return "high";
+  if (MEDIUM.test(text)) return "medium";
+  return "low";
+}
+
+// crude country detection from a small list of common ones
+const COUNTRY_LIST = [
+  "United States","USA","UK","United Kingdom","China","Russia","Ukraine","Israel","Palestine","Gaza",
+  "Iran","Iraq","Syria","Turkey","Germany","France","Italy","Spain","Romania","Poland","Japan","India",
+  "Pakistan","Brazil","Mexico","Canada","Australia","South Korea","North Korea","Saudi Arabia","Egypt",
+  "Greece","Sweden","Norway","Finland","Netherlands","Belgium","Switzerland","Austria","Argentina","Chile",
+  "South Africa","Nigeria","Kenya","Ethiopia","Indonesia","Vietnam","Thailand","Philippines","Singapore",
+  "Hungary","Czech","Bulgaria","Portugal","Ireland","Denmark",
+];
+
+export function detectCountry(text: string): string | undefined {
+  for (const c of COUNTRY_LIST) {
+    if (new RegExp(`\\b${c}\\b`, "i").test(text)) return c;
+  }
+  return undefined;
+}
+
+function normalizeGNews(articles: any[]): IntelligenceItem[] {
+  return articles.map((a, i) => {
+    const text = `${a.title ?? ""} ${a.description ?? ""}`;
+    return {
+      id: a.url ?? `gn-${i}-${a.publishedAt ?? Date.now()}`,
+      title: a.title ?? "Untitled",
+      description: a.description ?? "",
+      category: classifyCategory(text),
+      severity: classifySeverity(text),
+      country: detectCountry(text),
+      source: a.source?.name ?? "GNews",
+      url: a.url,
+      imageUrl: a.image,
+      publishedAt: a.publishedAt ?? new Date().toISOString(),
+      isLive: true,
+    } as IntelligenceItem;
+  });
+}
+
+function normalizeNewsAPI(articles: any[]): IntelligenceItem[] {
+  return articles.map((a, i) => {
+    const text = `${a.title ?? ""} ${a.description ?? ""}`;
+    return {
+      id: a.url ?? `na-${i}`,
+      title: a.title ?? "Untitled",
+      description: a.description ?? "",
+      category: classifyCategory(text),
+      severity: classifySeverity(text),
+      country: detectCountry(text),
+      source: a.source?.name ?? "NewsAPI",
+      url: a.url,
+      imageUrl: a.urlToImage,
+      publishedAt: a.publishedAt ?? new Date().toISOString(),
+      isLive: true,
+    } as IntelligenceItem;
+  });
+}
+
+export interface FetchOpts {
+  category?: typeof GNEWS_CATEGORIES[number];
+  query?: string;
+  max?: number;
+  lang?: string;
+}
+
+export async function fetchIntelligence(opts: FetchOpts = {}): Promise<NewsResult> {
+  const { category = "world", query, max = 25, lang = "en" } = opts;
+
+  // 1) GNews (preferred)
+  if (GNEWS_KEY) {
+    try {
+      const params = new URLSearchParams({
+        lang, max: String(max), apikey: GNEWS_KEY,
+      });
+      if (query) params.set("q", query);
+      else params.set("category", category);
+      const url = `https://gnews.io/api/v4/${query ? "search" : "top-headlines"}?${params}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`GNews ${res.status}`);
+      const data = await res.json();
+      return { items: normalizeGNews(data.articles ?? []), status: "live" };
+    } catch (e: any) {
+      console.warn("GNews failed", e);
+      return { items: demoNews, status: "demo", message: "GNews API failed — showing demo data." };
+    }
+  }
+
+  // 2) NewsAPI fallback
+  if (NEWS_API_KEY) {
+    try {
+      const params = new URLSearchParams({
+        language: lang, pageSize: String(max), apiKey: NEWS_API_KEY,
+      });
+      if (query) params.set("q", query);
+      else params.set("category", category === "world" || category === "nation" ? "general" : category);
+      const url = `https://newsapi.org/v2/${query ? "everything" : "top-headlines"}?${params}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`NewsAPI ${res.status}`);
+      const data = await res.json();
+      return { items: normalizeNewsAPI(data.articles ?? []), status: "live" };
+    } catch (e: any) {
+      return { items: demoNews, status: "demo", message: "NewsAPI failed — showing demo data." };
+    }
+  }
+
+  // 3) Demo fallback
+  return {
+    items: demoNews,
+    status: "demo",
+    message: "No news API key configured (set VITE_GNEWS_API_KEY) — showing demo intelligence feed.",
+  };
+}
+
+export function isNewsConfigured(): boolean {
+  return Boolean(GNEWS_KEY || NEWS_API_KEY);
+}
