@@ -1,7 +1,9 @@
 import type { IntelligenceItem, IntelligenceCategory, IntelligenceSeverity } from "@/types";
 import { demoNews } from "@/data/demoNews";
 
-const GNEWS_KEY = import.meta.env.VITE_GNEWS_API_KEY as string | undefined;
+const GNEWS_KEY =
+  (import.meta.env.VITE_GNEWS_API_KEY as string | undefined) ||
+  "554e73d2cc17d3bd98f183a3e033f43a";
 const NEWS_API_KEY = import.meta.env.VITE_NEWS_API_KEY as string | undefined;
 
 export type NewsStatus = "live" | "demo" | "error";
