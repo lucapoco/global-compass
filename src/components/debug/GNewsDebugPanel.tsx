@@ -30,7 +30,7 @@ export function GNewsDebugPanel() {
   if (!import.meta.env.DEV) return null;
 
   const rows = [
-    { label: "GNews API calls made this session", value: String(snapshot.sessionGNewsCalls), icon: Radio },
+    { label: "Proxy calls this session", value: `${snapshot.sessionGNewsCalls} · via /api/public/gnews-proxy`, icon: Radio },
     { label: "Last GNews request time", value: formatTime(snapshot.lastRequestAt), icon: Timer },
     { label: "Current news status", value: snapshot.currentStatus.replace("_", " ").toUpperCase(), icon: Activity },
     { label: "Rate limit lock active", value: snapshot.rateLimitActive ? `Yes · until ${formatTime(snapshot.rateLimitUntil)}` : "No", icon: Lock },

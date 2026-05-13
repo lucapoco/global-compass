@@ -19,6 +19,7 @@ import { Route as CompareRouteImport } from './routes/compare'
 import { Route as AlertsRouteImport } from './routes/alerts'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiPublicGnewsProxyRouteImport } from './routes/api/public/gnews-proxy'
 
 const WeatherRoute = WeatherRouteImport.update({
   id: '/weather',
@@ -70,6 +71,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicGnewsProxyRoute = ApiPublicGnewsProxyRouteImport.update({
+  id: '/api/public/gnews-proxy',
+  path: '/api/public/gnews-proxy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -82,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/map': typeof MapRoute
   '/saved': typeof SavedRoute
   '/weather': typeof WeatherRoute
+  '/api/public/gnews-proxy': typeof ApiPublicGnewsProxyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByTo {
   '/map': typeof MapRoute
   '/saved': typeof SavedRoute
   '/weather': typeof WeatherRoute
+  '/api/public/gnews-proxy': typeof ApiPublicGnewsProxyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -107,6 +115,7 @@ export interface FileRoutesById {
   '/map': typeof MapRoute
   '/saved': typeof SavedRoute
   '/weather': typeof WeatherRoute
+  '/api/public/gnews-proxy': typeof ApiPublicGnewsProxyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
     | '/map'
     | '/saved'
     | '/weather'
+    | '/api/public/gnews-proxy'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -133,6 +143,7 @@ export interface FileRouteTypes {
     | '/map'
     | '/saved'
     | '/weather'
+    | '/api/public/gnews-proxy'
   id:
     | '__root__'
     | '/'
@@ -145,6 +156,7 @@ export interface FileRouteTypes {
     | '/map'
     | '/saved'
     | '/weather'
+    | '/api/public/gnews-proxy'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -158,6 +170,7 @@ export interface RootRouteChildren {
   MapRoute: typeof MapRoute
   SavedRoute: typeof SavedRoute
   WeatherRoute: typeof WeatherRoute
+  ApiPublicGnewsProxyRoute: typeof ApiPublicGnewsProxyRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -232,6 +245,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/gnews-proxy': {
+      id: '/api/public/gnews-proxy'
+      path: '/api/public/gnews-proxy'
+      fullPath: '/api/public/gnews-proxy'
+      preLoaderRoute: typeof ApiPublicGnewsProxyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -246,17 +266,8 @@ const rootRouteChildren: RootRouteChildren = {
   MapRoute: MapRoute,
   SavedRoute: SavedRoute,
   WeatherRoute: WeatherRoute,
+  ApiPublicGnewsProxyRoute: ApiPublicGnewsProxyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

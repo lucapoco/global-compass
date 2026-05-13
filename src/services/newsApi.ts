@@ -22,7 +22,13 @@ import { demoNews } from "@/data/demoNews";
  * `fetchIntelligence()` — never call the API directly elsewhere.
  */
 
-const GNEWS_KEY = (import.meta.env.VITE_GNEWS_API_KEY as string | undefined)?.trim();
+/**
+ * IMPORTANT: The browser never talks to gnews.io directly anymore. All GNews
+ * traffic goes through our same-origin server route /api/public/gnews-proxy
+ * which holds the API key server-side. This avoids ad-blockers, CORS issues,
+ * and key leaks. See src/routes/api/public/gnews-proxy.ts.
+ */
+const PROXY_URL = "/api/public/gnews-proxy";
 const NEWS_API_KEY = import.meta.env.VITE_NEWS_API_KEY as string | undefined;
 
 const CACHE_KEY = "global_pulse_gnews_cache";
@@ -37,7 +43,7 @@ const MIN_INTERVAL_MS = 3 * 1000;         // 3 s between real API hits
 
 const DEV = !!import.meta.env.DEV;
 const log = (...a: any[]) => { if (DEV) console.log("[newsApi]", ...a); };
-const redactKey = (value: string) => GNEWS_KEY ? value.replace(GNEWS_KEY, "***") : value;
+const redactKey = (value: string) => value;
 
 export type NewsStatus = "live" | "cached" | "demo" | "error" | "rate_limited";
 export type NewsSource = "GNews" | "Cache" | "Demo";
@@ -297,32 +303,24 @@ function fallbackWhenBlocked(msg: string | undefined, status: NewsStatus, max: n
 }
 
 async function doHeadlinesFetch(): Promise<NewsResult> {
-  if (!GNEWS_KEY) {
-    return {
-      items: demoNews,
-      status: "demo",
-      source: "Demo",
-      message: "No GNews API key configured — showing demo intelligence feed.",
-    };
-  }
-
   markRequest();
   sessionGNewsCalls += 1;
   emitDebugUpdate();
-  // ONE shared request — top headlines, English, US. Categories are
-  // classified locally so we never need a per-category API call.
+
+  // Hit our same-origin server proxy. The proxy holds the API key server-side
+  // and forwards a single shared "general top-headlines" request to GNews.
+  // Categories/severity are classified locally so we never need extra calls.
   const params = new URLSearchParams({
     category: "general",
     lang: "en",
     country: "us",
     max: "25",
-    apikey: GNEWS_KEY,
   });
-  const url = `https://gnews.io/api/v4/top-headlines?${params}`;
-  log("GNews fetch (top-headlines)", { sessionGNewsCalls });
+  const url = `${PROXY_URL}?${params.toString()}`;
+  log("GNews proxy fetch", { sessionGNewsCalls });
 
   try {
-    const res = await fetch(url);
+    const res = await fetch(url, { headers: { Accept: "application/json" } });
 
     if (res.status === 429) {
       setRateLimit();
@@ -381,8 +379,8 @@ async function doHeadlinesFetch(): Promise<NewsResult> {
       };
     }
     const friendly = /Failed to fetch|NetworkError/i.test(safe)
-      ? "Could not reach gnews.io (network blocked, ad-blocker, or CORS). Showing demo data."
-      : `GNews error: ${safe}. Showing demo data.`;
+      ? "Could not reach the GNews proxy. Showing demo data."
+      : `News proxy error: ${safe}. Showing demo data.`;
     return { items: demoNews, status: "error", source: "Demo", message: friendly, errorMessage: friendly };
   }
 }
@@ -416,7 +414,7 @@ async function tryNewsApi(): Promise<NewsResult | null> {
   } catch { return null; }
 }
 
-export function isNewsConfigured(): boolean { return Boolean(GNEWS_KEY || NEWS_API_KEY); }
+export function isNewsConfigured(): boolean { return true; /* proxy is always reachable; server decides */ }
 
 /** Dev helper — clears all GNews-related cache + locks. */
 export function clearNewsCache() {
