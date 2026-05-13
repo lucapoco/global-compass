@@ -129,8 +129,20 @@ function MapPage() {
     setCategory("all");
     setHighOnly(false);
     setSearch("");
+    toast.success("Filters cleared");
   }
 
+  function pickSeverity(s: SeverityKey) {
+    setSeverity(s);
+    if (s !== "all" && highOnly) setHighOnly(false);
+  }
+
+  function resetView() {
+    mapRef.current?.resetView();
+    toast.message("Map view reset");
+  }
+
+  const allLayersOff = Object.values(layers).every((v) => !v);
   const hasMapbox = Boolean(import.meta.env.VITE_MAPBOX_TOKEN);
 
   return (
