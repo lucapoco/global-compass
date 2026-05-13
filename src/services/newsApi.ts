@@ -303,32 +303,24 @@ function fallbackWhenBlocked(msg: string | undefined, status: NewsStatus, max: n
 }
 
 async function doHeadlinesFetch(): Promise<NewsResult> {
-  if (!GNEWS_KEY) {
-    return {
-      items: demoNews,
-      status: "demo",
-      source: "Demo",
-      message: "No GNews API key configured — showing demo intelligence feed.",
-    };
-  }
-
   markRequest();
   sessionGNewsCalls += 1;
   emitDebugUpdate();
-  // ONE shared request — top headlines, English, US. Categories are
-  // classified locally so we never need a per-category API call.
+
+  // Hit our same-origin server proxy. The proxy holds the API key server-side
+  // and forwards a single shared "general top-headlines" request to GNews.
+  // Categories/severity are classified locally so we never need extra calls.
   const params = new URLSearchParams({
     category: "general",
     lang: "en",
     country: "us",
     max: "25",
-    apikey: GNEWS_KEY,
   });
-  const url = `https://gnews.io/api/v4/top-headlines?${params}`;
-  log("GNews fetch (top-headlines)", { sessionGNewsCalls });
+  const url = `${PROXY_URL}?${params.toString()}`;
+  log("GNews proxy fetch", { sessionGNewsCalls });
 
   try {
-    const res = await fetch(url);
+    const res = await fetch(url, { headers: { Accept: "application/json" } });
 
     if (res.status === 429) {
       setRateLimit();
