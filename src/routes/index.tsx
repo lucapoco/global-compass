@@ -16,6 +16,7 @@ import { MapPreview } from "@/components/dashboard/MapPreview";
 import { ApiHealthPanel } from "@/components/dashboard/ApiHealthPanel";
 import { LiveVideoPanel } from "@/components/video/LiveVideoPanel";
 import { getDashboardSnapshot, invalidateDashboardCache, type DashboardSnapshot } from "@/services/dashboardService";
+import { useViewMode } from "@/context/ViewModeContext";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -30,6 +31,7 @@ export const Route = createFileRoute("/")({
 const REFRESH_COOLDOWN_MS = 60_000;
 
 function DashboardPage() {
+  const { isSimple } = useViewMode();
   const [snap, setSnap] = useState<DashboardSnapshot | null>(null);
   const [loading, setLoading] = useState(false);
   const [updated, setUpdated] = useState<Date>(new Date());
@@ -114,20 +116,24 @@ function DashboardPage() {
         <CriticalSignalsPanel intel={intel} quakes={quakes} saved={saved} />
       </div>
 
-      {/* Row 3: Earthquake chart + Activity feed */}
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="glass-card p-4 lg:col-span-2">
-          <SectionHeader title="Earthquake magnitudes — last 24h" subtitle="Distribution by Richter bucket" right={<DataBadge variant="source">USGS</DataBadge>} />
-          {snap ? <EarthquakeMagnitudeChart data={quakes} /> : <div className="h-56 animate-pulse rounded bg-secondary/40" />}
+      {/* Row 3: Earthquake chart + Activity feed (advanced only) */}
+      {!isSimple && (
+        <div className="grid gap-4 lg:grid-cols-3">
+          <div className="glass-card p-4 lg:col-span-2">
+            <SectionHeader title="Earthquake magnitudes — last 24h" subtitle="Distribution by Richter bucket" right={<DataBadge variant="source">USGS</DataBadge>} />
+            {snap ? <EarthquakeMagnitudeChart data={quakes} /> : <div className="h-56 animate-pulse rounded bg-secondary/40" />}
+          </div>
+          <CategoryDistributionChart items={intel} />
         </div>
-        <CategoryDistributionChart items={intel} />
-      </div>
+      )}
 
-      {/* Row 4: API Health + Activity timeline */}
-      <div id="api-health" className="grid gap-4 lg:grid-cols-2">
-        <ApiHealthPanel />
-        <WorldActivityTimeline intel={intel} quakes={quakes} saved={saved} />
-      </div>
+      {/* Row 4: API Health + Activity timeline (advanced only) */}
+      {!isSimple && (
+        <div id="api-health" className="grid gap-4 lg:grid-cols-2">
+          <ApiHealthPanel />
+          <WorldActivityTimeline intel={intel} quakes={quakes} saved={saved} />
+        </div>
+      )}
 
       {/* Quick links */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
