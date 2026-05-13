@@ -40,9 +40,10 @@ export function ApiHealthPanel() {
   const [rows, setRows] = useState<ApiRow[]>([
     { name: "REST Countries", status: "checking" },
     { name: "USGS Earthquake", status: "checking" },
-    { name: "GNews", status: "checking" },
+    { name: "GNews Proxy", status: "checking" },
     { name: "OpenWeather", status: "checking" },
     { name: "Supabase", status: "checking" },
+    { name: "Mapbox", status: "checking" },
   ]);
 
   useEffect(() => {
@@ -77,13 +78,13 @@ export function ApiHealthPanel() {
           error: "error",
         };
         next.push({
-          name: "GNews",
+          name: "GNews Proxy",
           status: map[r.status],
           lastOk: r.cachedAt,
-          detail: r.message,
+          detail: r.message ?? `${r.items.length} items via /api/public/gnews-proxy`,
         });
       } catch (e: any) {
-        next.push({ name: "GNews", status: "error", detail: e?.message });
+        next.push({ name: "GNews Proxy", status: "error", detail: e?.message });
       }
 
       // OpenWeather — only check if key present (avoid wasting quota: shallow ping)
@@ -113,6 +114,15 @@ export function ApiHealthPanel() {
           next.push({ name: "Supabase", status: "error", detail: e?.message });
         }
       }
+
+      // Mapbox
+      const hasMapbox = Boolean(import.meta.env.VITE_MAPBOX_TOKEN);
+      next.push({
+        name: "Mapbox",
+        status: hasMapbox ? "online" : "demo",
+        lastOk: hasMapbox ? Date.now() : undefined,
+        detail: hasMapbox ? "Token configured" : "Using fallback shared token",
+      });
 
       if (alive) setRows(next);
     })();
