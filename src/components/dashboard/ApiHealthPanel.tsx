@@ -8,7 +8,9 @@ import { fetchIntelligence, type NewsStatus } from "@/services/newsApi";
 import { hasWeatherKey } from "@/services/weatherApi";
 import { isSupabaseConfigured, supabaseService } from "@/services/supabaseService";
 
-type Health = "online" | "cached" | "demo" | "rate_limited" | "error" | "not_configured" | "checking";
+type Health =
+  | "online" | "cached" | "cached_live" | "demo" | "rate_limited" | "error"
+  | "not_configured" | "invalid_key" | "fallback" | "checking";
 
 interface ApiRow {
   name: string;
@@ -17,22 +19,28 @@ interface ApiRow {
   detail?: string;
 }
 
-const VARIANT: Record<Health, "live" | "neutral" | "demo" | "error"> = {
+const VARIANT: Record<Health, "live" | "neutral" | "demo" | "error" | "source"> = {
   online: "live",
   cached: "neutral",
+  cached_live: "live",
   demo: "demo",
   rate_limited: "error",
   error: "error",
   not_configured: "neutral",
+  invalid_key: "error",
+  fallback: "source",
   checking: "neutral",
 };
 const LABEL: Record<Health, string> = {
   online: "Online",
   cached: "Cached",
+  cached_live: "Cached live data",
   demo: "Demo",
   rate_limited: "Rate limited",
   error: "Error",
   not_configured: "Not configured",
+  invalid_key: "Invalid key",
+  fallback: "Fallback",
   checking: "Checking…",
 };
 
