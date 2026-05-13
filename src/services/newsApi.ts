@@ -414,7 +414,7 @@ async function tryNewsApi(): Promise<NewsResult | null> {
   } catch { return null; }
 }
 
-export function isNewsConfigured(): boolean { return Boolean(GNEWS_KEY || NEWS_API_KEY); }
+export function isNewsConfigured(): boolean { return true; /* proxy is always reachable; server decides */ }
 
 /** Dev helper — clears all GNews-related cache + locks. */
 export function clearNewsCache() {
