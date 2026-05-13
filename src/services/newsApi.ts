@@ -22,7 +22,13 @@ import { demoNews } from "@/data/demoNews";
  * `fetchIntelligence()` — never call the API directly elsewhere.
  */
 
-const GNEWS_KEY = (import.meta.env.VITE_GNEWS_API_KEY as string | undefined)?.trim();
+/**
+ * IMPORTANT: The browser never talks to gnews.io directly anymore. All GNews
+ * traffic goes through our same-origin server route /api/public/gnews-proxy
+ * which holds the API key server-side. This avoids ad-blockers, CORS issues,
+ * and key leaks. See src/routes/api/public/gnews-proxy.ts.
+ */
+const PROXY_URL = "/api/public/gnews-proxy";
 const NEWS_API_KEY = import.meta.env.VITE_NEWS_API_KEY as string | undefined;
 
 const CACHE_KEY = "global_pulse_gnews_cache";
