@@ -379,8 +379,8 @@ async function doHeadlinesFetch(): Promise<NewsResult> {
       };
     }
     const friendly = /Failed to fetch|NetworkError/i.test(safe)
-      ? "Could not reach gnews.io (network blocked, ad-blocker, or CORS). Showing demo data."
-      : `GNews error: ${safe}. Showing demo data.`;
+      ? "Could not reach the GNews proxy. Showing demo data."
+      : `News proxy error: ${safe}. Showing demo data.`;
     return { items: demoNews, status: "error", source: "Demo", message: friendly, errorMessage: friendly };
   }
 }
