@@ -43,7 +43,7 @@ const MIN_INTERVAL_MS = 3 * 1000;         // 3 s between real API hits
 
 const DEV = !!import.meta.env.DEV;
 const log = (...a: any[]) => { if (DEV) console.log("[newsApi]", ...a); };
-const redactKey = (value: string) => GNEWS_KEY ? value.replace(GNEWS_KEY, "***") : value;
+const redactKey = (value: string) => value;
 
 export type NewsStatus = "live" | "cached" | "demo" | "error" | "rate_limited";
 export type NewsSource = "GNews" | "Cache" | "Demo";
