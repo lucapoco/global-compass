@@ -29,7 +29,7 @@ export function MapSidePanel({ events, onLocate, onSave, onDetails }: Props) {
           </div>
         ) : events.map((e) => {
           // Look up the source URL if present (some events have a url via id mapping; we keep it simple here)
-          const url = (e as any).url as string | undefined;
+          const url = e.url;
           return (
             <div key={e.id} className="rounded-md border border-border/40 bg-secondary/20 p-2">
               <div className="flex items-start gap-2">

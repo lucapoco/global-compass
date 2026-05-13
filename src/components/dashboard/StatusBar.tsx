@@ -1,4 +1,5 @@
 import { Activity, Heart, RefreshCw } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { DataBadge } from "@/components/ui/DataBadge";
 import type { NewsStatus } from "@/services/newsApi";
 
@@ -56,9 +57,9 @@ export function DashboardStatusBar({ status, updated, loading, cooldownLeft = 0,
           <a href="#api-health" className="inline-flex items-center gap-1.5 rounded-md border border-border/60 px-3 py-2 text-xs hover:text-primary">
             <Heart className="h-3.5 w-3.5 text-rose-glow" /> API Health
           </a>
-          <a href="/map" className="inline-flex items-center gap-1.5 rounded-md border border-border/60 px-3 py-2 text-xs hover:text-primary">
+          <Link to="/map" className="inline-flex items-center gap-1.5 rounded-md border border-border/60 px-3 py-2 text-xs hover:text-primary">
             <Activity className="h-3.5 w-3.5" /> Map
-          </a>
+          </Link>
         </div>
       </div>
     </div>

@@ -16,8 +16,10 @@ function formatAge(ms: number | null): string {
 
 export function GNewsDebugPanel() {
   const [snapshot, setSnapshot] = useState<NewsDebugSnapshot>(() => getNewsDebugSnapshot());
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     if (!import.meta.env.DEV) return;
     const unsubscribe = subscribeNewsDebug(setSnapshot);
     const tick = window.setInterval(() => setSnapshot(getNewsDebugSnapshot()), 1000);
@@ -28,6 +30,8 @@ export function GNewsDebugPanel() {
   }, []);
 
   if (!import.meta.env.DEV) return null;
+  // Avoid SSR/CSR hydration mismatches for time-based values.
+  if (!mounted) return null;
 
   const rows = [
     { label: "Proxy calls this session", value: `${snapshot.sessionGNewsCalls} · via /api/public/gnews-proxy`, icon: Radio },

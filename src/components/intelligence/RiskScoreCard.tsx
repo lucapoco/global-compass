@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import type { CountryRisk } from "@/types";
 import { SeverityBadge } from "@/components/ui/SeverityBadge";
 
@@ -16,7 +17,14 @@ export function RiskScoreCard({ rank, risk }: { rank: number; risk: CountryRisk 
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <span className="text-[11px] tabular-nums text-muted-foreground">#{rank}</span>
-          <span className="text-sm font-semibold">{risk.country}</span>
+          <Link
+            to="/countries"
+            search={{ q: risk.country } as any}
+            className="text-sm font-semibold hover:text-primary hover:underline"
+            title={`Open ${risk.country}`}
+          >
+            {risk.country}
+          </Link>
         </div>
         <div className="flex items-center gap-2">
           <SeverityBadge severity={risk.label} />
