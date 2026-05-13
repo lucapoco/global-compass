@@ -1,11 +1,10 @@
 import type { WeatherData } from "@/types";
 import { demoWeather } from "@/data/demoWeather";
 
-const API_KEY =
-  (import.meta.env.VITE_OPENWEATHER_API_KEY as string | undefined) ||
-  "d74e5be6ef27ba3a1e7c2d1cea7ada47";
+const USER_KEY = (import.meta.env.VITE_OPENWEATHER_API_KEY as string | undefined) || "";
+const API_KEY = USER_KEY;
 
-export const hasWeatherKey = (): boolean => Boolean(API_KEY);
+export const hasWeatherKey = (): boolean => Boolean(USER_KEY);
 
 export async function getWeather(city: string): Promise<WeatherData> {
   if (!API_KEY) {

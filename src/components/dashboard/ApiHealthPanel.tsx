@@ -8,7 +8,9 @@ import { fetchIntelligence, type NewsStatus } from "@/services/newsApi";
 import { hasWeatherKey } from "@/services/weatherApi";
 import { isSupabaseConfigured, supabaseService } from "@/services/supabaseService";
 
-type Health = "online" | "cached" | "demo" | "rate_limited" | "error" | "not_configured" | "checking";
+type Health =
+  | "online" | "cached" | "cached_live" | "demo" | "rate_limited" | "error"
+  | "not_configured" | "invalid_key" | "fallback" | "checking";
 
 interface ApiRow {
   name: string;
@@ -17,22 +19,28 @@ interface ApiRow {
   detail?: string;
 }
 
-const VARIANT: Record<Health, "live" | "neutral" | "demo" | "error"> = {
+const VARIANT: Record<Health, "live" | "neutral" | "demo" | "error" | "source"> = {
   online: "live",
   cached: "neutral",
+  cached_live: "live",
   demo: "demo",
   rate_limited: "error",
   error: "error",
   not_configured: "neutral",
+  invalid_key: "error",
+  fallback: "source",
   checking: "neutral",
 };
 const LABEL: Record<Health, string> = {
   online: "Online",
   cached: "Cached",
+  cached_live: "Cached live data",
   demo: "Demo",
   rate_limited: "Rate limited",
   error: "Error",
   not_configured: "Not configured",
+  invalid_key: "Invalid key",
+  fallback: "Fallback",
   checking: "Checking…",
 };
 
@@ -68,25 +76,28 @@ export function ApiHealthPanel() {
     try {
       const r = await fetchIntelligence({ max: 10 });
       const map: Record<NewsStatus, Health> = {
-        live: "online", cached: "cached", demo: "demo", rate_limited: "rate_limited", error: "error",
+        live: "online", cached: "cached_live", demo: "demo", rate_limited: "rate_limited", error: "error",
       };
       next.push({
         name: "GNews Proxy",
         status: map[r.status],
         lastOk: r.cachedAt,
-        detail: r.message ?? `${r.items.length} items via /api/public/gnews-proxy`,
+        detail: r.status === "cached"
+          ? `Serving cached live data · ${r.items.length} items`
+          : r.message ?? `${r.items.length} items via /api/public/gnews-proxy`,
       });
     } catch (e: any) {
       next.push({ name: "GNews Proxy", status: "error", detail: e?.message });
     }
 
     if (!hasWeatherKey()) {
-      next.push({ name: "OpenWeather", status: "not_configured", detail: "Set VITE_OPENWEATHER_API_KEY" });
+      next.push({ name: "OpenWeather", status: "not_configured", detail: "Add VITE_OPENWEATHER_API_KEY to enable live weather. Demo fallback in use." });
     } else {
       try {
         const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY as string;
         const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=London&appid=${apiKey}`);
-        if (res.status === 429) next.push({ name: "OpenWeather", status: "rate_limited" });
+        if (res.status === 401) next.push({ name: "OpenWeather", status: "invalid_key", detail: "API key rejected (401). Demo weather in use." });
+        else if (res.status === 429) next.push({ name: "OpenWeather", status: "rate_limited" });
         else if (!res.ok) next.push({ name: "OpenWeather", status: "error", detail: `HTTP ${res.status}` });
         else next.push({ name: "OpenWeather", status: "online", lastOk: Date.now() });
       } catch (e: any) {
@@ -108,9 +119,11 @@ export function ApiHealthPanel() {
     const hasMapbox = Boolean(import.meta.env.VITE_MAPBOX_TOKEN);
     next.push({
       name: "Mapbox",
-      status: hasMapbox ? "online" : "demo",
+      status: hasMapbox ? "online" : "fallback",
       lastOk: hasMapbox ? Date.now() : undefined,
-      detail: hasMapbox ? "Token configured" : "Using fallback shared token",
+      detail: hasMapbox
+        ? "User token configured — Mapbox GL active"
+        : "Map renders via shared fallback token. Add VITE_MAPBOX_TOKEN for full features (clustering, custom styles).",
     });
 
     setRows(next);
