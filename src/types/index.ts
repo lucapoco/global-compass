@@ -101,6 +101,7 @@ export interface MapEvent {
   description?: string;
   severity?: Severity;
   category?: IntelligenceCategory;
+  url?: string;
 }
 
 export type ApiState = "idle" | "loading" | "success" | "error";

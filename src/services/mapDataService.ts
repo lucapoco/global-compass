@@ -18,6 +18,7 @@ export async function collectMapEvents(): Promise<MapEvent[]> {
         title: `M${q.magnitude.toFixed(1)} — ${q.place}`,
         description: `Depth ${q.depth.toFixed(1)} km`,
         severity: magnitudeSeverity(q.magnitude),
+        url: q.url,
       });
     }
   } catch (e) { console.warn("earthquake feed failed", e); }
@@ -49,6 +50,7 @@ export async function collectMapEvents(): Promise<MapEvent[]> {
         description: `${i.category} · ${i.source}`,
         severity: sevMap[i.severity],
         category: i.category,
+        url: i.url,
       });
     }
   } catch (e) { console.warn("news feed failed", e); }
