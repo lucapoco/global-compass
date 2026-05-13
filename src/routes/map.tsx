@@ -163,11 +163,11 @@ function MapPage() {
       <MapToolbar
         state={{ loading, fullscreen, sidePanel, heatmap, clusters: false, highOnly }}
         onRefresh={refresh}
-        onResetView={() => mapRef.current?.resetView()}
+        onResetView={resetView}
         onToggleFullscreen={() => setFullscreen((v) => !v)}
         onToggleSidePanel={() => setSidePanel((v) => !v)}
-        onToggleHeatmap={() => setHeatmap((v) => !v)}
-        onToggleClusters={() => toast.message("Clustering will arrive in a future Mapbox layer build.")}
+        onToggleHeatmap={() => { setHeatmap((v) => !v); }}
+        onToggleClusters={() => toast.message("Clusters require Mapbox layer mode. Currently unavailable in fallback mode.")}
         onToggleHighOnly={() => setHighOnly((v) => !v)}
         onClearFilters={clearFilters}
         clustersSupported={false}
@@ -178,9 +178,15 @@ function MapPage() {
       <MapFilters
         layers={layers}
         onToggleLayer={(k) => setLayers((s) => ({ ...s, [k]: !s[k] }))}
-        severity={severity} onSeverity={setSeverity}
+        severity={severity} onSeverity={pickSeverity}
         category={category} onCategory={setCategory}
       />
+
+      {allLayersOff && (
+        <div className="glass-card border-dashed p-3 text-center text-xs text-muted-foreground">
+          All layers are disabled. <button onClick={clearFilters} className="text-primary underline-offset-2 hover:underline">Clear filters</button> to restore.
+        </div>
+      )}
 
       <div className={`grid gap-3 ${sidePanel ? "lg:grid-cols-[1fr_320px]" : "grid-cols-1"}`}>
         <ProfessionalWorldMap ref={mapRef} events={filtered} heatmap={heatmap} height={fullscreen ? "calc(100vh - 360px)" : "70vh"} />
@@ -189,20 +195,37 @@ function MapPage() {
             events={filtered.slice(0, 100)}
             onLocate={locate}
             onSave={saveAlert}
+            onDetails={(e) => setDetails(e)}
           />
         )}
       </div>
 
       <MapLegend />
 
-      {import.meta.env.DEV && (
-        <div className="glass-card border-dashed p-2 text-[11px] text-muted-foreground">
-          Map debug — visible: <span className="text-foreground">{filtered.length}</span> ·
-          severity: <span className="text-foreground">{severity}</span> ·
-          category: <span className="text-foreground">{category}</span> ·
-          layers: <span className="text-foreground">{Object.entries(layers).filter(([, v]) => v).map(([k]) => k).join(", ")}</span>
+      {details && <MapEventDetailsModal event={details} onClose={() => setDetails(null)} onLocate={locate} onSave={saveAlert} />}
+    </div>
+  );
+}
+
+function MapEventDetailsModal({ event, onClose, onLocate, onSave }: { event: MapEvent; onClose: () => void; onLocate: (e: MapEvent) => void; onSave: (e: MapEvent) => void }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} className="glass-card relative max-h-[85vh] w-full max-w-lg overflow-auto p-5">
+        <div className="flex flex-wrap items-center gap-2 text-[10px] uppercase tracking-wider text-muted-foreground">
+          <span>{event.type}</span>
+          {event.severity && <span>· {event.severity}</span>}
+          {event.category && <span>· {event.category}</span>}
         </div>
-      )}
+        <h2 className="mt-2 text-lg font-semibold leading-snug">{event.title}</h2>
+        {event.description && <p className="mt-2 text-sm text-foreground/90">{event.description}</p>}
+        <div className="mt-3 text-[11px] text-muted-foreground">Coordinates: {event.lat.toFixed(3)}, {event.lng.toFixed(3)}</div>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button onClick={() => { onLocate(event); onClose(); }} className="rounded-md border border-border/60 px-3 py-1.5 text-xs hover:text-primary">Locate on map</button>
+          {event.url && <a href={event.url} target="_blank" rel="noreferrer" className="rounded-md border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs text-primary">Open source</a>}
+          <button onClick={() => onSave(event)} className="rounded-md border border-border/60 px-3 py-1.5 text-xs hover:text-primary">Save alert</button>
+          <button onClick={onClose} className="ml-auto rounded-md border border-border/60 px-3 py-1.5 text-xs">Close</button>
+        </div>
+      </div>
     </div>
   );
 }
