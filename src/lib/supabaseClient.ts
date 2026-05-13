@@ -1,18 +1,44 @@
-// Standalone Supabase client pointing at the user's own Supabase project.
-// We bypass the Lovable Cloud managed client (src/integrations/supabase/client.ts)
-// because the user wants to use their external Supabase project instead.
-import { createClient } from "@supabase/supabase-js";
+// App Supabase client for saved data (alerts, countries, feedback, logs).
+// Uses the same env vars as Lovable / Vite; do not embed keys in source.
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 
-const SUPABASE_URL = "https://hwkirweisjfkucytlxlt.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_B7b7BSDUeNMRmZ3N7lzluA_effstGxP";
+function getCredentials(): { url: string; key: string } | null {
+  const url =
+    (import.meta.env.VITE_SUPABASE_URL as string | undefined)?.trim() ||
+    (typeof process !== "undefined" ? process.env.SUPABASE_URL?.trim() : undefined);
+  const key =
+    (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined)?.trim() ||
+    (typeof process !== "undefined" ? process.env.SUPABASE_PUBLISHABLE_KEY?.trim() : undefined);
+  if (!url || !key) return null;
+  return { url, key };
+}
 
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-  auth: {
-    storage: typeof window !== "undefined" ? window.localStorage : undefined,
-    persistSession: true,
-    autoRefreshToken: true,
+export const isSupabaseConfigured = (): boolean => getCredentials() !== null;
+
+let _client: SupabaseClient<Database> | undefined;
+
+function getClient(): SupabaseClient<Database> {
+  const creds = getCredentials();
+  if (!creds) {
+    throw new Error(
+      "Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY to your .env file.",
+    );
+  }
+  if (!_client) {
+    _client = createClient<Database>(creds.url, creds.key, {
+      auth: {
+        storage: typeof window !== "undefined" ? window.localStorage : undefined,
+        persistSession: true,
+        autoRefreshToken: true,
+      },
+    });
+  }
+  return _client;
+}
+
+export const supabase = new Proxy({} as SupabaseClient<Database>, {
+  get(_, prop, receiver) {
+    return Reflect.get(getClient(), prop, receiver);
   },
 });
-
-export const isSupabaseConfigured = (): boolean => Boolean(SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY);

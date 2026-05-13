@@ -14,11 +14,7 @@ export interface ProfessionalWorldMapHandle {
   resetView: () => void;
 }
 
-const MAPBOX_TOKEN =
-  (import.meta.env.VITE_MAPBOX_TOKEN as string | undefined) ||
-  "pk.eyJ1IjoibHVjYXBvY28iLCJhIjoiY21wMWsycTE1MDRiejJxcjFoN3d0Nmt5NyJ9.MQ-Nu5ZbYdCdBagfpinCKQ";
-
-mapboxgl.accessToken = MAPBOX_TOKEN;
+const MAPBOX_TOKEN = (import.meta.env.VITE_MAPBOX_TOKEN as string | undefined)?.trim();
 
 const COLORS: Record<MapEvent["type"], string> = {
   earthquake: "#f59e0b",
@@ -53,7 +49,8 @@ export const ProfessionalWorldMap = forwardRef<ProfessionalWorldMapHandle, Props
     }));
 
     useEffect(() => {
-      if (!containerRef.current || mapRef.current) return;
+      if (!MAPBOX_TOKEN || !containerRef.current || mapRef.current) return;
+      mapboxgl.accessToken = MAPBOX_TOKEN;
       try {
         mapRef.current = new mapboxgl.Map({
           container: containerRef.current,
@@ -87,7 +84,7 @@ export const ProfessionalWorldMap = forwardRef<ProfessionalWorldMapHandle, Props
 
     useEffect(() => {
       const map = mapRef.current;
-      if (!map) return;
+      if (!MAPBOX_TOKEN || !map) return;
       markersRef.current.forEach((m) => m.remove());
       markersRef.current = [];
 
@@ -118,6 +115,21 @@ export const ProfessionalWorldMap = forwardRef<ProfessionalWorldMapHandle, Props
         markersRef.current.push(marker);
       }
     }, [events, heatmap]);
+
+    if (!MAPBOX_TOKEN) {
+      return (
+        <div
+          style={{ height }}
+          className="flex w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-xl border border-dashed border-border/60 bg-card/30 px-6 text-center text-sm text-muted-foreground"
+        >
+          <p className="font-medium text-foreground">Mapbox token not configured</p>
+          <p className="max-w-md text-xs">
+            Add <code className="rounded bg-muted px-1 py-0.5 text-foreground">VITE_MAPBOX_TOKEN</code> to your{" "}
+            <code className="rounded bg-muted px-1 py-0.5 text-foreground">.env</code> file to load the globe map. Public tokens can be created in your Mapbox account.
+          </p>
+        </div>
+      );
+    }
 
     return (
       <div

@@ -1,8 +1,13 @@
--- Global Pulse — Supabase schema (demo / educational project)
--- This file documents the full schema applied to the connected Supabase project.
--- Demo-grade RLS policies allow public access for the InfoEducație presentation.
--- A production deployment would require authentication and stricter, owner-based policies.
+-- Global Pulse — expected public schema (matches src/integrations/supabase/types.ts)
+-- Apply in Supabase SQL Editor or: supabase db push / psql
+-- After creation, enable RLS and policies appropriate for your app (anon vs authenticated).
 
+-- Extensions (UUID generation)
+create extension if not exists "pgcrypto";
+
+-- ---------------------------------------------------------------------------
+-- saved_countries
+-- ---------------------------------------------------------------------------
 create table if not exists public.saved_countries (
   id uuid primary key default gen_random_uuid(),
   country_name text not null,
@@ -15,6 +20,9 @@ create table if not exists public.saved_countries (
   created_at timestamptz default now()
 );
 
+-- ---------------------------------------------------------------------------
+-- saved_alerts
+-- ---------------------------------------------------------------------------
 create table if not exists public.saved_alerts (
   id uuid primary key default gen_random_uuid(),
   title text not null,
@@ -26,42 +34,9 @@ create table if not exists public.saved_alerts (
   created_at timestamptz default now()
 );
 
-create table if not exists public.user_feedback (
-  id uuid primary key default gen_random_uuid(),
-  name text,
-  message text not null,
-  rating int,
-  created_at timestamptz default now()
-);
-
-create table if not exists public.project_logs (
-  id uuid primary key default gen_random_uuid(),
-  action text not null,
-  details text,
-  created_at timestamptz default now()
-);
-
-alter table public.saved_countries enable row level security;
-alter table public.saved_alerts    enable row level security;
-alter table public.user_feedback   enable row level security;
-alter table public.project_logs    enable row level security;
-
--- Demo-only policies (PUBLIC read/write). Replace with auth.uid()-scoped policies in production.
-create policy "public read saved_countries"   on public.saved_countries for select using (true);
-create policy "public insert saved_countries" on public.saved_countries for insert with check (true);
-create policy "public delete saved_countries" on public.saved_countries for delete using (true);
-
-create policy "public read saved_alerts"   on public.saved_alerts for select using (true);
-create policy "public insert saved_alerts" on public.saved_alerts for insert with check (true);
-create policy "public delete saved_alerts" on public.saved_alerts for delete using (true);
-
-create policy "public read user_feedback"   on public.user_feedback for select using (true);
-create policy "public insert user_feedback" on public.user_feedback for insert with check (true);
-
-create policy "public read project_logs"   on public.project_logs for select using (true);
-create policy "public insert project_logs" on public.project_logs for insert with check (true);
-
--- Live Intelligence Feed (saved items)
+-- ---------------------------------------------------------------------------
+-- saved_intelligence
+-- ---------------------------------------------------------------------------
 create table if not exists public.saved_intelligence (
   id uuid primary key default gen_random_uuid(),
   title text not null,
@@ -76,8 +51,36 @@ create table if not exists public.saved_intelligence (
   created_at timestamptz default now()
 );
 
-alter table public.saved_intelligence enable row level security;
+-- ---------------------------------------------------------------------------
+-- user_feedback
+-- ---------------------------------------------------------------------------
+create table if not exists public.user_feedback (
+  id uuid primary key default gen_random_uuid(),
+  name text,
+  message text not null,
+  rating integer,
+  created_at timestamptz default now()
+);
 
-create policy "public read saved_intelligence"   on public.saved_intelligence for select using (true);
-create policy "public insert saved_intelligence" on public.saved_intelligence for insert with check (true);
-create policy "public delete saved_intelligence" on public.saved_intelligence for delete using (true);
+-- ---------------------------------------------------------------------------
+-- project_logs (audit / activity log from the app)
+-- ---------------------------------------------------------------------------
+create table if not exists public.project_logs (
+  id uuid primary key default gen_random_uuid(),
+  action text not null,
+  details text,
+  created_at timestamptz default now()
+);
+
+-- Helpful indexes
+create index if not exists saved_countries_created_at_idx on public.saved_countries (created_at desc);
+create index if not exists saved_alerts_created_at_idx on public.saved_alerts (created_at desc);
+create index if not exists saved_intelligence_created_at_idx on public.saved_intelligence (created_at desc);
+create index if not exists user_feedback_created_at_idx on public.user_feedback (created_at desc);
+create index if not exists project_logs_created_at_idx on public.project_logs (created_at desc);
+
+comment on table public.saved_countries is 'Bookmarked countries from the Countries / map flows.';
+comment on table public.saved_alerts is 'User-saved alert pins (map, earthquakes, etc.).';
+comment on table public.saved_intelligence is 'Bookmarked intelligence feed items.';
+comment on table public.user_feedback is 'About page / feedback form submissions.';
+comment on table public.project_logs is 'Lightweight action log written by supabaseService.';

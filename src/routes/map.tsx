@@ -193,7 +193,9 @@ function MapPage() {
           <p className="text-xs text-muted-foreground">{filtered.length} of {events.length} events plotted</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          {isAdvanced && <DataBadge variant="source">{hasMapbox ? "Mapbox GL" : "MapLibre fallback"}</DataBadge>}
+          {isAdvanced && (
+            <DataBadge variant="source">{hasMapbox ? "Mapbox GL" : "Mapbox · set VITE_MAPBOX_TOKEN"}</DataBadge>
+          )}
           {isAdvanced && <DataBadge variant="source">USGS</DataBadge>}
           <DataBadge variant="live">Live</DataBadge>
           <DataBadge variant="neutral">Updated {updated.toLocaleTimeString()}</DataBadge>

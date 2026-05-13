@@ -46,7 +46,7 @@ const log = (...a: any[]) => { if (DEV) console.log("[newsApi]", ...a); };
 const redactKey = (value: string) => value;
 
 export type NewsStatus = "live" | "cached" | "demo" | "error" | "rate_limited";
-export type NewsSource = "GNews" | "Cache" | "Demo";
+export type NewsSource = "GNews" | "NewsAPI" | "Cache" | "Demo";
 export type NewsDebugStatus = NewsStatus | "idle";
 
 export interface NewsResult {
@@ -410,7 +410,7 @@ async function tryNewsApi(): Promise<NewsResult | null> {
     });
     writeCache(items);
     const ts = Date.now();
-    return { items, status: "live", source: "GNews", cachedAt: ts, lastUpdated: new Date(ts).toISOString() };
+    return { items, status: "live", source: "NewsAPI", cachedAt: ts, lastUpdated: new Date(ts).toISOString() };
   } catch { return null; }
 }
 

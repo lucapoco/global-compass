@@ -5,7 +5,7 @@ import { createFileRoute } from "@tanstack/react-router";
  *
  * The browser cannot reliably reach gnews.io directly from the Lovable
  * preview (ad-blockers, network policies, CORS quirks). This proxy:
- *   - reads the API key from server-side env (never exposed to the client)
+ *   - reads the API key from server-side env (`VITE_GNEWS_API_KEY` or `GNEWS_API_KEY`; never sent to the browser bundle for this route)
  *   - forwards a sanitized set of query params to GNews
  *   - returns normalized JSON with proper CORS headers
  *   - maps upstream 401/403/429/network errors to readable JSON responses
@@ -27,8 +27,8 @@ function json(body: unknown, status = 200) {
 
 function readKey(): string | undefined {
   const key =
-    process.env.GNEWS_API_KEY ??
     process.env.VITE_GNEWS_API_KEY ??
+    process.env.GNEWS_API_KEY ??
     (globalThis as any)?.GNEWS_API_KEY;
   return typeof key === "string" ? key.trim() : undefined;
 }

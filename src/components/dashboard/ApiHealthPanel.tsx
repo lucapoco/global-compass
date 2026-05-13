@@ -119,11 +119,11 @@ export function ApiHealthPanel() {
     const hasMapbox = Boolean(import.meta.env.VITE_MAPBOX_TOKEN);
     next.push({
       name: "Mapbox",
-      status: hasMapbox ? "online" : "fallback",
+      status: hasMapbox ? "online" : "not_configured",
       lastOk: hasMapbox ? Date.now() : undefined,
       detail: hasMapbox
-        ? "User token configured — Mapbox GL active"
-        : "Map renders via shared fallback token. Add VITE_MAPBOX_TOKEN for full features (clustering, custom styles).",
+        ? "Token configured — Mapbox GL globe active"
+        : "Add VITE_MAPBOX_TOKEN to render the map. Clustering and custom styles require your own token.",
     });
 
     setRows(next);
