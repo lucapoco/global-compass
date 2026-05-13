@@ -36,6 +36,7 @@ function MapPage() {
   const [fullscreen, setFullscreen] = useState(false);
   const [sidePanel, setSidePanel] = useState(true);
   const [heatmap, setHeatmap] = useState(false);
+  const [details, setDetails] = useState<MapEvent | null>(null);
 
   const mapRef = useRef<ProfessionalWorldMapHandle>(null);
 
@@ -45,12 +46,25 @@ function MapPage() {
       const e = await collectMapEvents();
       setEvents(e);
       setUpdated(new Date());
+      toast.success(`Map refreshed · ${e.length} events`);
     } catch (e: any) {
       toast.error(e?.message ?? "Failed to load map data");
     } finally { setLoading(false); }
   }
 
   useEffect(() => { refresh(); }, []);
+
+  // ESC closes details / fullscreen
+  useEffect(() => {
+    const onKey = (ev: KeyboardEvent) => {
+      if (ev.key === "Escape") {
+        if (details) setDetails(null);
+        else if (fullscreen) setFullscreen(false);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [details, fullscreen]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
