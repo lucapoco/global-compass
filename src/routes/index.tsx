@@ -1,19 +1,21 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
-import { Globe2, Activity, Flag, Bookmark, AlertTriangle, CloudSun, ArrowRight, Newspaper, ShieldAlert } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { Globe2, Activity, Flag, Bookmark, AlertTriangle, ArrowRight, Newspaper } from "lucide-react";
 import { StatCard } from "@/components/ui/StatCard";
 import { DataBadge } from "@/components/ui/DataBadge";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { EarthquakeMagnitudeChart } from "@/components/charts/EarthquakeMagnitudeChart";
-import { IntelligenceCard } from "@/components/intelligence/IntelligenceCard";
 import { RiskScoreCard } from "@/components/intelligence/RiskScoreCard";
-import { getEarthquakes } from "@/services/earthquakesApi";
-import { getAllCountries } from "@/services/countriesApi";
-import { fetchIntelligence, type NewsStatus } from "@/services/newsApi";
-import { buildCountryRiskIndex } from "@/services/riskService";
-import { supabaseService, isSupabaseConfigured } from "@/services/supabaseService";
+import { DashboardStatusBar } from "@/components/dashboard/StatusBar";
+import { LiveIntelligencePanel } from "@/components/dashboard/LiveIntelligencePanel";
+import { CriticalSignalsPanel } from "@/components/dashboard/CriticalSignalsPanel";
+import { CategoryDistributionChart } from "@/components/dashboard/CategoryDistributionChart";
+import { WorldActivityTimeline } from "@/components/dashboard/WorldActivityTimeline";
+import { MapPreview } from "@/components/dashboard/MapPreview";
 import { ApiHealthPanel } from "@/components/dashboard/ApiHealthPanel";
-import type { Earthquake, IntelligenceItem, CountryRisk } from "@/types";
+import { LiveVideoPanel } from "@/components/video/LiveVideoPanel";
+import { getDashboardSnapshot, invalidateDashboardCache, type DashboardSnapshot } from "@/services/dashboardService";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -25,155 +27,110 @@ export const Route = createFileRoute("/")({
   component: DashboardPage,
 });
 
+const REFRESH_COOLDOWN_MS = 60_000;
+
 function DashboardPage() {
-  const [quakes, setQuakes] = useState<Earthquake[] | null>(null);
-  const [quakeError, setQuakeError] = useState(false);
-  const [countryCount, setCountryCount] = useState<number | null>(null);
-  const [savedCount, setSavedCount] = useState<number | null>(null);
-  const [alertCount, setAlertCount] = useState<number | null>(null);
+  const [snap, setSnap] = useState<DashboardSnapshot | null>(null);
+  const [loading, setLoading] = useState(false);
   const [updated, setUpdated] = useState<Date>(new Date());
-  const [intel, setIntel] = useState<IntelligenceItem[] | null>(null);
-  const [intelStatus, setIntelStatus] = useState<NewsStatus>("demo");
-  const [risks, setRisks] = useState<CountryRisk[]>([]);
+  const [cooldownUntil, setCooldownUntil] = useState(0);
+  const [now, setNow] = useState(Date.now());
 
-  useEffect(() => {
-    (async () => {
-      const qP = getEarthquakes("day").then((q) => { setQuakes(q); return q; }).catch(() => { setQuakeError(true); return [] as Earthquake[]; });
-      getAllCountries().then((c) => setCountryCount(c.length)).catch(() => setCountryCount(null));
-      let savedAlerts: any[] = [];
-      if (isSupabaseConfigured()) {
-        supabaseService.listSavedCountries().then((d) => setSavedCount(d.length)).catch(() => setSavedCount(0));
-        try { savedAlerts = await supabaseService.listSavedAlerts(); setAlertCount(savedAlerts.length); }
-        catch { setAlertCount(0); }
-      }
-      const news = await fetchIntelligence({ max: 20 });
-      setIntel(news.items);
-      setIntelStatus(news.status);
-      const quakesNow = await qP;
-      setRisks(buildCountryRiskIndex({ intel: news.items, quakes: quakesNow, saved: savedAlerts }));
+  useEffect(() => { const t = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(t); }, []);
+
+  async function load(force = false) {
+    setLoading(true);
+    try {
+      if (force) invalidateDashboardCache();
+      const s = await getDashboardSnapshot(force);
+      setSnap(s);
       setUpdated(new Date());
-    })();
-  }, []);
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed to refresh");
+    } finally { setLoading(false); }
+  }
 
-  const today = quakes?.length ?? 0;
-  const maxMag = quakes && quakes.length ? Math.max(...quakes.map((q) => q.magnitude)) : 0;
-  const intelCounts = useMemo(() => {
-    const r = { critical: 0, high: 0, medium: 0, low: 0 } as Record<string, number>;
-    for (const i of intel ?? []) r[i.severity]++;
-    return r;
-  }, [intel]);
-  const categoryCounts = useMemo(() => {
-    const r = new Map<string, number>();
-    for (const i of intel ?? []) r.set(i.category, (r.get(i.category) ?? 0) + 1);
-    return Array.from(r.entries()).sort((a, b) => b[1] - a[1]);
-  }, [intel]);
+  useEffect(() => { load(); }, []);
+
+  function onRefresh() {
+    if (loading) return;
+    if (now < cooldownUntil) { toast.message("Please wait before refreshing again."); return; }
+    setCooldownUntil(Date.now() + REFRESH_COOLDOWN_MS);
+    load(true);
+  }
+  const cooldownLeft = Math.max(0, Math.ceil((cooldownUntil - now) / 1000));
+
+  const quakes = snap?.quakes ?? [];
+  const intel = snap?.intel ?? [];
+  const saved = snap?.savedAlerts ?? [];
+  const today = quakes.length;
+  const maxMag = quakes.length ? Math.max(...quakes.map((q) => q.magnitude)) : 0;
+  const intelCounts = intel.reduce((r, i) => { r[i.severity]++; return r; }, { critical: 0, high: 0, medium: 0, low: 0 } as Record<string, number>);
 
   return (
-    <div className="space-y-6">
-      {/* Hero */}
-      <div className="glass-card panel-grid relative overflow-hidden p-6 lg:p-8">
-        <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-cyan-glow/15 blur-3xl" />
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <DataBadge variant="live">Live</DataBadge>
-              {quakeError && <DataBadge variant="error">API error</DataBadge>}
-              {!isSupabaseConfigured() && <DataBadge variant="demo">Supabase not configured</DataBadge>}
-            </div>
-            <h1 className="mt-3 text-3xl font-semibold tracking-tight lg:text-4xl">Global Pulse</h1>
-            <p className="mt-1 text-sm text-muted-foreground">Real-time insights about our planet</p>
-            <p className="mt-2 text-[11px] uppercase tracking-wider text-muted-foreground">
-              Last updated · {updated.toLocaleTimeString()}
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Link to="/map" className="rounded-md border border-primary/40 bg-primary/10 px-3 py-2 text-xs text-primary">Explore Map</Link>
-            <Link to="/countries" className="rounded-md border border-border/60 px-3 py-2 text-xs">Search Country</Link>
-            <Link to="/earthquakes" className="rounded-md border border-border/60 px-3 py-2 text-xs">View Earthquakes</Link>
-            <Link to="/compare" className="rounded-md border border-border/60 px-3 py-2 text-xs">Compare</Link>
-            <Link to="/saved" className="rounded-md border border-border/60 px-3 py-2 text-xs">Saved Data</Link>
-          </div>
-        </div>
-      </div>
+    <div className="space-y-5">
+      <DashboardStatusBar
+        status={snap?.newsStatus ?? "demo"}
+        updated={updated}
+        loading={loading}
+        cooldownLeft={cooldownLeft}
+        onRefresh={onRefresh}
+      />
 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-        <StatCard label="Countries monitored" value={countryCount ?? "—"} hint="REST Countries API" icon={<Flag className="h-4 w-4" />} accent="cyan" />
-        <StatCard label="Earthquakes today" value={quakes ? today : "—"} hint="USGS feed" icon={<Activity className="h-4 w-4" />} accent="amber" />
-        <StatCard label="Highest magnitude" value={quakes ? maxMag.toFixed(1) : "—"} hint="USGS feed" icon={<Activity className="h-4 w-4" />} accent="rose" />
-        <StatCard label="Intel critical+high" value={intel ? intelCounts.critical + intelCounts.high : "—"} hint={intelStatus === "live" ? "GNews · Live" : intelStatus === "cached" ? "Cached live" : intelStatus === "rate_limited" ? "Rate limited" : "Demo feed"} icon={<Newspaper className="h-4 w-4" />} accent="rose" />
-        <StatCard label="Saved countries" value={savedCount ?? "—"} hint="Supabase" icon={<Bookmark className="h-4 w-4" />} accent="emerald" />
-        <StatCard label="Active alerts" value={alertCount ?? "—"} hint="Saved + USGS" icon={<AlertTriangle className="h-4 w-4" />} accent="amber" />
+        <StatCard label="Countries monitored" value={snap?.countryCount ?? "—"} hint="REST Countries API" icon={<Flag className="h-4 w-4" />} accent="cyan" />
+        <StatCard label="Earthquakes today" value={snap ? today : "—"} hint="USGS feed" icon={<Activity className="h-4 w-4" />} accent="amber" />
+        <StatCard label="Highest magnitude" value={snap ? maxMag.toFixed(1) : "—"} hint="USGS feed" icon={<Activity className="h-4 w-4" />} accent="rose" />
+        <StatCard label="Intel critical+high" value={snap ? intelCounts.critical + intelCounts.high : "—"} hint={snap?.newsStatus === "live" ? "GNews · Live" : (snap?.newsStatus ?? "—").toString()} icon={<Newspaper className="h-4 w-4" />} accent="rose" />
+        <StatCard label="Saved countries" value={snap?.savedCountriesCount ?? "—"} hint="Backend" icon={<Bookmark className="h-4 w-4" />} accent="emerald" />
+        <StatCard label="Active alerts" value={saved.length} hint="Saved" icon={<AlertTriangle className="h-4 w-4" />} accent="amber" />
       </div>
 
-      {/* Chart + activity */}
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="glass-card p-4 lg:col-span-2">
-          <SectionHeader title="Earthquake magnitudes — last 24h" subtitle="Distribution by Richter bucket" right={<DataBadge variant="source">USGS</DataBadge>} />
-          {quakes ? <EarthquakeMagnitudeChart data={quakes} /> : <div className="h-56 animate-pulse rounded bg-secondary/40" />}
-        </div>
+      {/* Row 1: Map preview + Live Intelligence + Country Risk */}
+      <div className="grid gap-4 xl:grid-cols-[minmax(280px,1fr)_minmax(0,2fr)_minmax(280px,1fr)]">
+        <MapPreview earthquakeCount={today} intelCount={intel.length} alertCount={saved.length} />
+        <LiveIntelligencePanel
+          items={snap ? intel : null}
+          status={snap?.newsStatus ?? "demo"}
+          loading={loading}
+          cooldownLeft={cooldownLeft}
+          onRefresh={onRefresh}
+        />
         <div className="glass-card p-4">
-          <SectionHeader title="World activity feed" subtitle="Most recent quakes" right={<DataBadge variant="live">Live</DataBadge>} />
-          <div className="space-y-2 max-h-56 overflow-auto pr-1">
-            {(quakes ?? []).slice(0, 8).map((q) => (
-              <div key={q.id} className="flex items-center justify-between rounded-md border border-border/40 bg-secondary/20 px-3 py-2">
-                <div className="min-w-0">
-                  <div className="truncate text-xs font-medium">{q.place}</div>
-                  <div className="text-[10px] text-muted-foreground">{new Date(q.time).toLocaleTimeString()}</div>
-                </div>
-                <span className="tabular-nums text-sm font-semibold text-amber-glow">M{q.magnitude.toFixed(1)}</span>
-              </div>
-            ))}
-            {quakes && quakes.length === 0 && <p className="text-xs text-muted-foreground">No earthquakes in the last day.</p>}
-          </div>
-        </div>
-      </div>
-
-      {/* Intelligence + Risk */}
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="glass-card p-4 lg:col-span-2">
-          <SectionHeader
-            title="Live Intelligence Feed"
-            subtitle="Latest 5 normalized headlines"
-            right={
-              <div className="flex items-center gap-2">
-                <DataBadge variant={intelStatus === "live" ? "live" : intelStatus === "cached" ? "neutral" : intelStatus === "error" || intelStatus === "rate_limited" ? "error" : "demo"}>
-                  {intelStatus === "live" ? "Live" : intelStatus === "cached" ? "Cached" : intelStatus === "rate_limited" ? "Rate limited" : intelStatus === "error" ? "API error" : "Demo"}
-                </DataBadge>
-                <Link to="/intelligence" className="text-[11px] text-primary hover:underline">Open feed →</Link>
-              </div>
-            }
-          />
-          {!intel ? <div className="h-40 animate-pulse rounded bg-secondary/40" /> : (
-            <div className="grid gap-2 sm:grid-cols-2">
-              {intel.slice(0, 5).map((i) => <IntelligenceCard key={i.id} item={i} />)}
-            </div>
-          )}
-          {intel && categoryCounts.length > 0 && (
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {categoryCounts.map(([cat, n]) => (
-                <span key={cat} className="rounded-full border border-border/60 px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">
-                  {cat} · {n}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-        <div className="glass-card p-4">
-          <SectionHeader title="Country Risk" subtitle="Top 5 by combined risk" right={<ShieldAlert className="h-4 w-4 text-amber-glow" />} />
+          <SectionHeader title="Country Risk" subtitle="Top 5 by combined risk" right={<DataBadge variant="neutral">0–100</DataBadge>} />
           <div className="space-y-2">
-            {risks.length === 0
-              ? <div className="text-xs text-muted-foreground">Computing risk index…</div>
-              : risks.slice(0, 5).map((r, idx) => <RiskScoreCard key={r.country} rank={idx + 1} risk={r} />)}
+            {!snap ? <div className="h-32 animate-pulse rounded bg-secondary/40" />
+              : snap.risks.length === 0 ? <div className="text-xs text-muted-foreground">Computing risk index…</div>
+              : snap.risks.slice(0, 5).map((r, idx) => <RiskScoreCard key={r.country} rank={idx + 1} risk={r} />)}
           </div>
           <Link to="/intelligence" className="mt-2 inline-block text-[11px] text-primary hover:underline">See full index →</Link>
         </div>
       </div>
 
-      <ApiHealthPanel />
+      {/* Row 2: Live Video Monitor + Critical Signals */}
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+        <LiveVideoPanel />
+        <CriticalSignalsPanel intel={intel} quakes={quakes} saved={saved} />
+      </div>
+
+      {/* Row 3: Earthquake chart + Activity feed */}
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="glass-card p-4 lg:col-span-2">
+          <SectionHeader title="Earthquake magnitudes — last 24h" subtitle="Distribution by Richter bucket" right={<DataBadge variant="source">USGS</DataBadge>} />
+          {snap ? <EarthquakeMagnitudeChart data={quakes} /> : <div className="h-56 animate-pulse rounded bg-secondary/40" />}
+        </div>
+        <CategoryDistributionChart items={intel} />
+      </div>
+
+      {/* Row 4: API Health + Activity timeline */}
+      <div id="api-health" className="grid gap-4 lg:grid-cols-2">
+        <ApiHealthPanel />
+        <WorldActivityTimeline intel={intel} quakes={quakes} saved={saved} />
+      </div>
 
       {/* Quick links */}
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         {[
           { to: "/intelligence", label: "Intelligence Feed", icon: Newspaper },
           { to: "/map", label: "Live World Map", icon: Globe2 },
