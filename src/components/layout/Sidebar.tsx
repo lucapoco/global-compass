@@ -3,6 +3,7 @@ import {
   LayoutDashboard, Globe2, Flag, Activity, CloudSun,
   AlertTriangle, GitCompareArrows, Bookmark, Info, Radio, Newspaper,
 } from "lucide-react";
+import { ViewModeToggle } from "./ViewModeToggle";
 
 const items = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -51,8 +52,9 @@ export function Sidebar() {
           );
         })}
       </nav>
-      <div className="mt-auto text-[11px] text-muted-foreground px-2">
-        InfoEducație · Educational project
+      <div className="mt-auto space-y-2 px-2">
+        <ViewModeToggle />
+        <div className="text-[11px] text-muted-foreground">InfoEducație · Educational project</div>
       </div>
     </aside>
   );

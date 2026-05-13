@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Menu, Radio } from "lucide-react";
 import { useState } from "react";
+import { ViewModeToggle } from "./ViewModeToggle";
 
 const items = [
   { to: "/", label: "Dashboard" },
@@ -25,6 +26,8 @@ export function MobileNav() {
           <Radio className="h-5 w-5 text-primary" />
           <span className="font-semibold tracking-tight">Global Pulse</span>
         </div>
+        <div className="flex items-center gap-2">
+          <ViewModeToggle compact />
         <button
           className="rounded-md border border-border/60 p-2"
           onClick={() => setOpen((v) => !v)}
@@ -32,6 +35,7 @@ export function MobileNav() {
         >
           <Menu className="h-4 w-4" />
         </button>
+        </div>
       </div>
       {open && (
         <nav className="flex flex-wrap gap-1 px-3 pb-3">
