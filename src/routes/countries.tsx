@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Bookmark, ExternalLink } from "lucide-react";
 import { SearchInput } from "@/components/ui/SearchInput";
@@ -14,25 +14,31 @@ import type { Country } from "@/types";
 
 export const Route = createFileRoute("/countries")({
   head: () => ({ meta: [{ title: "Countries — Global Pulse" }] }),
+  validateSearch: (s: Record<string, unknown>) => ({ q: typeof s.q === "string" ? s.q : undefined }),
   component: CountriesPage,
 });
 
 function CountriesPage() {
-  const [q, setQ] = useState("Romania");
+  const initialQ = Route.useSearch().q;
+  const [q, setQ] = useState(initialQ ?? "Romania");
   const [country, setCountry] = useState<Country | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function run() {
-    if (!q.trim()) return;
+  async function run(name?: string) {
+    const term = (name ?? q).trim();
+    if (!term) return;
     setLoading(true); setError(null); setCountry(null);
     try {
-      const res = await searchCountryByName(q.trim());
+      const res = await searchCountryByName(term);
       if (!res.length) setError("No country found.");
       else setCountry(res[0]);
     } catch (e: any) { setError(e.message ?? "Failed to fetch."); }
     finally { setLoading(false); }
   }
+
+  // Auto-run when arriving with ?q=
+  useEffect(() => { if (initialQ) run(initialQ); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [initialQ]);
 
   async function save() {
     if (!country) return;
