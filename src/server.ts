@@ -1,3 +1,7 @@
+import "dotenv/config";
+import "@/server/loadServerEnv";
+import { setWorkerEnv } from "@/server/workerEnv";
+
 import "./lib/error-capture";
 
 import { consumeLastCapturedError } from "./lib/error-capture";
@@ -68,6 +72,7 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
 
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
+    setWorkerEnv(env);
     try {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);

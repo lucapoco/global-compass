@@ -1,4 +1,4 @@
-import type { EventCategory } from "@/utils/filterEvents";
+import type { EventCategory } from "@/types";
 
 const CATS: { k: EventCategory; label: string }[] = [
   { k: "geopolitics", label: "Geopolitics" },
@@ -17,7 +17,7 @@ const CATS: { k: EventCategory; label: string }[] = [
 
 interface Props {
   selected: Set<EventCategory>;
-  counts: Record<string, number>;
+  counts: Partial<Record<EventCategory, number>>;
   onToggle: (c: EventCategory) => void;
   onClear: () => void;
 }
@@ -37,12 +37,15 @@ export function MapCategoryFilters({ selected, counts, onToggle, onClear }: Prop
   return (
     <div className="glass-card flex flex-wrap items-center gap-1.5 p-2" title="Filter map events by category.">
       <span className="px-1 text-[10px] uppercase tracking-wider text-muted-foreground">Category</span>
-      <button onClick={onClear} className={chip(allActive, false)}>All</button>
+      <button type="button" onClick={onClear} className={chip(allActive, false)}>
+        All
+      </button>
       {CATS.map((c) => {
         const n = counts[c.k] ?? 0;
         return (
-          <button key={c.k} onClick={() => onToggle(c.k)} className={chip(selected.has(c.k), n === 0)}>
-            {c.label}{n > 0 ? ` (${n})` : ""}
+          <button key={c.k} type="button" onClick={() => onToggle(c.k)} className={chip(selected.has(c.k), n === 0)}>
+            {c.label}
+            {n > 0 ? ` (${n})` : ""}
           </button>
         );
       })}

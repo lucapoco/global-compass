@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Globe2, Activity, Flag, Bookmark, AlertTriangle, ArrowRight, Newspaper } from "lucide-react";
+import { Globe2, Activity, Flag, Bookmark, AlertTriangle, ArrowRight, Newspaper, Sparkles, FileText } from "lucide-react";
 import { StatCard } from "@/components/ui/StatCard";
 import { DataBadge } from "@/components/ui/DataBadge";
 import { SectionHeader } from "@/components/ui/SectionHeader";
@@ -90,16 +90,20 @@ function DashboardPage() {
       </div>
 
       {/* Row 1: Map preview + Live Intelligence + Country Risk */}
-      <div className="grid gap-4 xl:grid-cols-[minmax(280px,1fr)_minmax(0,2fr)_minmax(280px,1fr)]">
-        <MapPreview earthquakeCount={today} intelCount={intel.length} alertCount={saved.length} />
-        <LiveIntelligencePanel
-          items={snap ? intel : null}
-          status={snap?.newsStatus ?? "demo"}
-          loading={loading}
-          cooldownLeft={cooldownLeft}
-          onRefresh={onRefresh}
-        />
-        <div className="glass-card p-4">
+      <div className="grid gap-4 xl:grid-cols-12">
+        <div className="xl:col-span-3">
+          <MapPreview earthquakeCount={today} intelCount={intel.length} alertCount={saved.length} />
+        </div>
+        <div className="xl:col-span-6">
+          <LiveIntelligencePanel
+            items={snap ? intel : null}
+            status={snap?.newsStatus ?? "demo"}
+            loading={loading}
+            cooldownLeft={cooldownLeft}
+            onRefresh={onRefresh}
+          />
+        </div>
+        <div className="glass-card p-4 xl:col-span-3">
           <SectionHeader title="Country Risk" subtitle="Top 5 by combined risk" right={<DataBadge variant="neutral">0–100</DataBadge>} />
           <div className="space-y-2">
             {!snap ? <div className="h-32 animate-pulse rounded bg-secondary/40" />
@@ -136,8 +140,10 @@ function DashboardPage() {
       )}
 
       {/* Quick links */}
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         {[
+          { to: "/ai-news", label: "Ask Global Pulse AI", icon: Sparkles },
+          { to: "/reports", label: "Generate Report", icon: FileText },
           { to: "/intelligence", label: "Intelligence Feed", icon: Newspaper },
           { to: "/map", label: "Live World Map", icon: Globe2 },
           { to: "/countries", label: "Countries", icon: Flag },

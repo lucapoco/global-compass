@@ -6,6 +6,8 @@ import { ViewModeToggle } from "./ViewModeToggle";
 const items = [
   { to: "/", label: "Dashboard" },
   { to: "/intelligence", label: "Intel" },
+  { to: "/ai-news", label: "AI News" },
+  { to: "/reports", label: "Reports" },
   { to: "/map", label: "Map" },
   { to: "/countries", label: "Countries" },
   { to: "/earthquakes", label: "Earthquakes" },
@@ -14,6 +16,7 @@ const items = [
   { to: "/compare", label: "Compare" },
   { to: "/saved", label: "Saved" },
   { to: "/about", label: "About" },
+  { to: "/presentation", label: "Present" },
 ] as const;
 
 export function MobileNav() {

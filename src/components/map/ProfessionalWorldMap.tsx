@@ -1,12 +1,14 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import mapboxgl, { type Map as MbMap, Marker, Popup } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import type { MapEvent } from "@/types";
+import type { EventLayer, EventSeverity, GlobalEvent } from "@/types";
 
 interface Props {
-  events: MapEvent[];
+  events: GlobalEvent[];
   height?: string;
   heatmap?: boolean;
+  selectedEventId?: string | null;
+  onMarkerSelect?: (e: GlobalEvent) => void;
 }
 
 export interface ProfessionalWorldMapHandle {
@@ -16,25 +18,45 @@ export interface ProfessionalWorldMapHandle {
 
 const MAPBOX_TOKEN = (import.meta.env.VITE_MAPBOX_TOKEN as string | undefined)?.trim();
 
-const COLORS: Record<MapEvent["type"], string> = {
-  earthquake: "#f59e0b",
-  weather: "#22d3ee",
-  country: "#a78bfa",
-  alert: "#fb7185",
+const LAYER_COLOR: Record<EventLayer, string> = {
+  earthquakes: "#f59e0b",
   intelligence: "#38bdf8",
+  saved_alerts: "#fb7185",
+  weather: "#22d3ee",
+  capitals: "#a78bfa",
 };
 
-function severityColor(sev?: string) {
+function markerBaseColor(ev: GlobalEvent): string {
+  if (ev.layer === "earthquakes" || ev.layer === "saved_alerts") return severityColor(ev.severity);
+  return LAYER_COLOR[ev.layer];
+}
+
+function severityColor(sev: EventSeverity): string {
   switch (sev) {
-    case "Critical": return "#fb7185";
-    case "High": return "#f59e0b";
-    case "Medium": return "#22d3ee";
-    default: return "#34d399";
+    case "critical":
+      return "#fb7185";
+    case "high":
+      return "#f59e0b";
+    case "medium":
+      return "#22d3ee";
+    default:
+      return "#34d399";
   }
 }
 
+function heatmapGlowPx(sev: EventSeverity, heatmap: boolean): number {
+  if (!heatmap) return 12;
+  if (sev === "critical") return 42;
+  if (sev === "high") return 32;
+  if (sev === "medium") return 24;
+  return 14;
+}
+
 export const ProfessionalWorldMap = forwardRef<ProfessionalWorldMapHandle, Props>(
-  function ProfessionalWorldMap({ events, height = "70vh", heatmap = false }, ref) {
+  function ProfessionalWorldMap(
+    { events, height = "70vh", heatmap = false, selectedEventId, onMarkerSelect },
+    ref,
+  ) {
     const containerRef = useRef<HTMLDivElement | null>(null);
     const mapRef = useRef<MbMap | null>(null);
     const markersRef = useRef<Marker[]>([]);
@@ -88,33 +110,45 @@ export const ProfessionalWorldMap = forwardRef<ProfessionalWorldMapHandle, Props
       markersRef.current.forEach((m) => m.remove());
       markersRef.current = [];
 
-      for (const ev of events) {
+      const plotted = events.filter((e) => e.latitude != null && e.longitude != null);
+      for (const ev of plotted) {
+        const lat = ev.latitude!;
+        const lng = ev.longitude!;
         const el = document.createElement("div");
-        const color = ev.type === "earthquake" || ev.type === "alert"
-          ? severityColor(ev.severity)
-          : COLORS[ev.type];
+        const color = markerBaseColor(ev);
         const size = heatmap ? 26 : 12;
-        const opacity = heatmap ? 0.55 : 1;
+        const glow = heatmapGlowPx(ev.severity, heatmap);
+        const selected = selectedEventId === ev.id;
         el.style.cssText = `
           width:${size}px;height:${size}px;border-radius:9999px;background:${color};
-          opacity:${opacity};
-          box-shadow:0 0 0 2px rgba(0,0,0,0.6), 0 0 ${heatmap ? 22 : 12}px ${color};
-          cursor:pointer; border:1px solid rgba(255,255,255,${heatmap ? 0.3 : 0.6});
+          opacity:${heatmap ? 0.65 : 1};
+          box-shadow:0 0 0 ${selected ? 3 : 2}px ${selected ? "rgba(255,255,255,0.95)" : "rgba(0,0,0,0.6)"}, 0 0 ${glow}px ${color};
+          cursor:pointer; border:1px solid rgba(255,255,255,${heatmap ? 0.35 : 0.65});
           mix-blend-mode:${heatmap ? "screen" : "normal"};
         `;
-        const popup = new Popup({ offset: 14, closeButton: true, maxWidth: "280px" }).setHTML(`
-          <div style="min-width:200px">
-            <div style="font-weight:600;font-size:13px;color:#e6f1ff">${escapeHtml(ev.title)}</div>
-            ${ev.description ? `<div style="font-size:11px;color:#9fb3c8;margin-top:4px">${escapeHtml(ev.description)}</div>` : ""}
-            <div style="font-size:10px;color:#7e93a8;margin-top:6px;text-transform:uppercase;letter-spacing:0.08em">
-              ${escapeHtml(ev.type)}${ev.severity ? " · " + escapeHtml(ev.severity) : ""}${ev.category ? " · " + escapeHtml(ev.category) : ""}
-            </div>
+        el.addEventListener("click", (evt) => {
+          evt.stopPropagation();
+          onMarkerSelect?.(ev);
+        });
+
+        const popupRoot = document.createElement("div");
+        popupRoot.style.minWidth = "200px";
+        popupRoot.style.color = "#e6f1ff";
+        popupRoot.innerHTML = `
+          <div style="font-weight:600;font-size:13px;margin-bottom:4px">${escapeHtml(ev.title)}</div>
+          ${ev.description ? `<div style="font-size:11px;color:#9fb3c8;margin-bottom:6px">${escapeHtml(ev.description)}</div>` : ""}
+          <div style="font-size:10px;color:#7e93a8;text-transform:uppercase;letter-spacing:0.08em">
+            ${escapeHtml(ev.layer)} · ${escapeHtml(ev.severity)} · ${escapeHtml(ev.category)}
           </div>
-        `);
-        const marker = new Marker({ element: el }).setLngLat([ev.lng, ev.lat]).setPopup(popup).addTo(map);
+          <div style="font-size:10px;color:#7e93a8;margin-top:4px">${escapeHtml(ev.source)} · ${escapeHtml(new Date(ev.publishedAt).toLocaleString())}</div>
+          ${ev.url ? `<div style="margin-top:8px"><a href="${escapeAttr(ev.url)}" target="_blank" rel="noreferrer" style="color:#38bdf8;font-size:11px">Open source</a></div>` : ""}
+        `;
+
+        const popup = new Popup({ offset: 14, closeButton: true, maxWidth: "300px" }).setDOMContent(popupRoot);
+        const marker = new Marker({ element: el }).setLngLat([lng, lat]).setPopup(popup).addTo(map);
         markersRef.current.push(marker);
       }
-    }, [events, heatmap]);
+    }, [events, heatmap, selectedEventId, onMarkerSelect]);
 
     if (!MAPBOX_TOKEN) {
       return (
@@ -135,7 +169,7 @@ export const ProfessionalWorldMap = forwardRef<ProfessionalWorldMapHandle, Props
       <div
         ref={containerRef}
         style={{ height }}
-        className="w-full overflow-hidden rounded-xl border border-border/60"
+        className="relative w-full overflow-hidden rounded-xl border border-border/60"
       />
     );
   },
@@ -143,4 +177,8 @@ export const ProfessionalWorldMap = forwardRef<ProfessionalWorldMapHandle, Props
 
 function escapeHtml(s: string): string {
   return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
+}
+
+function escapeAttr(s: string): string {
+  return s.replace(/"/g, "&quot;");
 }

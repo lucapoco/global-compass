@@ -6,7 +6,7 @@ import { createFileRoute } from "@tanstack/react-router";
  * The browser cannot reliably reach gnews.io directly from the Lovable
  * preview (ad-blockers, network policies, CORS quirks). This proxy:
  *   - reads the API key from server-side env (`VITE_GNEWS_API_KEY` or `GNEWS_API_KEY`; never sent to the browser bundle for this route)
- *   - forwards a sanitized set of query params to GNews
+ *   - forwards a sanitized set of query params to GNews (`max` clamped 1–50, default 25)
  *   - returns normalized JSON with proper CORS headers
  *   - maps upstream 401/403/429/network errors to readable JSON responses
  */
@@ -50,11 +50,16 @@ export const Route = createFileRoute("/api/public/gnews-proxy")({
         const url = new URL(request.url);
         const q = url.searchParams;
 
+        // GNews free plans often cap articles per request (~10). We still accept up to 50
+        // so paid tiers / future upgrades work; the frontend merges categories when needed.
+        const maxParam = Number(q.get("max"));
+        const max = Math.min(Math.max(Number.isFinite(maxParam) && maxParam > 0 ? maxParam : 25, 1), 50);
+
         const params = new URLSearchParams({
           category: (q.get("category") || "general").slice(0, 32),
           lang: (q.get("lang") || "en").slice(0, 8),
           country: (q.get("country") || "us").slice(0, 8),
-          max: String(Math.min(Math.max(Number(q.get("max")) || 10, 1), 25)),
+          max: String(max),
           apikey: key,
         });
         const search = q.get("q");

@@ -6,6 +6,7 @@ import { getAllCountries } from "@/services/countriesApi";
 import { getEarthquakes } from "@/services/earthquakesApi";
 import { fetchIntelligence, type NewsStatus } from "@/services/newsApi";
 import { hasWeatherKey } from "@/services/weatherApi";
+import { getSupabaseViteEnvSummary } from "@/lib/supabaseEnv";
 import { isSupabaseConfigured, supabaseService } from "@/services/supabaseService";
 
 type Health =
@@ -74,7 +75,7 @@ export function ApiHealthPanel() {
     }
 
     try {
-      const r = await fetchIntelligence({ max: 10 });
+      const r = await fetchIntelligence({ max: 10, probe: true });
       const map: Record<NewsStatus, Health> = {
         live: "online", cached: "cached_live", demo: "demo", rate_limited: "rate_limited", error: "error",
       };
@@ -106,11 +107,26 @@ export function ApiHealthPanel() {
     }
 
     if (!isSupabaseConfigured()) {
-      next.push({ name: "Supabase", status: "not_configured" });
+      next.push({
+        name: "Supabase",
+        status: "not_configured",
+        detail: "Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY, then restart `npm run dev`.",
+      });
     } else {
       try {
-        await supabaseService.listSavedCountries();
-        next.push({ name: "Supabase", status: "online", lastOk: Date.now() });
+        const meta = getSupabaseViteEnvSummary();
+        const probe = await supabaseService.testSavedDataConnection();
+        const rowSummary = probe.rows
+          .map((r) => (r.error ? `${r.table}: ${r.error}` : `${r.table}=${r.count}`))
+          .join(" · ");
+        next.push({
+          name: "Supabase",
+          status: probe.ok ? "online" : "error",
+          lastOk: Date.now(),
+          detail: probe.ok
+            ? `ONLINE · ref ${meta.projectRef ?? "?"} · ${rowSummary}`
+            : `ref ${meta.projectRef ?? "?"} — ${probe.message}`,
+        });
       } catch (e: any) {
         next.push({ name: "Supabase", status: "error", detail: e?.message });
       }

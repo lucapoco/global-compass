@@ -1,4 +1,5 @@
 import type { IntelligenceItem, IntelligenceSeverity } from "@/types";
+import type { NewsStatus } from "@/services/newsApi";
 import { DataBadge } from "@/components/ui/DataBadge";
 import { Bookmark, ExternalLink } from "lucide-react";
 
@@ -26,9 +27,36 @@ interface Props {
   item: IntelligenceItem;
   onOpen?: (i: IntelligenceItem) => void;
   onSave?: (i: IntelligenceItem) => void;
+  /** Feed source status for accurate LIVE / CACHED / DEMO badges */
+  newsStatus?: NewsStatus;
+  layout?: "compact" | "detailed";
 }
 
-export function IntelligenceCard({ item, onOpen, onSave }: Props) {
+function feedBadgeVariant(s: NewsStatus): "live" | "neutral" | "demo" | "error" {
+  if (s === "live") return "live";
+  if (s === "cached") return "neutral";
+  if (s === "rate_limited" || s === "error") return "error";
+  return "demo";
+}
+
+function feedBadgeLabel(s: NewsStatus): string {
+  switch (s) {
+    case "live":
+      return "LIVE";
+    case "cached":
+      return "CACHED";
+    case "rate_limited":
+      return "RATE LIMITED";
+    case "error":
+      return "API ERROR";
+    default:
+      return "DEMO";
+  }
+}
+
+export function IntelligenceCard({ item, onOpen, onSave, newsStatus, layout = "compact" }: Props) {
+  const isDetailed = layout === "detailed";
+  const status = newsStatus ?? (item.isLive ? "live" : "demo");
   return (
     <div className="glass-card group flex flex-col gap-2 p-3 transition-colors hover:border-primary/40">
       <div className="flex items-start justify-between gap-2">
@@ -44,34 +72,50 @@ export function IntelligenceCard({ item, onOpen, onSave }: Props) {
               {item.country}
             </span>
           )}
-          <DataBadge variant={item.isLive ? "live" : "demo"}>{item.isLive ? "Live" : "Demo"}</DataBadge>
+          <DataBadge variant={feedBadgeVariant(status)}>{feedBadgeLabel(status)}</DataBadge>
         </div>
         <span className="shrink-0 text-[10px] text-muted-foreground">
           {new Date(item.publishedAt).toLocaleString()}
         </span>
       </div>
 
-      <button onClick={() => onOpen?.(item)} className="text-left">
-        <h3 className="text-sm font-semibold leading-snug text-foreground group-hover:text-primary">
+      <button type="button" onClick={() => onOpen?.(item)} className="text-left">
+        <h3 className={`font-semibold leading-snug text-foreground group-hover:text-primary ${isDetailed ? "text-base" : "text-sm"}`}>
           {item.title}
         </h3>
         {item.description && (
-          <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{item.description}</p>
+          <p className={`mt-1 text-muted-foreground ${isDetailed ? "line-clamp-5 text-sm" : "line-clamp-2 text-xs"}`}>{item.description}</p>
         )}
       </button>
 
-      <div className="mt-1 flex items-center justify-between text-[11px]">
-        <span className="text-muted-foreground">Source · <span className="text-foreground">{item.source}</span></span>
+      <div className={`mt-1 flex flex-wrap items-center justify-between gap-2 ${isDetailed ? "text-sm" : "text-[11px]"}`}>
+        <span className="text-muted-foreground">
+          Source · <span className="text-foreground">{item.source}</span>
+        </span>
         <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => onOpen?.(item)}
+            className="inline-flex items-center gap-1 rounded-md border border-border/60 px-2 py-1 text-[10px] text-muted-foreground hover:text-foreground"
+          >
+            Details
+          </button>
           {item.url && (
-            <a href={item.url} target="_blank" rel="noreferrer"
-               className="inline-flex items-center gap-1 rounded-md border border-border/60 px-2 py-1 text-[10px] text-muted-foreground hover:text-foreground">
-              <ExternalLink className="h-3 w-3" /> Open
+            <a
+              href={item.url}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1 rounded-md border border-border/60 px-2 py-1 text-[10px] text-muted-foreground hover:text-foreground"
+            >
+              <ExternalLink className="h-3 w-3" /> Open source
             </a>
           )}
           {onSave && (
-            <button onClick={() => onSave(item)}
-              className="inline-flex items-center gap-1 rounded-md border border-primary/40 bg-primary/10 px-2 py-1 text-[10px] text-primary">
+            <button
+              type="button"
+              onClick={() => onSave(item)}
+              className="inline-flex items-center gap-1 rounded-md border border-primary/40 bg-primary/10 px-2 py-1 text-[10px] text-primary"
+            >
               <Bookmark className="h-3 w-3" /> Save
             </button>
           )}

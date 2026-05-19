@@ -1,9 +1,10 @@
 export function MapLegend() {
   const items = [
     { label: "Earthquake", color: "#f59e0b" },
-    { label: "Weather",    color: "#22d3ee" },
-    { label: "Capital",    color: "#a78bfa" },
-    { label: "Saved alert",color: "#fb7185" },
+    { label: "Intelligence", color: "#38bdf8" },
+    { label: "Weather", color: "#22d3ee" },
+    { label: "Capital", color: "#a78bfa" },
+    { label: "Saved alert", color: "#fb7185" },
   ];
   return (
     <div className="glass-card flex flex-wrap gap-3 p-3">

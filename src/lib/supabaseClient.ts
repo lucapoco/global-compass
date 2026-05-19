@@ -1,15 +1,16 @@
-// App Supabase client for saved data (alerts, countries, feedback, logs).
-// Uses the same env vars as Lovable / Vite; do not embed keys in source.
+// App Supabase client — single source of truth for saved data (alerts, countries, intelligence, logs).
+// Credentials: **only** `import.meta.env.VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`
+// (no hardcoded URLs/keys, no `process.env` fallbacks, no Lovable-managed defaults).
+//
+// After changing `.env` or `.env.local`, restart Vite (Ctrl+C → `npm run dev`) and hard-refresh the browser,
+// or `import.meta.env` may still point at the previous Supabase project.
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
+import { extractSupabaseProjectRef, getViteSupabasePublishableKey, getViteSupabaseUrl } from "./supabaseEnv";
 
 function getCredentials(): { url: string; key: string } | null {
-  const url =
-    (import.meta.env.VITE_SUPABASE_URL as string | undefined)?.trim() ||
-    (typeof process !== "undefined" ? process.env.SUPABASE_URL?.trim() : undefined);
-  const key =
-    (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined)?.trim() ||
-    (typeof process !== "undefined" ? process.env.SUPABASE_PUBLISHABLE_KEY?.trim() : undefined);
+  const url = getViteSupabaseUrl();
+  const key = getViteSupabasePublishableKey();
   if (!url || !key) return null;
   return { url, key };
 }
@@ -17,23 +18,30 @@ function getCredentials(): { url: string; key: string } | null {
 export const isSupabaseConfigured = (): boolean => getCredentials() !== null;
 
 let _client: SupabaseClient<Database> | undefined;
+/** Fingerprint so the client recreates when URL or publishable key changes. */
+let _clientFingerprint: string | undefined;
 
 function getClient(): SupabaseClient<Database> {
   const creds = getCredentials();
   if (!creds) {
     throw new Error(
-      "Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY to your .env file.",
+      "Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY in .env and restart the dev server.",
     );
   }
-  if (!_client) {
-    _client = createClient<Database>(creds.url, creds.key, {
-      auth: {
-        storage: typeof window !== "undefined" ? window.localStorage : undefined,
-        persistSession: true,
-        autoRefreshToken: true,
-      },
-    });
-  }
+  const fingerprint = `${creds.url}\n${creds.key}`;
+  if (_client && _clientFingerprint === fingerprint) return _client;
+
+  _clientFingerprint = fingerprint;
+  const ref = extractSupabaseProjectRef(creds.url) ?? "unknown";
+  _client = createClient<Database>(creds.url, creds.key, {
+    auth: {
+      storage: typeof window !== "undefined" ? window.localStorage : undefined,
+      persistSession: true,
+      autoRefreshToken: true,
+      // Isolate auth storage per Supabase project so switching `VITE_SUPABASE_URL` does not reuse old session keys.
+      storageKey: `gc-sb-${ref}-auth`,
+    },
+  });
   return _client;
 }
 

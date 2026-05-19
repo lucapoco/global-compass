@@ -1,13 +1,15 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard, Globe2, Flag, Activity, CloudSun,
-  AlertTriangle, GitCompareArrows, Bookmark, Info, Radio, Newspaper,
+  AlertTriangle, GitCompareArrows, Bookmark, Info, Radio, Newspaper, Sparkles, FileText, Presentation,
 } from "lucide-react";
 import { ViewModeToggle } from "./ViewModeToggle";
 
 const items = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
   { to: "/intelligence", label: "Intelligence Feed", icon: Newspaper },
+  { to: "/ai-news", label: "Global Pulse AI", icon: Sparkles },
+  { to: "/reports", label: "Intelligence Reports", icon: FileText },
   { to: "/map", label: "Live World Map", icon: Globe2 },
   { to: "/countries", label: "Countries", icon: Flag },
   { to: "/earthquakes", label: "Earthquakes", icon: Activity },
@@ -16,6 +18,7 @@ const items = [
   { to: "/compare", label: "Compare Countries", icon: GitCompareArrows },
   { to: "/saved", label: "Saved Data", icon: Bookmark },
   { to: "/about", label: "About Project", icon: Info },
+  { to: "/presentation", label: "Presentation Mode", icon: Presentation },
 ] as const;
 
 export function Sidebar() {

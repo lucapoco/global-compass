@@ -32,7 +32,8 @@ export async function getDashboardSnapshot(force = false): Promise<DashboardSnap
 
   inFlight = (async () => {
     const [news, quakes, countries, savedAlerts, savedCountries] = await Promise.all([
-      fetchIntelligence({ max: 30, force }),
+      /** Load up to 30 for risk / charts; LiveIntelligencePanel shows top 12. */
+      fetchIntelligence({ limit: 30, force }),
       getEarthquakes("day").catch(() => [] as Earthquake[]),
       getAllCountries().then((c) => c.length).catch(() => null),
       isSupabaseConfigured() ? supabaseService.listSavedAlerts().catch(() => []) : Promise.resolve([]),

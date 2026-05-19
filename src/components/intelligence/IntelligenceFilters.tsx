@@ -15,9 +15,12 @@ interface Props {
   severity: IntelligenceSeverity | "all";
   setSeverity: (s: IntelligenceSeverity | "all") => void;
   onSearch?: () => void;
+  /** Instant client-side search: hide submit button, optional clear */
+  instantSearch?: boolean;
 }
 
 export function IntelligenceFilters(p: Props) {
+  const instant = p.instantSearch ?? false;
   return (
     <div className="glass-card space-y-3 p-3">
       <div className="flex items-center gap-2">
@@ -26,15 +29,29 @@ export function IntelligenceFilters(p: Props) {
           <input
             value={p.query}
             onChange={(e) => p.setQuery(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && p.onSearch?.()}
-            placeholder="Search world headlines (e.g. ukraine, oil, ai)"
+            onKeyDown={(e) => !instant && e.key === "Enter" && p.onSearch?.()}
+            placeholder="Search title, description, source, country, category…"
             className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
           />
+          {p.query.trim() ? (
+            <button
+              type="button"
+              onClick={() => p.setQuery("")}
+              className="shrink-0 text-[10px] uppercase tracking-wider text-muted-foreground hover:text-foreground"
+            >
+              Clear
+            </button>
+          ) : null}
         </div>
-        <button onClick={p.onSearch}
-          className="rounded-md border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs text-primary">
-          Search
-        </button>
+        {!instant && p.onSearch ? (
+          <button
+            type="button"
+            onClick={p.onSearch}
+            className="rounded-md border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs text-primary"
+          >
+            Search
+          </button>
+        ) : null}
       </div>
 
       <div>

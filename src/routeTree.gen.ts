@@ -11,14 +11,20 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WeatherRouteImport } from './routes/weather'
 import { Route as SavedRouteImport } from './routes/saved'
+import { Route as ReportsRouteImport } from './routes/reports'
+import { Route as PresentationRouteImport } from './routes/presentation'
 import { Route as MapRouteImport } from './routes/map'
 import { Route as IntelligenceRouteImport } from './routes/intelligence'
 import { Route as EarthquakesRouteImport } from './routes/earthquakes'
 import { Route as CountriesRouteImport } from './routes/countries'
 import { Route as CompareRouteImport } from './routes/compare'
 import { Route as AlertsRouteImport } from './routes/alerts'
+import { Route as AiNewsRouteImport } from './routes/ai-news'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiGenerateReportRouteImport } from './routes/api/generate-report'
+import { Route as ApiDebugGeminiEnvRouteImport } from './routes/api/debug-gemini-env'
+import { Route as ApiAiNewsChatRouteImport } from './routes/api/ai-news-chat'
 import { Route as ApiPublicGnewsProxyRouteImport } from './routes/api/public/gnews-proxy'
 
 const WeatherRoute = WeatherRouteImport.update({
@@ -29,6 +35,16 @@ const WeatherRoute = WeatherRouteImport.update({
 const SavedRoute = SavedRouteImport.update({
   id: '/saved',
   path: '/saved',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportsRoute = ReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PresentationRoute = PresentationRouteImport.update({
+  id: '/presentation',
+  path: '/presentation',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MapRoute = MapRouteImport.update({
@@ -61,6 +77,11 @@ const AlertsRoute = AlertsRouteImport.update({
   path: '/alerts',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AiNewsRoute = AiNewsRouteImport.update({
+  id: '/ai-news',
+  path: '/ai-news',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -69,6 +90,21 @@ const AboutRoute = AboutRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiGenerateReportRoute = ApiGenerateReportRouteImport.update({
+  id: '/api/generate-report',
+  path: '/api/generate-report',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiDebugGeminiEnvRoute = ApiDebugGeminiEnvRouteImport.update({
+  id: '/api/debug-gemini-env',
+  path: '/api/debug-gemini-env',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAiNewsChatRoute = ApiAiNewsChatRouteImport.update({
+  id: '/api/ai-news-chat',
+  path: '/api/ai-news-chat',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicGnewsProxyRoute = ApiPublicGnewsProxyRouteImport.update({
@@ -80,41 +116,59 @@ const ApiPublicGnewsProxyRoute = ApiPublicGnewsProxyRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/ai-news': typeof AiNewsRoute
   '/alerts': typeof AlertsRoute
   '/compare': typeof CompareRoute
   '/countries': typeof CountriesRoute
   '/earthquakes': typeof EarthquakesRoute
   '/intelligence': typeof IntelligenceRoute
   '/map': typeof MapRoute
+  '/presentation': typeof PresentationRoute
+  '/reports': typeof ReportsRoute
   '/saved': typeof SavedRoute
   '/weather': typeof WeatherRoute
+  '/api/ai-news-chat': typeof ApiAiNewsChatRoute
+  '/api/debug-gemini-env': typeof ApiDebugGeminiEnvRoute
+  '/api/generate-report': typeof ApiGenerateReportRoute
   '/api/public/gnews-proxy': typeof ApiPublicGnewsProxyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/ai-news': typeof AiNewsRoute
   '/alerts': typeof AlertsRoute
   '/compare': typeof CompareRoute
   '/countries': typeof CountriesRoute
   '/earthquakes': typeof EarthquakesRoute
   '/intelligence': typeof IntelligenceRoute
   '/map': typeof MapRoute
+  '/presentation': typeof PresentationRoute
+  '/reports': typeof ReportsRoute
   '/saved': typeof SavedRoute
   '/weather': typeof WeatherRoute
+  '/api/ai-news-chat': typeof ApiAiNewsChatRoute
+  '/api/debug-gemini-env': typeof ApiDebugGeminiEnvRoute
+  '/api/generate-report': typeof ApiGenerateReportRoute
   '/api/public/gnews-proxy': typeof ApiPublicGnewsProxyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/ai-news': typeof AiNewsRoute
   '/alerts': typeof AlertsRoute
   '/compare': typeof CompareRoute
   '/countries': typeof CountriesRoute
   '/earthquakes': typeof EarthquakesRoute
   '/intelligence': typeof IntelligenceRoute
   '/map': typeof MapRoute
+  '/presentation': typeof PresentationRoute
+  '/reports': typeof ReportsRoute
   '/saved': typeof SavedRoute
   '/weather': typeof WeatherRoute
+  '/api/ai-news-chat': typeof ApiAiNewsChatRoute
+  '/api/debug-gemini-env': typeof ApiDebugGeminiEnvRoute
+  '/api/generate-report': typeof ApiGenerateReportRoute
   '/api/public/gnews-proxy': typeof ApiPublicGnewsProxyRoute
 }
 export interface FileRouteTypes {
@@ -122,54 +176,78 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/ai-news'
     | '/alerts'
     | '/compare'
     | '/countries'
     | '/earthquakes'
     | '/intelligence'
     | '/map'
+    | '/presentation'
+    | '/reports'
     | '/saved'
     | '/weather'
+    | '/api/ai-news-chat'
+    | '/api/debug-gemini-env'
+    | '/api/generate-report'
     | '/api/public/gnews-proxy'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
+    | '/ai-news'
     | '/alerts'
     | '/compare'
     | '/countries'
     | '/earthquakes'
     | '/intelligence'
     | '/map'
+    | '/presentation'
+    | '/reports'
     | '/saved'
     | '/weather'
+    | '/api/ai-news-chat'
+    | '/api/debug-gemini-env'
+    | '/api/generate-report'
     | '/api/public/gnews-proxy'
   id:
     | '__root__'
     | '/'
     | '/about'
+    | '/ai-news'
     | '/alerts'
     | '/compare'
     | '/countries'
     | '/earthquakes'
     | '/intelligence'
     | '/map'
+    | '/presentation'
+    | '/reports'
     | '/saved'
     | '/weather'
+    | '/api/ai-news-chat'
+    | '/api/debug-gemini-env'
+    | '/api/generate-report'
     | '/api/public/gnews-proxy'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AiNewsRoute: typeof AiNewsRoute
   AlertsRoute: typeof AlertsRoute
   CompareRoute: typeof CompareRoute
   CountriesRoute: typeof CountriesRoute
   EarthquakesRoute: typeof EarthquakesRoute
   IntelligenceRoute: typeof IntelligenceRoute
   MapRoute: typeof MapRoute
+  PresentationRoute: typeof PresentationRoute
+  ReportsRoute: typeof ReportsRoute
   SavedRoute: typeof SavedRoute
   WeatherRoute: typeof WeatherRoute
+  ApiAiNewsChatRoute: typeof ApiAiNewsChatRoute
+  ApiDebugGeminiEnvRoute: typeof ApiDebugGeminiEnvRoute
+  ApiGenerateReportRoute: typeof ApiGenerateReportRoute
   ApiPublicGnewsProxyRoute: typeof ApiPublicGnewsProxyRoute
 }
 
@@ -187,6 +265,20 @@ declare module '@tanstack/react-router' {
       path: '/saved'
       fullPath: '/saved'
       preLoaderRoute: typeof SavedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reports': {
+      id: '/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof ReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/presentation': {
+      id: '/presentation'
+      path: '/presentation'
+      fullPath: '/presentation'
+      preLoaderRoute: typeof PresentationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/map': {
@@ -231,6 +323,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AlertsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ai-news': {
+      id: '/ai-news'
+      path: '/ai-news'
+      fullPath: '/ai-news'
+      preLoaderRoute: typeof AiNewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -243,6 +342,27 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/generate-report': {
+      id: '/api/generate-report'
+      path: '/api/generate-report'
+      fullPath: '/api/generate-report'
+      preLoaderRoute: typeof ApiGenerateReportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/debug-gemini-env': {
+      id: '/api/debug-gemini-env'
+      path: '/api/debug-gemini-env'
+      fullPath: '/api/debug-gemini-env'
+      preLoaderRoute: typeof ApiDebugGeminiEnvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/ai-news-chat': {
+      id: '/api/ai-news-chat'
+      path: '/api/ai-news-chat'
+      fullPath: '/api/ai-news-chat'
+      preLoaderRoute: typeof ApiAiNewsChatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/gnews-proxy': {
@@ -258,14 +378,20 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AiNewsRoute: AiNewsRoute,
   AlertsRoute: AlertsRoute,
   CompareRoute: CompareRoute,
   CountriesRoute: CountriesRoute,
   EarthquakesRoute: EarthquakesRoute,
   IntelligenceRoute: IntelligenceRoute,
   MapRoute: MapRoute,
+  PresentationRoute: PresentationRoute,
+  ReportsRoute: ReportsRoute,
   SavedRoute: SavedRoute,
   WeatherRoute: WeatherRoute,
+  ApiAiNewsChatRoute: ApiAiNewsChatRoute,
+  ApiDebugGeminiEnvRoute: ApiDebugGeminiEnvRoute,
+  ApiGenerateReportRoute: ApiGenerateReportRoute,
   ApiPublicGnewsProxyRoute: ApiPublicGnewsProxyRoute,
 }
 export const routeTree = rootRouteImport

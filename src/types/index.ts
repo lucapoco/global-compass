@@ -104,6 +104,44 @@ export interface MapEvent {
   url?: string;
 }
 
+/** Normalized map event for Live World Map (filters + side panel + markers when coords exist). */
+export type EventSeverity = "low" | "medium" | "high" | "critical";
+
+export type EventCategory =
+  | "geopolitics"
+  | "military"
+  | "economy"
+  | "technology"
+  | "energy"
+  | "climate"
+  | "disaster"
+  | "cyber"
+  | "health"
+  | "earthquake"
+  | "weather"
+  | "general";
+
+export type EventLayer = "earthquakes" | "intelligence" | "saved_alerts" | "weather" | "capitals";
+
+export interface GlobalEvent {
+  id: string;
+  title: string;
+  description?: string;
+  category: EventCategory;
+  severity: EventSeverity;
+  layer: EventLayer;
+  source: string;
+  url?: string;
+  country?: string;
+  location?: string;
+  latitude?: number;
+  longitude?: number;
+  publishedAt: string;
+  isLive: boolean;
+  isDemo?: boolean;
+  isSaved?: boolean;
+}
+
 export type ApiState = "idle" | "loading" | "success" | "error";
 
 // ---------------- Intelligence ----------------
@@ -156,4 +194,17 @@ export interface CountryRisk {
   score: number;
   label: Severity;
   factors: string[];
+}
+
+export type ReportType = "country" | "event" | "global_briefing";
+
+export interface GeneratedReport {
+  id: string;
+  title: string;
+  type: ReportType;
+  country: string | null;
+  event_id: string | null;
+  content: string;
+  data_status: string;
+  created_at: string | null;
 }

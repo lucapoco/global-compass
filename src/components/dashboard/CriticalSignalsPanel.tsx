@@ -45,7 +45,10 @@ export function CriticalSignalsPanel({ intel, quakes, saved }: Props) {
   }, [intel, quakes, saved]);
 
   async function save(i: IntelligenceItem) {
-    if (!isSupabaseConfigured()) { toast.error("Backend not configured."); return; }
+    if (!isSupabaseConfigured()) {
+      toast.error("Supabase is not configured.");
+      return;
+    }
     try { await supabaseService.saveIntelligence(i); toast.success("Saved."); }
     catch (e: any) { toast.error(e?.message ?? "Save failed"); }
   }

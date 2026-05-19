@@ -1,44 +1,58 @@
-import type { MapEvent, IntelligenceCategory } from "@/types";
-import type { LayerKey, SeverityKey } from "@/components/map/MapFilters";
+import type { EventCategory, EventLayer, EventSeverity, GlobalEvent } from "@/types";
 
-export type EventCategory = IntelligenceCategory | "earthquake" | "weather";
+export type { EventCategory, EventLayer, EventSeverity };
 
-export interface MapFilters {
-  search: string;
-  layers: Record<LayerKey, boolean>;
-  severity: SeverityKey;
+/** Single filter pipeline for the Live World Map. */
+export type MapFilters = {
+  searchQuery: string;
+  enabledLayers: EventLayer[];
+  selectedSeverity: EventSeverity | "all";
+  selectedCategories: EventCategory[];
   highSeverityOnly: boolean;
-  /** Empty set = no category filter (all). */
-  categories: Set<EventCategory>;
-}
+};
 
-/** Derives the canonical category for filtering from a MapEvent. */
-export function eventCategory(e: MapEvent): EventCategory {
-  if (e.type === "earthquake") return "earthquake";
-  if (e.type === "weather") return "weather";
-  return (e.category ?? "general") as EventCategory;
-}
+const ALL_LAYERS: EventLayer[] = ["earthquakes", "intelligence", "saved_alerts", "weather", "capitals"];
 
-export function filterMapEvents(events: MapEvent[], f: MapFilters): MapEvent[] {
-  const q = f.search.trim().toLowerCase();
+export const DEFAULT_ENABLED_LAYERS: EventLayer[] = [...ALL_LAYERS];
+
+/** 1) layers 2) high-only 3) specific severity 4) categories 5) search */
+export function filterGlobalEvents(events: GlobalEvent[], f: MapFilters): GlobalEvent[] {
+  const q = f.searchQuery.trim().toLowerCase();
   return events.filter((e) => {
-    if (!f.layers[e.type]) return false;
-    if (f.highSeverityOnly && !["High", "Critical"].includes(e.severity ?? "")) return false;
-    if (f.severity !== "all" && e.severity !== f.severity) return false;
-    if (f.categories.size > 0 && !f.categories.has(eventCategory(e))) return false;
+    if (!f.enabledLayers.includes(e.layer)) return false;
+    if (f.highSeverityOnly && !["high", "critical"].includes(e.severity)) return false;
+    if (f.selectedSeverity !== "all" && e.severity !== f.selectedSeverity) return false;
+    if (f.selectedCategories.length > 0 && !f.selectedCategories.includes(e.category)) return false;
     if (q) {
-      const blob = `${e.title} ${e.description ?? ""} ${e.category ?? ""} ${e.type}`.toLowerCase();
+      const blob = [
+        e.title,
+        e.description ?? "",
+        e.country ?? "",
+        e.location ?? "",
+        e.source,
+        e.category,
+        e.severity,
+      ]
+        .join(" ")
+        .toLowerCase();
       if (!blob.includes(q)) return false;
     }
     return true;
   });
 }
 
-export function categoryCounts(events: MapEvent[]): Record<EventCategory, number> {
-  const r: Record<string, number> = {};
+export function categoryCountsFromGlobal(events: GlobalEvent[]): Partial<Record<EventCategory, number>> {
+  const r: Partial<Record<EventCategory, number>> = {};
   for (const e of events) {
-    const c = eventCategory(e);
-    r[c] = (r[c] ?? 0) + 1;
+    r[e.category] = (r[e.category] ?? 0) + 1;
   }
-  return r as Record<EventCategory, number>;
+  return r;
+}
+
+export function allLayersEnabled(enabled: EventLayer[]): boolean {
+  return ALL_LAYERS.every((l) => enabled.includes(l));
+}
+
+export function missingLayers(enabled: EventLayer[]): EventLayer[] {
+  return ALL_LAYERS.filter((l) => !enabled.includes(l));
 }
