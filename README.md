@@ -1,93 +1,92 @@
 # Global Pulse
 
-Educational “planetary monitoring” dashboard: earthquakes (USGS), intelligence headlines (GNews via same-origin proxy), Mapbox globe, OpenWeather, and optional Supabase persistence for saved countries, alerts, and feedback.
+Dashboard educațional de „monitorizare planetară”: cutremure prin USGS, știri/intelligence prin GNews folosind un proxy same-origin, hartă globală Mapbox, OpenWeather și persistență opțională prin Supabase pentru țări salvate, alerte și feedback.
 
-## Prerequisites
+## Cerințe preliminare
 
-- Node.js 20+ (LTS recommended)
+- Node.js 20+ (recomandat LTS)
 - npm 10+
 
-## Run locally
+## Rulare locală
 
-```bash
+bash
 npm install
 cp .env.example .env
-# Edit `.env` with your keys (see table below), then:
+# Editează `.env` cu cheile tale (vezi tabelul de mai jos), apoi:
 npm run dev
-```
 
-The dev server prints a local URL (often `http://localhost:8080/`; another port is used if that one is busy).
+Serverul de dezvoltare va afișa un URL local, de obicei http://localhost:8080/. Dacă portul este ocupat, se va folosi alt port.
 
-### Changing `.env` or `.env.local` (Supabase, Mapbox, etc.)
+Modificarea fișierelor .env sau .env.local — Supabase, Mapbox etc.
 
-`VITE_*` variables are read when the **Vite dev server starts**. After you edit `.env` or `.env.local`:
+Variabilele VITE_* sunt citite când pornește serverul de dezvoltare Vite. După ce modifici .env sau .env.local:
 
-1. Stop the dev server (**Ctrl+C**).
-2. Run `npm run dev` again.
-3. Hard-refresh the browser (**Ctrl+Shift+R**) or open a new tab.
+Oprește serverul de dezvoltare cu Ctrl+C.
+Rulează din nou npm run dev.
+Fă hard refresh în browser cu Ctrl+Shift+R sau deschide aplicația într-un tab nou.
 
-Otherwise `import.meta.env` can still reflect the previous Supabase project or keys.
+Altfel, import.meta.env poate păstra încă vechiul proiect Supabase sau vechile chei.
 
-Other scripts:
+Alte comenzi:
 
-| Command | Purpose |
-|--------|---------|
-| `npm run dev` | Vite + TanStack Start dev server |
-| `npm run build` | Production client + SSR bundles |
-| `npm run preview` | Preview the production build |
-| `npm run lint` | ESLint |
+Comandă	Scop
+npm run dev	Pornește serverul Vite + TanStack Start
+npm run build	Generează build-ul de producție pentru client + SSR
+npm run preview	Previzualizează build-ul de producție
+npm run lint	Rulează ESLint
+Variabile de mediu
 
-## Environment variables
+Creează un fișier .env în rădăcina proiectului. Poți folosi .env.example ca model.
 
-Create a `.env` file in the project root (see `.env.example`). Required for a **fully live** experience:
+Pentru o experiență complet live sunt necesare:
 
-| Variable | Used for |
-|----------|----------|
-| `VITE_SUPABASE_URL` | Supabase project URL |
-| `VITE_SUPABASE_PUBLISHABLE_KEY` | Supabase anon / publishable key (client-safe) |
-| `VITE_MAPBOX_TOKEN` | Mapbox GL globe map |
-| `VITE_OPENWEATHER_API_KEY` | Live current weather |
-| `VITE_GNEWS_API_KEY` | GNews — consumed by the server handler at `/api/public/gnews-proxy` (same-origin fetch from the app) |
+Variabilă	Folosită pentru
+VITE_SUPABASE_URL	URL-ul proiectului Supabase
+VITE_SUPABASE_PUBLISHABLE_KEY	Cheia anon / publishable Supabase, sigură pentru client
+VITE_MAPBOX_TOKEN	Harta globală Mapbox GL
+VITE_OPENWEATHER_API_KEY	Vreme live curentă
+VITE_GNEWS_API_KEY	GNews — folosită de handlerul server de la /api/public/gnews-proxy, aplicația făcând request same-origin
 
-Without optional keys, the app still runs using public feeds and demo fallbacks where implemented.
+Fără cheile opționale, aplicația rulează în continuare folosind feed-uri publice și fallback-uri demo acolo unde sunt implementate.
 
-**Optional:** `GNEWS_API_KEY` (non-`VITE_`) is also read by the GNews proxy if you prefer not to expose a `VITE_` name in some deployments. `VITE_NEWS_API_KEY` enables an optional NewsAPI.org client fallback in `src/services/newsApi.ts` (not listed in `.env.example`).
+Opțional: GNEWS_API_KEY, fără prefixul VITE_, este citită de proxy-ul GNews dacă preferi ca în anumite deployment-uri cheia să nu aibă nume expus frontend-ului. VITE_NEWS_API_KEY activează un fallback opțional prin NewsAPI.org în src/services/newsApi.ts, dar nu este listată în .env.example.
 
-### Global Pulse AI (Google Gemini)
+Global Pulse AI — Google Gemini
 
-The **Global Pulse AI** page (`/ai-news`) calls `POST /api/ai-news-chat` on the server, which forwards to **Google Gemini** (`gemini-2.5-flash-lite` by default).
+Pagina Global Pulse AI (/ai-news) apelează POST /api/ai-news-chat pe server, care trimite request-ul mai departe către Google Gemini. Modelul implicit este gemini-2.5-flash-lite.
 
-1. Create a [Google AI Studio](https://aistudio.google.com/apikey) API key.
-2. In `.env` or `.env.local` (server secrets), add:
-
-```env
+Creează o cheie API din Google AI Studio.
+În .env sau .env.local, adaugă:
 GEMINI_API_KEY=your_gemini_api_key_here
 GEMINI_MODEL=gemini-2.5-flash-lite
-```
-
-3. Restart the dev server after any `.env` change:
-
-```bash
-# Ctrl+C to stop, then:
+Repornește serverul de dezvoltare după orice modificare în .env:
+# Ctrl+C pentru oprire, apoi:
 npm run dev
-```
+Variabilă	Scop
+GEMINI_API_KEY	Cheia API Google Gemini, folosită doar server-side
+GEMINI_MODEL	Modelul principal, implicit gemini-2.5-flash-lite
+GEMINI_FALLBACK_MODEL	Model fallback când modelul principal este ocupat, implicit gemini-2.0-flash-lite
 
-| Variable | Purpose |
-|----------|---------|
-| `GEMINI_API_KEY` | Google Gemini API key (server-side only) |
-| `GEMINI_MODEL` | Primary model (default `gemini-2.5-flash-lite`) |
-| `GEMINI_FALLBACK_MODEL` | Fallback when primary is busy (default `gemini-2.0-flash-lite`) |
+Nu folosi VITE_GEMINI_API_KEY — cheia nu trebuie să ajungă niciodată în browser. Serverul citește variabilele GEMINI_* prin process.env, încărcate din .env la pornire și injectate în worker bundle de Vite.
 
-Do **not** use `VITE_GEMINI_API_KEY` — the key must never reach the browser. The server reads `GEMINI_*` via `process.env` (loaded from `.env` at startup and injected into the worker bundle by Vite). If `GEMINI_API_KEY` is missing, the UI uses a **local rule-based fallback** (badge: `LOCAL FALLBACK`). When Gemini works, responses show `GEMINI LIVE`.
+Dacă GEMINI_API_KEY lipsește, interfața folosește un fallback local bazat pe reguli, cu badge-ul LOCAL FALLBACK. Când Gemini funcționează, răspunsurile afișează GEMINI LIVE.
 
-For **Cloudflare production**, set `GEMINI_API_KEY` as a Wrangler secret (`wrangler secret put GEMINI_API_KEY`), not in the client bundle.
+Pentru Cloudflare production, setează GEMINI_API_KEY ca secret Wrangler:
 
-## Supabase
+wrangler secret put GEMINI_API_KEY
 
-SQL that matches the app’s expected tables **and anon RLS policies** is in **`supabase-schema.sql`**. In **Supabase → SQL Editor**, paste the **entire** file and run it once per project. If tables exist but the app still cannot read/write, you likely have RLS on without policies — run the **RLS** section at the bottom of that file (or the full file again; it uses `IF NOT EXISTS` / `DROP POLICY IF EXISTS` where needed).
+Nu o pune în bundle-ul de client.
 
-Then align Row Level Security with your auth model before any production launch (the bundled policies are permissive for `anon` for local/educational use).
+Supabase
 
-## Stack (short)
+SQL-ul care corespunde tabelelor așteptate de aplicație și politicilor RLS pentru anon se află în fișierul supabase-schema.sql.
+
+În Supabase → SQL Editor, lipește întregul fișier și rulează-l o singură dată pentru fiecare proiect.
+
+Dacă tabelele există, dar aplicația tot nu poate citi sau scrie date, probabil ai RLS activat fără politici. În acest caz, rulează secțiunea RLS de la finalul fișierului sau rulează din nou întregul fișier. Acesta folosește IF NOT EXISTS și DROP POLICY IF EXISTS acolo unde este necesar.
+
+Înainte de o lansare reală în producție, ajustează Row Level Security în funcție de modelul tău de autentificare. Politicile incluse sunt permisive pentru anon și sunt gândite pentru uz local / educațional.
+
+Stack — pe scurt
 
 React 19, TypeScript, Vite 7, TanStack Router / Start, Tailwind CSS 4, Radix UI, Mapbox GL, Supabase JS.

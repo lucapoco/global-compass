@@ -1,42 +1,46 @@
 import { X } from "lucide-react";
-import type { EventCategory, EventLayer, EventSeverity } from "@/types";
+import type { GlobalEventCategory, GlobalEventSeverity } from "@/domain/models/GlobalEvent";
+import { LAYER_GROUPS } from "@/utils/filterEvents";
 
 interface Props {
-  categories: Set<EventCategory>;
-  selectedSeverity: EventSeverity | "all";
-  highOnly: boolean;
+  categories: Set<GlobalEventCategory>;
+  severities: GlobalEventSeverity[];
   searchQuery: string;
-  enabledLayers: EventLayer[];
-  onRemoveCategory: (c: EventCategory) => void;
-  onClearSeverity: () => void;
-  onClearHighOnly: () => void;
+  enabledLayerGroups: string[];
+  minRiskScore?: number;
+  minConfidence?: number;
+  verifiedOnly: boolean;
+  liveOnly: boolean;
+  onRemoveCategory: (c: GlobalEventCategory) => void;
+  onRemoveSeverity: (s: GlobalEventSeverity) => void;
   onClearSearch: () => void;
-  onEnableLayer: (l: EventLayer) => void;
+  onEnableLayerGroup: (id: string) => void;
+  onClearRisk: () => void;
+  onClearConfidence: () => void;
+  onClearVerified: () => void;
+  onClearLive: () => void;
   onClearAll: () => void;
 }
 
-const CAT_LABELS: Partial<Record<EventCategory, string>> = { technology: "Tech" };
-const LAYER_LABELS: Record<EventLayer, string> = {
-  earthquakes: "Earthquakes",
-  intelligence: "Intelligence",
-  saved_alerts: "Saved alerts",
-  weather: "Weather",
-  capitals: "Capitals",
-};
-
-const ALL: EventLayer[] = ["earthquakes", "intelligence", "saved_alerts", "weather", "capitals"];
+const CAT_LABELS: Partial<Record<GlobalEventCategory, string>> = { technology: "Tech", geopolitics: "Politics" };
 
 export function ActiveFilterSummary({
   categories,
-  selectedSeverity,
-  highOnly,
+  severities,
   searchQuery,
-  enabledLayers,
+  enabledLayerGroups,
+  minRiskScore,
+  minConfidence,
+  verifiedOnly,
+  liveOnly,
   onRemoveCategory,
-  onClearSeverity,
-  onClearHighOnly,
+  onRemoveSeverity,
   onClearSearch,
-  onEnableLayer,
+  onEnableLayerGroup,
+  onClearRisk,
+  onClearConfidence,
+  onClearVerified,
+  onClearLive,
   onClearAll,
 }: Props) {
   const chips: React.ReactNode[] = [];
@@ -53,27 +57,43 @@ export function ActiveFilterSummary({
       </button>,
     );
   }
-  if (selectedSeverity !== "all") {
+  for (const s of severities) {
     chips.push(
       <button
-        key="sev"
+        key={`sev-${s}`}
         type="button"
-        onClick={onClearSeverity}
+        onClick={() => onRemoveSeverity(s)}
         className="inline-flex items-center gap-1 rounded-md border border-amber-glow/40 bg-amber-glow/10 px-2 py-0.5 text-[10px] uppercase tracking-wider text-amber-glow"
       >
-        Severity: {selectedSeverity} <X className="h-3 w-3" />
+        Severity: {s} <X className="h-3 w-3" />
       </button>,
     );
   }
-  if (highOnly) {
+  if (minRiskScore !== undefined) {
     chips.push(
-      <button
-        key="hi"
-        type="button"
-        onClick={onClearHighOnly}
-        className="inline-flex items-center gap-1 rounded-md border border-rose-glow/40 bg-rose-glow/10 px-2 py-0.5 text-[10px] uppercase tracking-wider text-rose-glow"
-      >
-        High severity only <X className="h-3 w-3" />
+      <button key="risk" type="button" onClick={onClearRisk} className="inline-flex items-center gap-1 rounded-md border border-rose-glow/40 bg-rose-glow/10 px-2 py-0.5 text-[10px] uppercase tracking-wider text-rose-glow">
+        Risk ≥ {minRiskScore} <X className="h-3 w-3" />
+      </button>,
+    );
+  }
+  if (minConfidence !== undefined) {
+    chips.push(
+      <button key="conf" type="button" onClick={onClearConfidence} className="inline-flex items-center gap-1 rounded-md border border-cyan-glow/40 bg-cyan-glow/10 px-2 py-0.5 text-[10px] uppercase tracking-wider text-cyan-glow">
+        Confidence ≥ {minConfidence} <X className="h-3 w-3" />
+      </button>,
+    );
+  }
+  if (verifiedOnly) {
+    chips.push(
+      <button key="verified" type="button" onClick={onClearVerified} className="inline-flex items-center gap-1 rounded-md border border-border/60 px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+        Verified only <X className="h-3 w-3" />
+      </button>,
+    );
+  }
+  if (liveOnly) {
+    chips.push(
+      <button key="live" type="button" onClick={onClearLive} className="inline-flex items-center gap-1 rounded-md border border-border/60 px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+        Live only <X className="h-3 w-3" />
       </button>,
     );
   }
@@ -89,16 +109,16 @@ export function ActiveFilterSummary({
       </button>,
     );
   }
-  for (const L of ALL) {
-    if (!enabledLayers.includes(L)) {
+  for (const group of LAYER_GROUPS) {
+    if (!enabledLayerGroups.includes(group.id)) {
       chips.push(
         <button
-          key={`off-${L}`}
+          key={`off-${group.id}`}
           type="button"
-          onClick={() => onEnableLayer(L)}
+          onClick={() => onEnableLayerGroup(group.id)}
           className="inline-flex items-center gap-1 rounded-md border border-primary/30 bg-primary/5 px-2 py-0.5 text-[10px] uppercase tracking-wider text-primary"
         >
-          Layer off: {LAYER_LABELS[L]} <X className="h-3 w-3" />
+          Layer off: {group.label} <X className="h-3 w-3" />
         </button>,
       );
     }

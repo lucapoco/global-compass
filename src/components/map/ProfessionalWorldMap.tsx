@@ -1,14 +1,21 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import mapboxgl, { type Map as MbMap, Marker, Popup } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import type { EventLayer, EventSeverity, GlobalEvent } from "@/types";
+import type { GlobalEvent, GlobalEventSeverity } from "@/domain/models/GlobalEvent";
+import type { EventCluster, MapViewport, MapVisualizationMode } from "@/domain/services/map-engine";
+import type { HeatmapFeatureCollection } from "@/domain/services/map-engine/heatmap/heatmapData";
+import type { RelationLineFeatureCollection } from "@/domain/services/map-engine/relationships/relatedEventLines";
 
 interface Props {
-  events: GlobalEvent[];
-  height?: string;
-  heatmap?: boolean;
+  clusters: EventCluster[];
+  visualizationMode: MapVisualizationMode;
+  heatmapData: HeatmapFeatureCollection;
+  relationLines: RelationLineFeatureCollection;
   selectedEventId?: string | null;
-  onMarkerSelect?: (e: GlobalEvent) => void;
+  onSelectEvent?: (e: GlobalEvent) => void;
+  onExpandCluster?: (cluster: EventCluster) => void;
+  onViewportChange?: (viewport: MapViewport) => void;
+  height?: string;
 }
 
 export interface ProfessionalWorldMapHandle {
@@ -17,21 +24,12 @@ export interface ProfessionalWorldMapHandle {
 }
 
 const MAPBOX_TOKEN = (import.meta.env.VITE_MAPBOX_TOKEN as string | undefined)?.trim();
+const HEATMAP_SOURCE_ID = "gp-heatmap-source";
+const HEATMAP_LAYER_ID = "gp-heatmap-layer";
+const LINES_SOURCE_ID = "gp-relation-lines-source";
+const LINES_LAYER_ID = "gp-relation-lines-layer";
 
-const LAYER_COLOR: Record<EventLayer, string> = {
-  earthquakes: "#f59e0b",
-  intelligence: "#38bdf8",
-  saved_alerts: "#fb7185",
-  weather: "#22d3ee",
-  capitals: "#a78bfa",
-};
-
-function markerBaseColor(ev: GlobalEvent): string {
-  if (ev.layer === "earthquakes" || ev.layer === "saved_alerts") return severityColor(ev.severity);
-  return LAYER_COLOR[ev.layer];
-}
-
-function severityColor(sev: EventSeverity): string {
+function severityColor(sev: GlobalEventSeverity): string {
   switch (sev) {
     case "critical":
       return "#fb7185";
@@ -44,22 +42,24 @@ function severityColor(sev: EventSeverity): string {
   }
 }
 
-function heatmapGlowPx(sev: EventSeverity, heatmap: boolean): number {
-  if (!heatmap) return 12;
-  if (sev === "critical") return 42;
-  if (sev === "high") return 32;
-  if (sev === "medium") return 24;
-  return 14;
+function markerColor(cluster: EventCluster): string {
+  if (cluster.dominantCategory === "country") return "#a78bfa";
+  return severityColor(cluster.averageSeverity);
+}
+
+function categoryAbbrev(category: string): string {
+  return category.slice(0, 3).toUpperCase();
 }
 
 export const ProfessionalWorldMap = forwardRef<ProfessionalWorldMapHandle, Props>(
   function ProfessionalWorldMap(
-    { events, height = "70vh", heatmap = false, selectedEventId, onMarkerSelect },
+    { clusters, visualizationMode, heatmapData, relationLines, selectedEventId, onSelectEvent, onExpandCluster, onViewportChange, height = "70vh" },
     ref,
   ) {
     const containerRef = useRef<HTMLDivElement | null>(null);
     const mapRef = useRef<MbMap | null>(null);
     const markersRef = useRef<Marker[]>([]);
+    const styleLoadedRef = useRef(false);
 
     useImperativeHandle(ref, () => ({
       flyTo: (lng: number, lat: number, zoom = 4) => {
@@ -84,6 +84,7 @@ export const ProfessionalWorldMap = forwardRef<ProfessionalWorldMapHandle, Props
         });
         mapRef.current.addControl(new mapboxgl.NavigationControl({ showCompass: false }), "top-right");
         mapRef.current.on("style.load", () => {
+          styleLoadedRef.current = true;
           mapRef.current?.setFog({
             color: "rgb(15, 23, 42)",
             "high-color": "rgb(36, 92, 223)",
@@ -91,7 +92,18 @@ export const ProfessionalWorldMap = forwardRef<ProfessionalWorldMapHandle, Props
             "space-color": "rgb(8, 12, 24)",
             "star-intensity": 0.6,
           } as any);
+          addHeatmapLayer(mapRef.current!);
+          addRelationLinesLayer(mapRef.current!);
         });
+
+        const emitViewport = () => {
+          const map = mapRef.current;
+          if (!map || !onViewportChange) return;
+          const center = map.getCenter();
+          onViewportChange({ center: [center.lng, center.lat], zoom: map.getZoom() });
+        };
+        mapRef.current.on("zoomend", emitViewport);
+        mapRef.current.on("moveend", emitViewport);
       } catch (e) {
         console.error("Map init failed", e);
       }
@@ -101,54 +113,97 @@ export const ProfessionalWorldMap = forwardRef<ProfessionalWorldMapHandle, Props
         markersRef.current = [];
         mapRef.current?.remove();
         mapRef.current = null;
+        styleLoadedRef.current = false;
       };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    // Markers / clusters
     useEffect(() => {
       const map = mapRef.current;
       if (!MAPBOX_TOKEN || !map) return;
       markersRef.current.forEach((m) => m.remove());
       markersRef.current = [];
 
-      const plotted = events.filter((e) => e.latitude != null && e.longitude != null);
-      for (const ev of plotted) {
-        const lat = ev.latitude!;
-        const lng = ev.longitude!;
+      if (visualizationMode === "heatmap") return;
+
+      for (const cluster of clusters) {
         const el = document.createElement("div");
-        const color = markerBaseColor(ev);
-        const size = heatmap ? 26 : 12;
-        const glow = heatmapGlowPx(ev.severity, heatmap);
-        const selected = selectedEventId === ev.id;
-        el.style.cssText = `
-          width:${size}px;height:${size}px;border-radius:9999px;background:${color};
-          opacity:${heatmap ? 0.65 : 1};
-          box-shadow:0 0 0 ${selected ? 3 : 2}px ${selected ? "rgba(255,255,255,0.95)" : "rgba(0,0,0,0.6)"}, 0 0 ${glow}px ${color};
-          cursor:pointer; border:1px solid rgba(255,255,255,${heatmap ? 0.35 : 0.65});
-          mix-blend-mode:${heatmap ? "screen" : "normal"};
-        `;
-        el.addEventListener("click", (evt) => {
-          evt.stopPropagation();
-          onMarkerSelect?.(ev);
-        });
+        const color = markerColor(cluster);
+        const isCluster = cluster.count > 1;
+        const size = isCluster ? Math.min(56, 22 + Math.log2(cluster.count) * 8) : 12;
+        const selected = !isCluster && selectedEventId === cluster.soleEvent?.id;
 
-        const popupRoot = document.createElement("div");
-        popupRoot.style.minWidth = "200px";
-        popupRoot.style.color = "#e6f1ff";
-        popupRoot.innerHTML = `
-          <div style="font-weight:600;font-size:13px;margin-bottom:4px">${escapeHtml(ev.title)}</div>
-          ${ev.description ? `<div style="font-size:11px;color:#9fb3c8;margin-bottom:6px">${escapeHtml(ev.description)}</div>` : ""}
-          <div style="font-size:10px;color:#7e93a8;text-transform:uppercase;letter-spacing:0.08em">
-            ${escapeHtml(ev.layer)} · ${escapeHtml(ev.severity)} · ${escapeHtml(ev.category)}
-          </div>
-          <div style="font-size:10px;color:#7e93a8;margin-top:4px">${escapeHtml(ev.source)} · ${escapeHtml(new Date(ev.publishedAt).toLocaleString())}</div>
-          ${ev.url ? `<div style="margin-top:8px"><a href="${escapeAttr(ev.url)}" target="_blank" rel="noreferrer" style="color:#38bdf8;font-size:11px">Open source</a></div>` : ""}
-        `;
+        if (isCluster) {
+          el.style.cssText = `
+            width:${size}px;height:${size}px;border-radius:9999px;background:${color};
+            opacity:0.85;display:flex;align-items:center;justify-content:center;
+            box-shadow:0 0 0 2px rgba(0,0,0,0.55), 0 0 16px ${color};
+            cursor:pointer;border:1.5px solid rgba(255,255,255,0.75);
+            color:#0b1220;font-weight:700;font-size:${size > 40 ? 13 : 11}px;font-family:inherit;
+          `;
+          el.title = `${cluster.count} events · ${cluster.dominantCategory} · avg ${cluster.averageSeverity}`;
+          el.textContent = String(cluster.count);
+          el.addEventListener("click", (evt) => {
+            evt.stopPropagation();
+            onExpandCluster?.(cluster);
+          });
+        } else {
+          el.style.cssText = `
+            width:${size}px;height:${size}px;border-radius:9999px;background:${color};
+            box-shadow:0 0 0 ${selected ? 3 : 2}px ${selected ? "rgba(255,255,255,0.95)" : "rgba(0,0,0,0.6)"}, 0 0 10px ${color};
+            cursor:pointer;border:1px solid rgba(255,255,255,0.65);
+          `;
+          if (cluster.soleEvent) {
+            const ev = cluster.soleEvent;
+            el.addEventListener("click", (evt) => {
+              evt.stopPropagation();
+              onSelectEvent?.(ev);
+            });
 
-        const popup = new Popup({ offset: 14, closeButton: true, maxWidth: "300px" }).setDOMContent(popupRoot);
-        const marker = new Marker({ element: el }).setLngLat([lng, lat]).setPopup(popup).addTo(map);
+            const popupRoot = document.createElement("div");
+            popupRoot.style.minWidth = "200px";
+            popupRoot.style.color = "#e6f1ff";
+            popupRoot.innerHTML = `
+              <div style="font-weight:600;font-size:13px;margin-bottom:4px">${escapeHtml(ev.title)}</div>
+              ${ev.description ? `<div style="font-size:11px;color:#9fb3c8;margin-bottom:6px">${escapeHtml(ev.description.slice(0, 160))}</div>` : ""}
+              <div style="font-size:10px;color:#7e93a8;text-transform:uppercase;letter-spacing:0.08em">
+                ${escapeHtml(cluster.dominantCategory)} · ${escapeHtml(ev.severity)} · risk ${ev.riskScore}
+              </div>
+              <div style="font-size:10px;color:#7e93a8;margin-top:4px">${escapeHtml(ev.source)} · ${escapeHtml(new Date(ev.timestamp).toLocaleString())}</div>
+              ${ev.sourceUrl ? `<div style="margin-top:8px"><a href="${escapeAttr(ev.sourceUrl)}" target="_blank" rel="noreferrer" style="color:#38bdf8;font-size:11px">Open source</a></div>` : ""}
+            `;
+            const popup = new Popup({ offset: 14, closeButton: true, maxWidth: "300px" }).setDOMContent(popupRoot);
+            const marker = new Marker({ element: el }).setLngLat([cluster.lng, cluster.lat]).setPopup(popup).addTo(map);
+            markersRef.current.push(marker);
+            continue;
+          }
+        }
+
+        const marker = new Marker({ element: el }).setLngLat([cluster.lng, cluster.lat]).addTo(map);
         markersRef.current.push(marker);
       }
-    }, [events, heatmap, selectedEventId, onMarkerSelect]);
+    }, [clusters, visualizationMode, selectedEventId, onSelectEvent, onExpandCluster]);
+
+    // Heatmap layer data + visibility
+    useEffect(() => {
+      const map = mapRef.current;
+      if (!map || !styleLoadedRef.current) return;
+      const src = map.getSource(HEATMAP_SOURCE_ID) as mapboxgl.GeoJSONSource | undefined;
+      src?.setData(heatmapData as any);
+      const visible = visualizationMode === "heatmap" || visualizationMode === "both";
+      if (map.getLayer(HEATMAP_LAYER_ID)) {
+        map.setLayoutProperty(HEATMAP_LAYER_ID, "visibility", visible ? "visible" : "none");
+      }
+    }, [heatmapData, visualizationMode]);
+
+    // Relation lines data
+    useEffect(() => {
+      const map = mapRef.current;
+      if (!map || !styleLoadedRef.current) return;
+      const src = map.getSource(LINES_SOURCE_ID) as mapboxgl.GeoJSONSource | undefined;
+      src?.setData(relationLines as any);
+    }, [relationLines]);
 
     if (!MAPBOX_TOKEN) {
       return (
@@ -174,6 +229,50 @@ export const ProfessionalWorldMap = forwardRef<ProfessionalWorldMapHandle, Props
     );
   },
 );
+
+function addHeatmapLayer(map: MbMap) {
+  if (map.getSource(HEATMAP_SOURCE_ID)) return;
+  map.addSource(HEATMAP_SOURCE_ID, { type: "geojson", data: { type: "FeatureCollection", features: [] } as any });
+  map.addLayer({
+    id: HEATMAP_LAYER_ID,
+    type: "heatmap",
+    source: HEATMAP_SOURCE_ID,
+    layout: { visibility: "none" },
+    paint: {
+      "heatmap-weight": ["get", "weight"],
+      "heatmap-intensity": 1.1,
+      "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 0, 6, 6, 30, 12, 60],
+      "heatmap-opacity": 0.75,
+      "heatmap-color": [
+        "interpolate",
+        ["linear"],
+        ["heatmap-density"],
+        0, "rgba(0,0,0,0)",
+        0.2, "#22d3ee",
+        0.4, "#34d399",
+        0.6, "#f59e0b",
+        0.8, "#fb7185",
+        1, "#ef4444",
+      ],
+    },
+  });
+}
+
+function addRelationLinesLayer(map: MbMap) {
+  if (map.getSource(LINES_SOURCE_ID)) return;
+  map.addSource(LINES_SOURCE_ID, { type: "geojson", data: { type: "FeatureCollection", features: [] } as any });
+  map.addLayer({
+    id: LINES_LAYER_ID,
+    type: "line",
+    source: LINES_SOURCE_ID,
+    paint: {
+      "line-color": "#38bdf8",
+      "line-width": 1.6,
+      "line-opacity": 0.7,
+      "line-dasharray": [2, 1.5],
+    },
+  });
+}
 
 function escapeHtml(s: string): string {
   return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));

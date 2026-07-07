@@ -1,5 +1,5 @@
 import { Bookmark, Crosshair, ExternalLink, Eye } from "lucide-react";
-import type { GlobalEvent } from "@/types";
+import type { GlobalEvent } from "@/domain/models/GlobalEvent";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface Props {
@@ -15,7 +15,7 @@ function sevLabel(s: GlobalEvent["severity"]): string {
 }
 
 export function MapSidePanel({ events, selectedId, onLocate, onSave, onDetails }: Props) {
-  const hasCoords = (e: GlobalEvent) => e.latitude != null && e.longitude != null;
+  const hasCoords = (e: GlobalEvent) => !!e.coordinates;
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -33,7 +33,6 @@ export function MapSidePanel({ events, selectedId, onLocate, onSave, onDetails }
             </div>
           ) : (
             events.map((e) => {
-              const url = e.url;
               const selected = e.id === selectedId;
               return (
                 <div
@@ -62,11 +61,12 @@ export function MapSidePanel({ events, selectedId, onLocate, onSave, onDetails }
                       <div className="mt-0.5 flex flex-wrap gap-1 text-[10px] uppercase tracking-wider text-muted-foreground">
                         <span className="rounded border border-border/50 px-1 py-0">{e.category}</span>
                         <span>{sevLabel(e.severity)}</span>
-                        <span>· {e.layer}</span>
+                        <span>· risk {e.riskScore}</span>
+                        <span>· {e.provider}</span>
                         {e.country && <span>· {e.country}</span>}
                       </div>
                       <div className="mt-0.5 text-[10px] text-muted-foreground">
-                        {e.source} · {new Date(e.publishedAt).toLocaleString()}
+                        {e.source} · {new Date(e.timestamp).toLocaleString()}
                         {!hasCoords(e) ? <span className="ml-1 text-amber-600">· no coords</span> : null}
                       </div>
                     </div>
@@ -99,9 +99,9 @@ export function MapSidePanel({ events, selectedId, onLocate, onSave, onDetails }
                         <TooltipContent>Details</TooltipContent>
                       </Tooltip>
                     )}
-                    {url ? (
+                    {e.sourceUrl ? (
                       <a
-                        href={url}
+                        href={e.sourceUrl}
                         target="_blank"
                         rel="noreferrer"
                         title="Open source"

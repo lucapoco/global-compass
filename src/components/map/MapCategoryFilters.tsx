@@ -1,24 +1,10 @@
-import type { EventCategory } from "@/types";
-
-const CATS: { k: EventCategory; label: string }[] = [
-  { k: "geopolitics", label: "Geopolitics" },
-  { k: "military", label: "Military" },
-  { k: "economy", label: "Economy" },
-  { k: "technology", label: "Tech" },
-  { k: "energy", label: "Energy" },
-  { k: "climate", label: "Climate" },
-  { k: "disaster", label: "Disaster" },
-  { k: "cyber", label: "Cyber" },
-  { k: "health", label: "Health" },
-  { k: "earthquake", label: "Earthquake" },
-  { k: "weather", label: "Weather" },
-  { k: "general", label: "General" },
-];
+import type { GlobalEventCategory } from "@/domain/models/GlobalEvent";
+import { MAP_CATEGORIES } from "@/utils/filterEvents";
 
 interface Props {
-  selected: Set<EventCategory>;
-  counts: Partial<Record<EventCategory, number>>;
-  onToggle: (c: EventCategory) => void;
+  selected: Set<GlobalEventCategory>;
+  counts: Map<GlobalEventCategory, number>;
+  onToggle: (c: GlobalEventCategory) => void;
   onClear: () => void;
 }
 
@@ -32,6 +18,7 @@ function chip(active: boolean, muted: boolean) {
   }`;
 }
 
+/** Every category button here is wired to a real EventEngine filter — no decorative-only chips. */
 export function MapCategoryFilters({ selected, counts, onToggle, onClear }: Props) {
   const allActive = selected.size === 0;
   return (
@@ -40,10 +27,10 @@ export function MapCategoryFilters({ selected, counts, onToggle, onClear }: Prop
       <button type="button" onClick={onClear} className={chip(allActive, false)}>
         All
       </button>
-      {CATS.map((c) => {
-        const n = counts[c.k] ?? 0;
+      {MAP_CATEGORIES.map((c) => {
+        const n = counts.get(c.id) ?? 0;
         return (
-          <button key={c.k} type="button" onClick={() => onToggle(c.k)} className={chip(selected.has(c.k), n === 0)}>
+          <button key={c.id} type="button" onClick={() => onToggle(c.id)} className={chip(selected.has(c.id), n === 0)}>
             {c.label}
             {n > 0 ? ` (${n})` : ""}
           </button>

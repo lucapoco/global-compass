@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Activity, Heart, RefreshCw } from "lucide-react";
 import { DataBadge } from "@/components/ui/DataBadge";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { getAllCountries } from "@/services/countriesApi";
+import { getAllCountries, getCountriesStatus, type CountriesStatus } from "@/services/countriesApi";
 import { getEarthquakes } from "@/services/earthquakesApi";
 import { fetchIntelligence, type NewsStatus } from "@/services/newsApi";
 import { hasWeatherKey } from "@/services/weatherApi";
@@ -62,7 +62,16 @@ export function ApiHealthPanel() {
 
     try {
       const c = await getAllCountries();
-      next.push({ name: "REST Countries", status: c.length > 0 ? "online" : "error", lastOk: Date.now(), detail: `${c.length} countries` });
+      const cs: CountriesStatus = getCountriesStatus();
+      const statusMap: Record<CountriesStatus, Health> = {
+        live: "online", cached: "cached", local: "fallback", error: "error", idle: "checking",
+      };
+      const detail =
+        cs === "live" ? `${c.length} countries via /api/public/restcountries-proxy (live)` :
+        cs === "cached" ? `${c.length} countries (server cache)` :
+        cs === "local" ? `${c.length} bundled countries — proxy unreachable` :
+        "All fallbacks failed";
+      next.push({ name: "REST Countries", status: statusMap[cs] ?? "error", lastOk: cs !== "error" ? Date.now() : undefined, detail });
     } catch (e: any) {
       next.push({ name: "REST Countries", status: "error", detail: e?.message });
     }

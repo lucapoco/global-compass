@@ -1,12 +1,12 @@
-import { RefreshCw, Maximize2, Minimize2, PanelRightOpen, PanelRightClose, Flame, Layers, AlertTriangle, X, Crosshair } from "lucide-react";
+import { RefreshCw, Maximize2, Minimize2, PanelRightOpen, PanelRightClose, Flame, MapPin, Layers3, X, Crosshair, History } from "lucide-react";
+import type { MapVisualizationMode } from "@/domain/services/map-engine";
 
 export interface MapToolbarState {
   loading: boolean;
   fullscreen: boolean;
   sidePanel: boolean;
-  heatmap: boolean;
-  clusters: boolean;
-  highOnly: boolean;
+  visualizationMode: MapVisualizationMode;
+  replayActive: boolean;
 }
 
 interface Props {
@@ -15,11 +15,9 @@ interface Props {
   onResetView: () => void;
   onToggleFullscreen: () => void;
   onToggleSidePanel: () => void;
-  onToggleHeatmap: () => void;
-  onToggleClusters: () => void;
-  onToggleHighOnly: () => void;
+  onSetVisualizationMode: (mode: MapVisualizationMode) => void;
+  onToggleReplay: () => void;
   onClearFilters: () => void;
-  clustersSupported?: boolean;
 }
 
 function btn(active: boolean) {
@@ -28,9 +26,15 @@ function btn(active: boolean) {
   }`;
 }
 
+const VIS_MODES: { id: MapVisualizationMode; label: string; icon: typeof MapPin }[] = [
+  { id: "markers", label: "Markers", icon: MapPin },
+  { id: "heatmap", label: "Heatmap", icon: Flame },
+  { id: "both", label: "Both", icon: Layers3 },
+];
+
 export function MapToolbar({
   state, onRefresh, onResetView, onToggleFullscreen, onToggleSidePanel,
-  onToggleHeatmap, onToggleClusters, onToggleHighOnly, onClearFilters, clustersSupported = false,
+  onSetVisualizationMode, onToggleReplay, onClearFilters,
 }: Props) {
   return (
     <div className="glass-card flex flex-wrap items-center gap-1.5 p-2">
@@ -49,19 +53,17 @@ export function MapToolbar({
         Side panel
       </button>
       <span className="mx-1 hidden h-5 w-px bg-border/60 sm:inline" />
-      <button onClick={onToggleHeatmap} className={btn(state.heatmap)} title="Toggle density / heatmap markers">
-        <Flame className="h-3.5 w-3.5" /> Heatmap
-      </button>
-      <button
-        onClick={onToggleClusters}
-        disabled={!clustersSupported}
-        className={btn(state.clusters) + (clustersSupported ? "" : " cursor-not-allowed opacity-50")}
-        title={clustersSupported ? "Toggle marker clusters" : "Clustering requires Mapbox layer mode (not enabled in this build)"}
-      >
-        <Layers className="h-3.5 w-3.5" /> Clusters
-      </button>
-      <button onClick={onToggleHighOnly} className={btn(state.highOnly)} title="Show only high & critical events">
-        <AlertTriangle className="h-3.5 w-3.5" /> High severity only
+      {VIS_MODES.map((m) => {
+        const Icon = m.icon;
+        return (
+          <button key={m.id} onClick={() => onSetVisualizationMode(m.id)} className={btn(state.visualizationMode === m.id)} title={`Show ${m.label.toLowerCase()}`}>
+            <Icon className="h-3.5 w-3.5" /> {m.label}
+          </button>
+        );
+      })}
+      <span className="mx-1 hidden h-5 w-px bg-border/60 sm:inline" />
+      <button onClick={onToggleReplay} className={btn(state.replayActive)} title="Chronological replay mode">
+        <History className="h-3.5 w-3.5" /> Replay
       </button>
       <button onClick={onClearFilters} className={btn(false)} title="Clear all filters">
         <X className="h-3.5 w-3.5" /> Clear filters

@@ -25,6 +25,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiGenerateReportRouteImport } from './routes/api/generate-report'
 import { Route as ApiDebugGeminiEnvRouteImport } from './routes/api/debug-gemini-env'
 import { Route as ApiAiNewsChatRouteImport } from './routes/api/ai-news-chat'
+import { Route as ApiPublicRestcountriesProxyRouteImport } from './routes/api/public/restcountries-proxy'
 import { Route as ApiPublicGnewsProxyRouteImport } from './routes/api/public/gnews-proxy'
 
 const WeatherRoute = WeatherRouteImport.update({
@@ -107,6 +108,12 @@ const ApiAiNewsChatRoute = ApiAiNewsChatRouteImport.update({
   path: '/api/ai-news-chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicRestcountriesProxyRoute =
+  ApiPublicRestcountriesProxyRouteImport.update({
+    id: '/api/public/restcountries-proxy',
+    path: '/api/public/restcountries-proxy',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicGnewsProxyRoute = ApiPublicGnewsProxyRouteImport.update({
   id: '/api/public/gnews-proxy',
   path: '/api/public/gnews-proxy',
@@ -131,6 +138,7 @@ export interface FileRoutesByFullPath {
   '/api/debug-gemini-env': typeof ApiDebugGeminiEnvRoute
   '/api/generate-report': typeof ApiGenerateReportRoute
   '/api/public/gnews-proxy': typeof ApiPublicGnewsProxyRoute
+  '/api/public/restcountries-proxy': typeof ApiPublicRestcountriesProxyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -150,6 +158,7 @@ export interface FileRoutesByTo {
   '/api/debug-gemini-env': typeof ApiDebugGeminiEnvRoute
   '/api/generate-report': typeof ApiGenerateReportRoute
   '/api/public/gnews-proxy': typeof ApiPublicGnewsProxyRoute
+  '/api/public/restcountries-proxy': typeof ApiPublicRestcountriesProxyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -170,6 +179,7 @@ export interface FileRoutesById {
   '/api/debug-gemini-env': typeof ApiDebugGeminiEnvRoute
   '/api/generate-report': typeof ApiGenerateReportRoute
   '/api/public/gnews-proxy': typeof ApiPublicGnewsProxyRoute
+  '/api/public/restcountries-proxy': typeof ApiPublicRestcountriesProxyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -191,6 +201,7 @@ export interface FileRouteTypes {
     | '/api/debug-gemini-env'
     | '/api/generate-report'
     | '/api/public/gnews-proxy'
+    | '/api/public/restcountries-proxy'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -210,6 +221,7 @@ export interface FileRouteTypes {
     | '/api/debug-gemini-env'
     | '/api/generate-report'
     | '/api/public/gnews-proxy'
+    | '/api/public/restcountries-proxy'
   id:
     | '__root__'
     | '/'
@@ -229,6 +241,7 @@ export interface FileRouteTypes {
     | '/api/debug-gemini-env'
     | '/api/generate-report'
     | '/api/public/gnews-proxy'
+    | '/api/public/restcountries-proxy'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -249,6 +262,7 @@ export interface RootRouteChildren {
   ApiDebugGeminiEnvRoute: typeof ApiDebugGeminiEnvRoute
   ApiGenerateReportRoute: typeof ApiGenerateReportRoute
   ApiPublicGnewsProxyRoute: typeof ApiPublicGnewsProxyRoute
+  ApiPublicRestcountriesProxyRoute: typeof ApiPublicRestcountriesProxyRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -365,6 +379,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAiNewsChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/restcountries-proxy': {
+      id: '/api/public/restcountries-proxy'
+      path: '/api/public/restcountries-proxy'
+      fullPath: '/api/public/restcountries-proxy'
+      preLoaderRoute: typeof ApiPublicRestcountriesProxyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/gnews-proxy': {
       id: '/api/public/gnews-proxy'
       path: '/api/public/gnews-proxy'
@@ -393,6 +414,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiDebugGeminiEnvRoute: ApiDebugGeminiEnvRoute,
   ApiGenerateReportRoute: ApiGenerateReportRoute,
   ApiPublicGnewsProxyRoute: ApiPublicGnewsProxyRoute,
+  ApiPublicRestcountriesProxyRoute: ApiPublicRestcountriesProxyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
