@@ -79,7 +79,7 @@ export function generateCountryReportLocal(
     ctx.savedIntelligence?.filter((s) => matchCountry(country, s.country ?? "") || matchCountry(country, s.title)) ??
     [];
   const countrySavedAlerts = savedAlerts.filter(
-    (a) => matchCountry(country, a.country ?? "") || matchCountry(country, a.title),
+    (a) => matchCountry(country, a.location ?? "") || matchCountry(country, a.title),
   );
 
   const pop = meta?.population ? `Population ~${meta.population.toLocaleString()}` : "";

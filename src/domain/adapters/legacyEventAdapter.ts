@@ -17,6 +17,14 @@ const PROVIDER_TO_LAYER: Record<GlobalEventProvider, EventLayer> = {
   supabase_alerts: "saved_alerts",
   supabase_intelligence: "intelligence",
   openweather: "weather",
+  nasa_eonet: "disasters",
+  acled: "intelligence",
+  world_bank: "intelligence",
+  gdacs: "disasters",
+  nasa_firms: "disasters",
+  reliefweb: "humanitarian",
+  gdelt: "intelligence",
+  rss: "intelligence",
   internal: "intelligence",
 };
 

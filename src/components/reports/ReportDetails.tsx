@@ -4,6 +4,7 @@ import type { AIChatStatus } from "@/lib/aiChatTypes";
 import { DataBadge } from "@/components/ui/DataBadge";
 import { ReportExportButton } from "./ReportExportButton";
 import { reportTypeLabel } from "@/services/reportService";
+import { useT } from "@/i18n";
 
 function statusBadge(status?: AIChatStatus | string) {
   if (!status) return null;
@@ -58,6 +59,7 @@ type Props = {
 };
 
 export function ReportDetails({ report, aiStatus, onSave, saving, showSave }: Props) {
+  const t = useT();
   const content = "content" in report ? report.content : "";
   const title = report.title;
   const dataStatus = "data_status" in report ? report.data_status : (report as ReportGenerationResult).dataStatus;
@@ -88,7 +90,7 @@ export function ReportDetails({ report, aiStatus, onSave, saving, showSave }: Pr
               onClick={onSave}
               disabled={saving}
             >
-              {saving ? "Saving…" : "Save to Supabase"}
+              {saving ? t("app.pages.reports.saving") : t("app.pages.reports.saveToSupabase")}
             </button>
           ) : null}
         </div>

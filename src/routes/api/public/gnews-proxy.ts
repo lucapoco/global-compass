@@ -1,35 +1,23 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { publicApiJson, publicRateLimitResponse, PUBLIC_CORS_HEADERS } from "@/server/publicApiGuard";
 
 /**
  * Server-side GNews proxy.
  *
  * The browser cannot reliably reach gnews.io directly from the Lovable
  * preview (ad-blockers, network policies, CORS quirks). This proxy:
- *   - reads the API key from server-side env (`VITE_GNEWS_API_KEY` or `GNEWS_API_KEY`; never sent to the browser bundle for this route)
+ *   - reads the API key from server-only env (`GNEWS_API_KEY` — never use VITE_ prefix)
  *   - forwards a sanitized set of query params to GNews (`max` clamped 1–50, default 25)
  *   - returns normalized JSON with proper CORS headers
  *   - maps upstream 401/403/429/network errors to readable JSON responses
  */
 
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
-  "Access-Control-Max-Age": "86400",
-} as const;
-
 function json(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { "Content-Type": "application/json", ...CORS_HEADERS },
-  });
+  return publicApiJson(body, status);
 }
 
 function readKey(): string | undefined {
-  const key =
-    process.env.VITE_GNEWS_API_KEY ??
-    process.env.GNEWS_API_KEY ??
-    (globalThis as any)?.GNEWS_API_KEY;
+  const key = process.env.GNEWS_API_KEY ?? (globalThis as { GNEWS_API_KEY?: string }).GNEWS_API_KEY;
   return typeof key === "string" ? key.trim() : undefined;
 }
 
@@ -40,8 +28,11 @@ function safeMessage(raw: string, key: string | undefined): string {
 export const Route = createFileRoute("/api/public/gnews-proxy")({
   server: {
     handlers: {
-      OPTIONS: async () => new Response(null, { status: 204, headers: CORS_HEADERS }),
+      OPTIONS: async () => new Response(null, { status: 204, headers: PUBLIC_CORS_HEADERS }),
       GET: async ({ request }) => {
+        const limited = publicRateLimitResponse(request, "gnews-proxy");
+        if (limited) return limited;
+
         const key = readKey();
         if (!key) {
           return json({ error: "not_configured", message: "GNews API key is not set on the server." }, 500);
@@ -68,7 +59,10 @@ export const Route = createFileRoute("/api/public/gnews-proxy")({
         const upstream = `https://gnews.io/api/v4/top-headlines?${params.toString()}`;
 
         try {
-          const res = await fetch(upstream);
+          const controller = new AbortController();
+          const timer = setTimeout(() => controller.abort(), 10_000);
+          const res = await fetch(upstream, { signal: controller.signal });
+          clearTimeout(timer);
 
           if (res.status === 401) return json({ error: "invalid_key", message: "GNews API key is invalid." }, 401);
           if (res.status === 403) return json({ error: "quota_reached", message: "GNews daily quota reached." }, 403);
@@ -76,7 +70,12 @@ export const Route = createFileRoute("/api/public/gnews-proxy")({
 
           if (!res.ok) {
             let detail = "";
-            try { const j = await res.json(); detail = j?.errors?.[0] ?? j?.message ?? ""; } catch {}
+            try {
+              const j = await res.json();
+              detail = j?.errors?.[0] ?? j?.message ?? "";
+            } catch {
+              // upstream error body wasn't valid JSON — fall back to the plain status code
+            }
             return json({ error: "upstream_error", status: res.status, message: `GNews ${res.status}${detail ? ` — ${detail}` : ""}` }, 502);
           }
 
@@ -87,8 +86,8 @@ export const Route = createFileRoute("/api/public/gnews-proxy")({
             totalArticles: data.totalArticles ?? (data.articles?.length ?? 0),
             fetchedAt: new Date().toISOString(),
           });
-        } catch (e: any) {
-          const msg = safeMessage(e?.message ?? String(e), key);
+        } catch (e: unknown) {
+          const msg = safeMessage(e instanceof Error ? e.message : String(e), key);
           return json({ error: "network_error", message: `Could not reach GNews: ${msg}` }, 502);
         }
       },

@@ -41,19 +41,6 @@ export interface WeatherData {
 
 export type Severity = "Low" | "Medium" | "High" | "Critical";
 
-export interface AlertItem {
-  id: string;
-  title: string;
-  type: string;
-  severity: Severity;
-  location?: string;
-  description?: string;
-  source: string;
-  time?: number;
-  lat?: number;
-  lng?: number;
-}
-
 export interface SavedCountry {
   id: string;
   country_name: string;
@@ -85,26 +72,7 @@ export interface FeedbackMessage {
   created_at: string | null;
 }
 
-export interface ProjectLog {
-  id: string;
-  action: string;
-  details: string | null;
-  created_at: string | null;
-}
-
-export interface MapEvent {
-  id: string;
-  lat: number;
-  lng: number;
-  type: "earthquake" | "weather" | "country" | "alert" | "intelligence";
-  title: string;
-  description?: string;
-  severity?: Severity;
-  category?: IntelligenceCategory;
-  url?: string;
-}
-
-/** Normalized map event for Live World Map (filters + side panel + markers when coords exist). */
+/** Eveniment normalizat pentru harta live (filtre, panou lateral, markeri). */
 export type EventSeverity = "low" | "medium" | "high" | "critical";
 
 export type EventCategory =
@@ -121,7 +89,14 @@ export type EventCategory =
   | "weather"
   | "general";
 
-export type EventLayer = "earthquakes" | "intelligence" | "saved_alerts" | "weather" | "capitals";
+export type EventLayer =
+  | "earthquakes"
+  | "intelligence"
+  | "saved_alerts"
+  | "weather"
+  | "capitals"
+  | "disasters"
+  | "humanitarian";
 
 export interface GlobalEvent {
   id: string;

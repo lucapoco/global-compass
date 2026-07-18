@@ -4,7 +4,7 @@
  * Fallback: generateLocalFallbackResponse when Gemini is unavailable.
  */
 
-import type { CountryRisk, Earthquake, GlobalEvent, IntelligenceItem, SavedIntelligence } from "@/types";
+import type { CountryRisk, GlobalEvent, SavedIntelligence } from "@/types";
 import type {
   AIChatStatus,
   AIChatTurn,
@@ -13,10 +13,16 @@ import type {
   GeminiProviderStatus,
   LLMChatContextPayload,
 } from "@/lib/aiChatTypes";
-import { fetchIntelligence, detectCountry, type NewsStatus } from "@/services/newsApi";
-import { getEarthquakes } from "@/services/earthquakesApi";
-import { buildCountryRiskIndex } from "@/services/riskService";
+import { detectCountry, type NewsStatus } from "@/services/newsApi";
 import { isSupabaseConfigured, supabaseService } from "@/services/supabaseService";
+// Centralized Intelligence Store — every provider (GNews, USGS, GDACS,
+// ReliefWeb, GDELT, RSS, ACLED, NASA FIRMS, World Bank, ...), not just
+// GNews + USGS. The AI Assistant now reasons over the exact same data every
+// other page sees.
+import { getLatestEvents, getHighestRiskCountries } from "@/domain/store";
+import { toLegacyMapEvents } from "@/domain/adapters/legacyEventAdapter";
+import { toCountryRisks } from "@/domain/adapters/legacyIntelAdapter";
+import { filterIntelligenceSignals } from "@/domain/constants/metadataProviders";
 
 export type AINewsMessage = {
   id: string;
@@ -98,51 +104,6 @@ const EUROPE_COUNTRIES = new Set([
   "Czech",
   "Bulgaria",
 ]);
-
-function magToSeverity(m: number): GlobalEvent["severity"] {
-  if (m >= 6) return "critical";
-  if (m >= 5) return "high";
-  if (m >= 4) return "medium";
-  return "low";
-}
-
-function intelToGlobalEvent(item: IntelligenceItem, isDemo: boolean): GlobalEvent {
-  return {
-    id: `intel-${item.id}`,
-    title: item.title,
-    description: item.description,
-    category: item.category === "technology" ? "technology" : item.category,
-    severity: item.severity,
-    layer: "intelligence",
-    source: item.source,
-    url: item.url,
-    country: item.country,
-    location: item.country,
-    latitude: item.latitude,
-    longitude: item.longitude,
-    publishedAt: item.publishedAt,
-    isLive: item.isLive && !isDemo,
-    isDemo: isDemo || !item.isLive,
-  };
-}
-
-function quakeToGlobalEvent(q: Earthquake): GlobalEvent {
-  return {
-    id: `eq-${q.id}`,
-    title: `M${q.magnitude.toFixed(1)} — ${q.place}`,
-    description: `Depth ${q.depth.toFixed(1)} km`,
-    category: "earthquake",
-    severity: magToSeverity(q.magnitude),
-    layer: "earthquakes",
-    source: "USGS",
-    url: q.url,
-    location: q.place,
-    latitude: q.latitude,
-    longitude: q.longitude,
-    publishedAt: new Date(q.time).toISOString(),
-    isLive: true,
-  };
-}
 
 function newsStatusLabel(status: NewsStatus): string {
   switch (status) {
@@ -328,35 +289,40 @@ function respondDefault(ctx: AINewsContext): string {
 
 export async function buildNewsContext(opts?: { force?: boolean }): Promise<AINewsContext> {
   let newsStatus: NewsStatus = "demo";
-  let newsSource = "Demo";
-  let lastUpdated: string | null = null;
-  let isDemo = true;
   let intelligenceItems: GlobalEvent[] = [];
   let earthquakes: GlobalEvent[] = [];
+  let eqStatus = "UNAVAILABLE";
+  let countryRisks: CountryRisk[] = [];
+
+  try {
+    // Single shared load from the centralized Intelligence Store — spans
+    // every active provider (GNews, USGS, GDACS, ReliefWeb, GDELT, RSS,
+    // ACLED, NASA FIRMS, World Bank, ...), not just GNews + USGS.
+    const [events, topRiskCountries] = await Promise.all([
+      getLatestEvents({ force: opts?.force, limit: 150 }),
+      getHighestRiskCountries(10, { force: opts?.force }),
+    ]);
+
+    const legacy = toLegacyMapEvents(filterIntelligenceSignals(events));
+    earthquakes = legacy.filter((e) => e.layer === "earthquakes");
+    intelligenceItems = legacy.filter((e) => e.layer !== "earthquakes");
+    eqStatus = earthquakes.length > 0 ? "LIVE" : "NO EVENTS";
+    countryRisks = toCountryRisks(topRiskCountries);
+    newsStatus = events.some((e) => e.live) ? "live" : events.length > 0 ? "cached" : "demo";
+  } catch {
+    /* keep empty — degrade gracefully below */
+  }
+
+  const newsSource = "Global Pulse Intelligence Engine";
+  const isDemo = intelligenceItems.length === 0 && earthquakes.length === 0;
+  const lastUpdated = [...intelligenceItems, ...earthquakes]
+    .map((e) => e.publishedAt)
+    .sort()
+    .at(-1) ?? null;
+
   let savedIntelligence: SavedIntelligence[] | undefined;
   let savedAlerts: import("@/types").SavedAlert[] = [];
   let savedCountriesCount = 0;
-  let quakes: Earthquake[] = [];
-
-  try {
-    const news = await fetchIntelligence({ limit: 30, force: opts?.force });
-    newsStatus = news.status;
-    newsSource = news.source;
-    lastUpdated = news.lastUpdated ?? (news.cachedAt ? new Date(news.cachedAt).toISOString() : null);
-    isDemo = news.status === "demo" || news.source === "Demo";
-    intelligenceItems = news.items.map((i) => intelToGlobalEvent(i, isDemo));
-  } catch {
-    /* keep empty */
-  }
-
-  let eqStatus = "ERROR";
-  try {
-    quakes = await getEarthquakes("day");
-    earthquakes = quakes.map(quakeToGlobalEvent);
-    eqStatus = "LIVE";
-  } catch {
-    eqStatus = "UNAVAILABLE";
-  }
 
   let sbStatus = "NOT CONFIGURED";
   if (isSupabaseConfigured()) {
@@ -381,27 +347,6 @@ export async function buildNewsContext(opts?: { force?: boolean }): Promise<AINe
   const criticalAlerts = sortBySeverityThenDate(
     intelligenceItems.filter((e) => e.severity === "critical" || e.severity === "high"),
   );
-
-  let countryRisks: CountryRisk[] | undefined;
-  try {
-    const intelItems = intelligenceItems.map(
-      (e): IntelligenceItem => ({
-        id: e.id,
-        title: e.title,
-        description: e.description ?? "",
-        category: e.category === "earthquake" || e.category === "weather" ? "general" : e.category,
-        severity: e.severity,
-        country: e.country,
-        source: e.source,
-        url: e.url,
-        publishedAt: e.publishedAt,
-        isLive: e.isLive,
-      }),
-    );
-    countryRisks = buildCountryRiskIndex({ intel: intelItems, quakes, saved: savedAlerts });
-  } catch {
-    countryRisks = [];
-  }
 
   return {
     intelligenceItems,
@@ -485,7 +430,10 @@ export function buildLLMContextPayload(ctx: AINewsContext): LLMChatContextPayloa
       gnews: `${ctx.dataStatus.news} (${ctx.newsSource})`,
       usgs: ctx.dataStatus.earthquakes,
       supabase: ctx.dataStatus.supabase,
-      openWeather: import.meta.env.VITE_OPENWEATHER_API_KEY ? "key configured" : "not configured / demo fallback",
+      // Weather key now lives server-side only (/api/public/openweather-proxy) and
+      // isn't synchronously checkable from here; the platform degrades to demo
+      // weather automatically when it's absent, so this is informational only.
+      openWeather: "managed server-side (demo fallback if unconfigured)",
       map: import.meta.env.VITE_MAPBOX_TOKEN ? "Mapbox token present" : "not configured / map fallback",
     },
   };
@@ -583,6 +531,21 @@ export async function sendGlobalPulseAIChat(
         localFallback: false,
         geminiLive: true,
         retryCount: data.retryCount,
+      };
+    }
+
+    // Configuration or request errors should surface to the user — not silently fall back.
+    const noFallbackCodes = new Set(["BAD_REQUEST", "INVALID_API_KEY"]);
+    if (data.errorCode && noFallbackCodes.has(data.errorCode)) {
+      return {
+        answer: data.errorMessage ?? data.error ?? "Gemini rejected the request.",
+        provider: "Google Gemini",
+        model: data.model,
+        status: "GEMINI ERROR",
+        localFallback: false,
+        geminiLive: false,
+        retryCount: data.retryCount,
+        errorMessage: data.errorMessage ?? data.error,
       };
     }
 

@@ -15,7 +15,7 @@
  */
 import type { IntelligenceItem } from "@/types";
 import type { Earthquake, SavedAlert } from "@/types";
-import type { IntelligenceEvent, ProcessedIntelligence, IntelligenceFilter, TimeRange } from "../types";
+import type { IntelligenceEvent, ProcessedIntelligence, IntelligenceFilter, TimeRange, SortMode } from "../types";
 
 import { detectCategories }        from "../nlp/categoryEngine";
 import { extractEntities, extractKeywords, detectPrimaryCountry } from "../nlp/entityExtractor";
@@ -179,10 +179,11 @@ export function applyIntelligenceFilter(
 }
 
 // ─── Sort ─────────────────────────────────────────────────────────────────────
-export function sortEvents(events: IntelligenceEvent[], mode: "newest" | "importance" | "severity" | "country" | "source"): IntelligenceEvent[] {
+export function sortEvents(events: IntelligenceEvent[], mode: SortMode): IntelligenceEvent[] {
   const copy = [...events];
   switch (mode) {
     case "importance": return copy.sort(byImportanceDesc);
+    case "confidence": return copy.sort((a, b) => b.confidence - a.confidence || byImportanceDesc(a, b));
     case "severity": return copy.sort((a, b) => {
       const sd = (["critical","high","medium","low"].indexOf(a.severity)) - (["critical","high","medium","low"].indexOf(b.severity));
       return sd !== 0 ? sd : byImportanceDesc(a, b);

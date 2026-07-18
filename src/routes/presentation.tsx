@@ -1,14 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PresentationPage } from "@/pages/Presentation";
+import en from "@/locales/en.json";
 
 export const Route = createFileRoute("/presentation")({
   head: () => ({
     meta: [
-      { title: "Presentation Mode — Global Pulse" },
+      { title: en.app.pages.presentation.metaTitle },
       {
         name: "description",
-        content:
-          "Guided step-by-step demo for InfoEducație jury presentations — explore Global Pulse features in order.",
+        content: en.app.pages.presentation.metaDescription,
       },
     ],
   }),

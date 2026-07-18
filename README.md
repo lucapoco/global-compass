@@ -79,7 +79,7 @@ Nu o pune în bundle-ul de client.
 
 Supabase
 
-SQL-ul care corespunde tabelelor așteptate de aplicație și politicilor RLS pentru anon se află în fișierul supabase-schema.sql.
+SQL-ul care corespunde tabelelor așteptate de aplicație și politicilor RLS pentru anon se află în fișierul docs/legacy-supabase-schema.sql.
 
 În Supabase → SQL Editor, lipește întregul fișier și rulează-l o singură dată pentru fiecare proiect.
 
@@ -89,4 +89,4 @@ Dacă tabelele există, dar aplicația tot nu poate citi sau scrie date, probabi
 
 Stack — pe scurt
 
-React 19, TypeScript, Vite 7, TanStack Router / Start, Tailwind CSS 4, Radix UI, Mapbox GL, Supabase JS.
+React 19, TypeScript, Vite 7, TanStack Router / Start, Tailwind CSS 4, Radix UI, Mapbox GL, Supabase JS..

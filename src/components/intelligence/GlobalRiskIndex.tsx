@@ -104,7 +104,7 @@ export function GlobalRiskIndex({ data }: Props) {
       )}
 
       {/* Footer */}
-      <div className="mt-3 border-t border-border/30 pt-2 text-[10px] text-muted-foreground">
+      <div suppressHydrationWarning className="mt-3 border-t border-border/30 pt-2 text-[10px] text-muted-foreground">
         Computed {new Date(data.computedAt).toLocaleTimeString()} · 6 factor model
       </div>
     </div>

@@ -20,12 +20,18 @@ export function ViewModeProvider({ children }: { children: ReactNode }) {
     try {
       const v = localStorage.getItem(STORAGE_KEY);
       if (v === "simple" || v === "advanced") setViewModeState(v);
-    } catch {}
+    } catch {
+      // localStorage unavailable (private browsing, SSR) — keep the default view mode
+    }
   }, []);
 
   function setViewMode(m: ViewMode) {
     setViewModeState(m);
-    try { localStorage.setItem(STORAGE_KEY, m); } catch {}
+    try {
+      localStorage.setItem(STORAGE_KEY, m);
+    } catch {
+      // localStorage unavailable — preference just won't persist across reloads
+    }
   }
 
   return (

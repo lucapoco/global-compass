@@ -4,7 +4,6 @@ import type {
   SavedCountry,
   SavedAlert,
   FeedbackMessage,
-  ProjectLog,
   SavedIntelligence,
   IntelligenceItem,
   GeneratedReport,
@@ -65,6 +64,12 @@ export async function testSupabaseSavedDataConnection(): Promise<{
   };
 }
 
+async function requireUserId(): Promise<string> {
+  const { data, error } = await supabase.auth.getUser();
+  if (error || !data.user) throw new Error("Authentication required");
+  return data.user.id;
+}
+
 async function logAction(action: string, details?: string) {
   try {
     await supabase.from("project_logs").insert({ action, details: details ?? null });
@@ -74,42 +79,50 @@ async function logAction(action: string, details?: string) {
 }
 
 export const supabaseService = {
-  // ---- Saved countries
+  // ---- Saved countries (per-user)
   async listSavedCountries(): Promise<SavedCountry[]> {
+    const userId = await requireUserId();
     const { data, error } = await supabase
       .from("saved_countries")
       .select("*")
+      .eq("user_id", userId)
       .order("created_at", { ascending: false });
     if (error) throw error;
     return (data ?? []) as SavedCountry[];
   },
   async saveCountry(payload: Omit<SavedCountry, "id" | "created_at">) {
-    const { error } = await supabase.from("saved_countries").insert(payload);
+    const userId = await requireUserId();
+    const { error } = await supabase.from("saved_countries").insert({ ...payload, user_id: userId } as never);
     if (error) throw error;
     await logAction("save_country", payload.country_name);
   },
   async deleteSavedCountry(id: string, name?: string) {
-    const { error } = await supabase.from("saved_countries").delete().eq("id", id);
+    const userId = await requireUserId();
+    const { error } = await supabase.from("saved_countries").delete().eq("id", id).eq("user_id", userId);
     if (error) throw error;
     await logAction("delete_country", name ?? id);
   },
 
-  // ---- Saved alerts
+  // ---- Saved alerts (per-user)
   async listSavedAlerts(): Promise<SavedAlert[]> {
+    const userId = await requireUserId();
     const { data, error } = await supabase
       .from("saved_alerts")
       .select("*")
+      .eq("user_id", userId)
       .order("created_at", { ascending: false });
     if (error) throw error;
     return (data ?? []) as SavedAlert[];
   },
   async saveAlert(payload: Omit<SavedAlert, "id" | "created_at">) {
-    const { error } = await supabase.from("saved_alerts").insert(payload);
+    const userId = await requireUserId();
+    const { error } = await supabase.from("saved_alerts").insert({ ...payload, user_id: userId } as never);
     if (error) throw error;
     await logAction("save_alert", payload.title);
   },
   async deleteSavedAlert(id: string, title?: string) {
-    const { error } = await supabase.from("saved_alerts").delete().eq("id", id);
+    const userId = await requireUserId();
+    const { error } = await supabase.from("saved_alerts").delete().eq("id", id).eq("user_id", userId);
     if (error) throw error;
     await logAction("delete_alert", title ?? id);
   },
@@ -119,17 +132,6 @@ export const supabaseService = {
     const { error } = await supabase.from("user_feedback").insert(payload);
     if (error) throw error;
     await logAction("submit_feedback", payload.name ?? "anonymous");
-  },
-
-  // ---- Logs
-  async listLogs(): Promise<ProjectLog[]> {
-    const { data, error } = await supabase
-      .from("project_logs")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(50);
-    if (error) throw error;
-    return (data ?? []) as ProjectLog[];
   },
 
   // ---- Feedback list (for "About")
@@ -143,17 +145,21 @@ export const supabaseService = {
     return (data ?? []) as FeedbackMessage[];
   },
 
-  // ---- Saved intelligence
+  // ---- Saved intelligence (per-user)
   async listSavedIntelligence(): Promise<SavedIntelligence[]> {
+    const userId = await requireUserId();
     const { data, error } = await (supabase as any)
       .from("saved_intelligence")
       .select("*")
+      .eq("user_id", userId)
       .order("created_at", { ascending: false });
     if (error) throw error;
     return (data ?? []) as SavedIntelligence[];
   },
   async saveIntelligence(item: IntelligenceItem) {
+    const userId = await requireUserId();
     const payload = {
+      user_id: userId,
       title: item.title,
       description: item.description,
       category: item.category,
@@ -169,7 +175,12 @@ export const supabaseService = {
     await logAction("save_intelligence", item.title);
   },
   async deleteSavedIntelligence(id: string, title?: string) {
-    const { error } = await (supabase as any).from("saved_intelligence").delete().eq("id", id);
+    const userId = await requireUserId();
+    const { error } = await (supabase as any)
+      .from("saved_intelligence")
+      .delete()
+      .eq("id", id)
+      .eq("user_id", userId);
     if (error) throw error;
     await logAction("delete_intelligence", title ?? id);
   },

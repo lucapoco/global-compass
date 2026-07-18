@@ -27,7 +27,7 @@ export const PRESENTATION_STEPS: PresentationStep[] = [
     title: "Introduction to Global Pulse",
     explanation:
       "Global Pulse is an educational planetary monitoring dashboard for InfoEducație. It aggregates public intelligence, seismic, weather, and country data into one dark, analyst-style interface — with clear LIVE, CACHED, and DEMO labels so users always know what they are looking at.",
-    featureTo: "/",
+    featureTo: "/dashboard",
     featureLabel: "Open Dashboard",
     icon: Radio,
     previewTitle: "Mission control overview",

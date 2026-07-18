@@ -13,15 +13,15 @@ function barColor(label: string) {
 
 export function RiskScoreCard({ rank, risk }: { rank: number; risk: CountryRisk }) {
   return (
-    <div className="glass-card p-3">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <span className="text-[11px] tabular-nums text-muted-foreground">#{rank}</span>
+    <div className="glass-card min-w-0 p-3">
+      <div className="flex min-w-0 items-center justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-2">
+          <span className="shrink-0 text-[11px] tabular-nums text-muted-foreground">#{rank}</span>
           <Link
-            to="/countries"
-            search={{ q: risk.country } as any}
-            className="text-sm font-semibold hover:text-primary hover:underline"
-            title={`Open ${risk.country}`}
+            to="/country/$name"
+            params={{ name: encodeURIComponent(risk.country) }}
+            className="min-w-0 truncate text-sm font-semibold hover:text-primary hover:underline"
+            title={`Intelligence profile: ${risk.country}`}
           >
             {risk.country}
           </Link>

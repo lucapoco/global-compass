@@ -1,6 +1,7 @@
 import { Bookmark, Crosshair, ExternalLink, Eye } from "lucide-react";
 import type { GlobalEvent } from "@/domain/models/GlobalEvent";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useT } from "@/i18n";
 
 interface Props {
   events: GlobalEvent[];
@@ -10,30 +11,28 @@ interface Props {
   onDetails?: (e: GlobalEvent) => void;
 }
 
-function sevLabel(s: GlobalEvent["severity"]): string {
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}
-
 export function MapSidePanel({ events, selectedId, onLocate, onSave, onDetails }: Props) {
+  const t = useT();
   const hasCoords = (e: GlobalEvent) => !!e.coordinates;
 
   return (
     <TooltipProvider delayDuration={200}>
       <aside className="glass-card flex max-h-[70vh] flex-col overflow-hidden p-3 lg:max-h-none lg:h-full">
         <div className="mb-2 flex items-baseline justify-between">
-          <h3 className="text-sm font-semibold">Visible events</h3>
+          <h3 className="text-sm font-semibold">{t("app.pages.map.ui.visibleEvents")}</h3>
           <span className="text-[10px] text-muted-foreground">
-            {events.length} item{events.length === 1 ? "" : "s"}
+            {t("app.pages.map.ui.items", { count: events.length })}
           </span>
         </div>
         <div className="flex-1 space-y-1.5 overflow-auto pr-1">
           {events.length === 0 ? (
             <div className="rounded-md border border-dashed border-border/50 p-4 text-center text-xs text-muted-foreground">
-              No events match your filters.
+              {t("app.pages.map.ui.noEventsMatch")}
             </div>
           ) : (
             events.map((e) => {
               const selected = e.id === selectedId;
+              const severityLabel = t(`app.ui.severity.${e.severity}`);
               return (
                 <div
                   key={e.id}
@@ -60,14 +59,14 @@ export function MapSidePanel({ events, selectedId, onLocate, onSave, onDetails }
                       )}
                       <div className="mt-0.5 flex flex-wrap gap-1 text-[10px] uppercase tracking-wider text-muted-foreground">
                         <span className="rounded border border-border/50 px-1 py-0">{e.category}</span>
-                        <span>{sevLabel(e.severity)}</span>
-                        <span>· risk {e.riskScore}</span>
+                        <span>{severityLabel}</span>
+                        <span>· {t("app.pages.map.ui.riskWithScore", { score: e.riskScore })}</span>
                         <span>· {e.provider}</span>
                         {e.country && <span>· {e.country}</span>}
                       </div>
                       <div className="mt-0.5 text-[10px] text-muted-foreground">
                         {e.source} · {new Date(e.timestamp).toLocaleString()}
-                        {!hasCoords(e) ? <span className="ml-1 text-amber-600">· no coords</span> : null}
+                        {!hasCoords(e) ? <span className="ml-1 text-amber-600">· {t("app.pages.map.ui.noCoords")}</span> : null}
                       </div>
                     </div>
                   </div>
@@ -77,13 +76,13 @@ export function MapSidePanel({ events, selectedId, onLocate, onSave, onDetails }
                         <button
                           type="button"
                           onClick={() => onLocate(e)}
-                          title="Locate on map"
+                          title={t("app.pages.map.ui.locateOnMap")}
                           className="rounded border border-border/50 p-1 hover:text-primary"
                         >
                           <Crosshair className="h-3 w-3" />
                         </button>
                       </TooltipTrigger>
-                      <TooltipContent side="top">Locate on map</TooltipContent>
+                      <TooltipContent side="top">{t("app.pages.map.ui.locateOnMap")}</TooltipContent>
                     </Tooltip>
                     {onDetails && (
                       <Tooltip>
@@ -92,11 +91,12 @@ export function MapSidePanel({ events, selectedId, onLocate, onSave, onDetails }
                             type="button"
                             onClick={() => onDetails(e)}
                             className="rounded border border-border/50 p-1 hover:text-primary"
+                            aria-label={t("app.pages.map.ui.details")}
                           >
                             <Eye className="h-3 w-3" />
                           </button>
                         </TooltipTrigger>
-                        <TooltipContent>Details</TooltipContent>
+                        <TooltipContent>{t("app.pages.map.ui.details")}</TooltipContent>
                       </Tooltip>
                     )}
                     {e.sourceUrl ? (
@@ -104,7 +104,7 @@ export function MapSidePanel({ events, selectedId, onLocate, onSave, onDetails }
                         href={e.sourceUrl}
                         target="_blank"
                         rel="noreferrer"
-                        title="Open source"
+                        title={t("app.ui.openSource")}
                         className="rounded border border-border/50 p-1 hover:text-primary"
                       >
                         <ExternalLink className="h-3 w-3" />
@@ -116,7 +116,7 @@ export function MapSidePanel({ events, selectedId, onLocate, onSave, onDetails }
                             <ExternalLink className="h-3 w-3" />
                           </span>
                         </TooltipTrigger>
-                        <TooltipContent>No source URL available</TooltipContent>
+                        <TooltipContent>{t("app.pages.map.ui.noSourceUrl")}</TooltipContent>
                       </Tooltip>
                     )}
                     {onSave && (
@@ -126,11 +126,12 @@ export function MapSidePanel({ events, selectedId, onLocate, onSave, onDetails }
                             type="button"
                             onClick={() => onSave(e)}
                             className="rounded border border-primary/40 bg-primary/10 p-1 text-primary"
+                            aria-label={t("app.pages.map.ui.saveToSupabase")}
                           >
                             <Bookmark className="h-3 w-3" />
                           </button>
                         </TooltipTrigger>
-                        <TooltipContent>Save to Supabase</TooltipContent>
+                        <TooltipContent>{t("app.pages.map.ui.saveToSupabase")}</TooltipContent>
                       </Tooltip>
                     )}
                   </div>

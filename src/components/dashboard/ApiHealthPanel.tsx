@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { Activity, Heart, RefreshCw } from "lucide-react";
+import { useT } from "@/i18n";
 import { DataBadge } from "@/components/ui/DataBadge";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { getAllCountries, getCountriesStatus, type CountriesStatus } from "@/services/countriesApi";
 import { getEarthquakes } from "@/services/earthquakesApi";
 import { fetchIntelligence, type NewsStatus } from "@/services/newsApi";
-import { hasWeatherKey } from "@/services/weatherApi";
+import { isWeatherConfigured } from "@/services/weatherApi";
 import { getSupabaseViteEnvSummary } from "@/lib/supabaseEnv";
 import { isSupabaseConfigured, supabaseService } from "@/services/supabaseService";
 
@@ -45,7 +46,17 @@ const LABEL: Record<Health, string> = {
   checking: "Checking…",
 };
 
+function healthLabel(status: Health, t: (key: string) => string): string {
+  if (status === "online") return t("app.pages.dashboard.statusBar.aiOnline");
+  if (status === "demo") return t("app.ui.dataStatus.demo");
+  if (status === "cached") return t("app.ui.dataStatus.cached");
+  if (status === "cached_live") return t("app.ui.dataStatus.cached");
+  if (status === "checking") return t("app.ui.loading");
+  return LABEL[status];
+}
+
 export function ApiHealthPanel() {
+  const t = useT();
   const [rows, setRows] = useState<ApiRow[]>([
     { name: "REST Countries", status: "checking" },
     { name: "USGS Earthquake", status: "checking" },
@@ -72,15 +83,15 @@ export function ApiHealthPanel() {
         cs === "local" ? `${c.length} bundled countries — proxy unreachable` :
         "All fallbacks failed";
       next.push({ name: "REST Countries", status: statusMap[cs] ?? "error", lastOk: cs !== "error" ? Date.now() : undefined, detail });
-    } catch (e: any) {
-      next.push({ name: "REST Countries", status: "error", detail: e?.message });
+    } catch (e: unknown) {
+      next.push({ name: "REST Countries", status: "error", detail: e instanceof Error ? e.message : undefined });
     }
 
     try {
       const q = await getEarthquakes("day");
       next.push({ name: "USGS Earthquake", status: "online", lastOk: Date.now(), detail: `${q.length} events` });
-    } catch (e: any) {
-      next.push({ name: "USGS Earthquake", status: "error", detail: e?.message });
+    } catch (e: unknown) {
+      next.push({ name: "USGS Earthquake", status: "error", detail: e instanceof Error ? e.message : undefined });
     }
 
     try {
@@ -96,23 +107,20 @@ export function ApiHealthPanel() {
           ? `Serving cached live data · ${r.items.length} items`
           : r.message ?? `${r.items.length} items via /api/public/gnews-proxy`,
       });
-    } catch (e: any) {
-      next.push({ name: "GNews Proxy", status: "error", detail: e?.message });
+    } catch (e: unknown) {
+      next.push({ name: "GNews Proxy", status: "error", detail: e instanceof Error ? e.message : undefined });
     }
 
-    if (!hasWeatherKey()) {
-      next.push({ name: "OpenWeather", status: "not_configured", detail: "Add VITE_OPENWEATHER_API_KEY to enable live weather. Demo fallback in use." });
-    } else {
-      try {
-        const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY as string;
-        const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=London&appid=${apiKey}`);
-        if (res.status === 401) next.push({ name: "OpenWeather", status: "invalid_key", detail: "API key rejected (401). Demo weather in use." });
-        else if (res.status === 429) next.push({ name: "OpenWeather", status: "rate_limited" });
-        else if (!res.ok) next.push({ name: "OpenWeather", status: "error", detail: `HTTP ${res.status}` });
-        else next.push({ name: "OpenWeather", status: "online", lastOk: Date.now() });
-      } catch (e: any) {
-        next.push({ name: "OpenWeather", status: "error", detail: e?.message });
+    try {
+      // Probes the server-side proxy only — the API key never reaches the browser.
+      const configured = await isWeatherConfigured(true);
+      if (!configured) {
+        next.push({ name: "OpenWeather", status: "not_configured", detail: "Add OPENWEATHER_API_KEY (server env) to enable live weather. Demo fallback in use." });
+      } else {
+        next.push({ name: "OpenWeather", status: "online", lastOk: Date.now(), detail: "Key configured via /api/public/openweather-proxy" });
       }
+    } catch (e: unknown) {
+      next.push({ name: "OpenWeather", status: "error", detail: e instanceof Error ? e.message : undefined });
     }
 
     if (!isSupabaseConfigured()) {
@@ -136,8 +144,8 @@ export function ApiHealthPanel() {
             ? `ONLINE · ref ${meta.projectRef ?? "?"} · ${rowSummary}`
             : `ref ${meta.projectRef ?? "?"} — ${probe.message}`,
         });
-      } catch (e: any) {
-        next.push({ name: "Supabase", status: "error", detail: e?.message });
+      } catch (e: unknown) {
+        next.push({ name: "Supabase", status: "error", detail: e instanceof Error ? e.message : undefined });
       }
     }
 
@@ -160,17 +168,17 @@ export function ApiHealthPanel() {
   return (
     <div className="glass-card p-4">
       <SectionHeader
-        title="API Health"
-        subtitle="Live status of all integrated data sources"
+        title={t("app.pages.dashboard.apiHealth.title")}
+        subtitle={t("app.pages.dashboard.apiHealth.subtitle")}
         right={
           <div className="flex items-center gap-2">
             <button
               onClick={() => runChecks()}
               disabled={refreshing}
-              title="Re-check all data sources"
+              title={t("app.ui.refresh")}
               className="inline-flex items-center gap-1 rounded-md border border-border/60 px-2 py-1 text-[10px] hover:text-primary disabled:opacity-50"
             >
-              <RefreshCw className={`h-3 w-3 ${refreshing ? "animate-spin" : ""}`} /> Refresh
+              <RefreshCw className={`h-3 w-3 ${refreshing ? "animate-spin" : ""}`} /> {t("app.ui.refresh")}
             </button>
             <Heart className="h-4 w-4 text-rose-glow" />
           </div>
@@ -187,10 +195,10 @@ export function ApiHealthPanel() {
               </div>
             </div>
             <div className="flex shrink-0 items-center gap-2">
-              <span className="text-[10px] tabular-nums text-muted-foreground">
+              <span suppressHydrationWarning className="text-[10px] tabular-nums text-muted-foreground">
                 {r.lastOk ? new Date(r.lastOk).toLocaleTimeString() : "—"}
               </span>
-              <DataBadge variant={VARIANT[r.status]}>{LABEL[r.status]}</DataBadge>
+              <DataBadge variant={VARIANT[r.status]}>{healthLabel(r.status, t)}</DataBadge>
             </div>
           </div>
         ))}

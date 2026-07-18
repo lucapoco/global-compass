@@ -14,14 +14,19 @@ import { isSupabaseConfigured, supabaseService } from "@/services/supabaseServic
 import { AINewsMessageBubble } from "./AINewsMessageBubble";
 import { SuggestedPromptButton } from "./SuggestedPromptButton";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/i18n";
+import { useAuth } from "@/auth";
 
 interface Props {
   context: AINewsContext | null;
   onContextRefresh: () => Promise<void>;
   contextLoading?: boolean;
+  pendingPrompt?: { text: string; id: number } | null;
 }
 
-export function AINewsChat({ context, onContextRefresh, contextLoading }: Props) {
+export function AINewsChat({ context, onContextRefresh, contextLoading, pendingPrompt }: Props) {
+  const t = useT();
+  const { requireAuth } = useAuth();
   const [messages, setMessages] = useState<AINewsMessage[]>([]);
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
@@ -53,7 +58,7 @@ export function AINewsChat({ context, onContextRefresh, contextLoading }: Props)
           ctx = await buildNewsContext();
           await onContextRefresh();
         } catch {
-          toast.error("Could not load analyst context.");
+          toast.error(t("app.pages.aiNews.toastContextFailed"));
           return;
         }
       }
@@ -85,17 +90,19 @@ export function AINewsChat({ context, onContextRefresh, contextLoading }: Props)
         ]);
         setLastPair({ question: q, answer: result.answer });
         if (result.status === "LOCAL FALLBACK") {
-          toast.message("Using local analyst — Gemini is temporarily busy or unavailable.");
+          toast.message(t("app.pages.aiNews.toastLocalFallback"));
         } else if (result.status === "GEMINI FALLBACK MODEL") {
-          toast.message("Primary model busy — answered with fallback Gemini model.");
+          toast.message(t("app.pages.aiNews.toastFallbackModel"));
+        } else if (result.status === "GEMINI ERROR") {
+          toast.error(result.errorMessage ?? t("app.pages.aiNews.toastGeminiError"));
         }
       } catch (e: unknown) {
-        const msg = e instanceof Error ? e.message : "Global Pulse AI failed to respond.";
+        const msg = e instanceof Error ? e.message : t("app.pages.aiNews.toastAiFailed");
         toast.error(msg);
         setLastFailedQuestion(q);
         setMessages((prev) => [
           ...prev,
-          createMessage("assistant", `I couldn't process that request: ${msg}`, {
+          createMessage("assistant", t("app.pages.aiNews.processError", { message: msg }), {
             localFallback: true,
             aiStatus: "GEMINI ERROR",
           }),
@@ -104,33 +111,44 @@ export function AINewsChat({ context, onContextRefresh, contextLoading }: Props)
         setThinking(false);
       }
     },
-    [thinking, messages, onContextRefresh],
+    [thinking, messages, onContextRefresh, t],
   );
 
-  async function saveBriefing() {
+  useEffect(() => {
+    if (pendingPrompt?.text) {
+      void sendQuestion(pendingPrompt.text);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingPrompt?.id]);
+
+  function saveBriefing() {
     if (!lastPair) {
-      toast.message("Ask a question first to save a briefing.");
+      toast.message(t("app.pages.aiNews.toastAskFirst"));
       return;
     }
-    if (!isSupabaseConfigured()) {
-      toast.error("Supabase is not configured.");
-      return;
-    }
-    try {
-      await supabaseService.saveAIBriefing({
-        question: lastPair.question,
-        answer: lastPair.answer,
-        data_status: context?.dataStatus.news ?? "UNKNOWN",
-      });
-      toast.success("Briefing saved");
-    } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : "Save failed";
-      if (/ai_briefings|does not exist|relation/i.test(msg)) {
-        toast.error("Briefing save table not configured yet.");
-      } else {
-        toast.error(msg);
-      }
-    }
+    requireAuth(() => {
+      void (async () => {
+        if (!isSupabaseConfigured()) {
+          toast.error(t("app.ui.notConfigured"));
+          return;
+        }
+        try {
+          await supabaseService.saveAIBriefing({
+            question: lastPair.question,
+            answer: lastPair.answer,
+            data_status: context?.dataStatus.news ?? "UNKNOWN",
+          });
+          toast.success(t("app.pages.aiNews.toastBriefingSaved"));
+        } catch (e: unknown) {
+          const msg = e instanceof Error ? e.message : t("app.ui.saveFailed");
+          if (/ai_briefings|does not exist|relation/i.test(msg)) {
+            toast.error(t("app.pages.aiNews.toastBriefingTableMissing"));
+          } else {
+            toast.error(msg);
+          }
+        }
+      })();
+    }, "save_article");
   }
 
   function clearChat() {
@@ -143,7 +161,7 @@ export function AINewsChat({ context, onContextRefresh, contextLoading }: Props)
     <div className="glass-card flex min-h-[480px] flex-col overflow-hidden">
       <div className="flex flex-1 flex-col gap-3 overflow-hidden p-4">
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/40 pb-3">
-          <p className="text-xs text-muted-foreground">Global Pulse AI · Google Gemini when configured</p>
+          <p className="text-xs text-muted-foreground">{t("app.pages.aiNews.chatSubtitle")}</p>
           <div className="flex flex-wrap gap-2">
             {lastFailedQuestion ? (
               <Button
@@ -154,7 +172,7 @@ export function AINewsChat({ context, onContextRefresh, contextLoading }: Props)
                 onClick={() => void sendQuestion(lastFailedQuestion, true)}
                 disabled={thinking}
               >
-                <RotateCcw className="mr-1 h-3.5 w-3.5" /> Retry
+                <RotateCcw className="mr-1 h-3.5 w-3.5" /> {t("app.ui.retry")}
               </Button>
             ) : null}
             <Button
@@ -164,12 +182,12 @@ export function AINewsChat({ context, onContextRefresh, contextLoading }: Props)
               className="h-8 text-xs"
               onClick={() => void saveBriefing()}
               disabled={!lastPair}
-              title={!lastPair ? "Ask a question first" : "Save last Q&A to Supabase"}
+              title={!lastPair ? t("app.pages.aiNews.askFirstTitle") : t("app.pages.aiNews.saveTitle")}
             >
-              <Bookmark className="mr-1 h-3.5 w-3.5" /> Save briefing
+              <Bookmark className="mr-1 h-3.5 w-3.5" /> {t("app.pages.aiNews.saveBriefing")}
             </Button>
             <Button type="button" variant="ghost" size="sm" className="h-8 text-xs" onClick={clearChat}>
-              <Trash2 className="mr-1 h-3.5 w-3.5" /> Clear chat
+              <Trash2 className="mr-1 h-3.5 w-3.5" /> {t("app.pages.aiNews.clearChat")}
             </Button>
           </div>
         </div>
@@ -185,14 +203,14 @@ export function AINewsChat({ context, onContextRefresh, contextLoading }: Props)
           ))}
         </div>
 
-        <div className="flex-1 space-y-4 overflow-y-auto pr-1 min-h-[240px] max-h-[50vh] lg:max-h-[calc(100vh-22rem)]">
+        <div className="panel-scroll min-h-[240px] max-h-[50vh] flex-1 space-y-4 pr-1 lg:max-h-[calc(100vh-22rem)]">
           {messages.map((m) => (
             <AINewsMessageBubble key={m.id} message={m} />
           ))}
           {thinking ? (
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin text-primary" />
-              Global Pulse AI is thinking…
+              {t("app.pages.aiNews.thinking")}
             </div>
           ) : null}
           <div ref={bottomRef} />
@@ -210,13 +228,13 @@ export function AINewsChat({ context, onContextRefresh, contextLoading }: Props)
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask Global Pulse AI about news, the map, or the platform…"
+            placeholder={t("app.pages.aiNews.placeholder")}
             disabled={thinking}
-            className="flex-1 rounded-md border border-border/60 bg-background/60 px-3 py-2 text-sm outline-none placeholder:text-muted-foreground focus:border-primary/50"
+            className="h-9 min-w-0 flex-1 rounded-md border border-input bg-background px-3 text-sm text-foreground shadow-sm outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring/40 disabled:opacity-45"
           />
-          <Button type="submit" disabled={thinking || !input.trim()} className="shrink-0">
+          <Button type="submit" disabled={thinking || !input.trim()} className="h-9 shrink-0">
             <Send className="h-4 w-4" />
-            <span className="sr-only">Send</span>
+            <span className="sr-only">{t("app.ui.send")}</span>
           </Button>
         </div>
       </form>

@@ -1,0 +1,1928 @@
+{
+  "common": {
+    "explore": "Explore",
+    "skipToContent": "Skip to main content"
+  },
+  "language": {
+    "select": "Select language",
+    "en": "English",
+    "ro": "Română",
+    "enShort": "EN",
+    "roShort": "RO"
+  },
+  "nav": {
+    "features": "Features",
+    "howItWorks": "How it works",
+    "product": "Product",
+    "ai": "AI",
+    "pricing": "Pricing",
+    "faq": "FAQ",
+    "exploreMap": "Explore map",
+    "openDashboard": "Open dashboard",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "homeAria": "{{brand}} home",
+    "mainAria": "Main navigation"
+  },
+  "hero": {
+    "title": "Understand a changing world",
+    "titleHighlight": "before it becomes a crisis",
+    "subtitle": "Global Pulse unifies live monitoring, AI briefings, and decision support — so your team sees what matters, acts faster, and briefs with confidence.",
+    "ctaPrimary": "Start monitoring",
+    "ctaSecondary": "View Mission Control"
+  },
+  "trustedBy": {
+    "label": "Intelligence powered by trusted global sources"
+  },
+  "features": {
+    "label": "Features",
+    "title": "Everything you need to stay ahead of global risk",
+    "description": "From live monitoring to AI briefings — one platform replaces fragmented tools and gives your team a shared operational picture.",
+    "items": {
+      "monitoring": {
+        "title": "See the world as it changes",
+        "description": "Live global monitoring across earthquakes, weather, news, and humanitarian signals — unified on one planetary canvas."
+      },
+      "alerts": {
+        "title": "Act before crises escalate",
+        "description": "Risk scoring, correlation, and alert prioritization surface what matters now — not noise from yesterday."
+      },
+      "briefings": {
+        "title": "Briefings that save hours",
+        "description": "AI summaries grounded in live intelligence data give executives clarity in seconds, not spreadsheets."
+      },
+      "graph": {
+        "title": "Understand hidden connections",
+        "description": "Knowledge graph reveals relationships between events, regions, and entities that dashboards alone miss."
+      },
+      "analytics": {
+        "title": "Measure what is shifting",
+        "description": "Analytics track trends, stability, and measurable change across countries and time windows."
+      },
+      "decisions": {
+        "title": "Decide with confidence",
+        "description": "Country intelligence, comparison tools, and executive reports support informed strategic action."
+      }
+    }
+  },
+  "howItWorks": {
+    "label": "How it works",
+    "title": "From raw signals to decisive action in three steps",
+    "description": "Global Pulse transforms fragmented global data into a coherent intelligence workflow your entire team can trust.",
+    "steps": {
+      "ingest": {
+        "title": "Ingest global signals",
+        "description": "Multi-provider pipelines normalize earthquakes, news, weather, and conflict data into a single intelligence layer."
+      },
+      "analyze": {
+        "title": "Analyze & correlate",
+        "description": "The Intelligence Engine scores severity, detects clusters, and maps relationships across geography and time."
+      },
+      "brief": {
+        "title": "Brief & respond",
+        "description": "Mission Control, alerts, and AI briefings turn raw signals into actionable insight for your team."
+      }
+    }
+  },
+  "product": {
+    "label": "Product",
+    "title": "Built for operators, analysts, and executives",
+    "description": "Every module is designed for clarity under pressure — from the interactive globe to presentation-ready Mission Control.",
+    "globeTitle": "Interactive planetary canvas",
+    "globeDescription": "Scroll-driven globe experience with live intelligence markers. See earthquakes, news, and humanitarian signals on a unified 3D Earth.",
+    "openMap": "Open world map",
+    "loadingGlobe": "Loading globe",
+    "screens": {
+      "map": {
+        "title": "World Map",
+        "description": "Interactive globe with live geo-located events and severity layers."
+      },
+      "mission": {
+        "title": "Mission Control",
+        "description": "Presentation-ready operational view for live monitoring and demos."
+      },
+      "analytics": {
+        "title": "Analytics",
+        "description": "Trend analysis and stability metrics across regions and categories."
+      }
+    }
+  },
+  "ai": {
+    "label": "AI Intelligence",
+    "title": "AI that understands your live data — not the open web",
+    "description": "Briefings, reports, and analyst chat grounded in the same intelligence engine that powers your dashboard.",
+    "demoLabel": "// AI Briefing · Live context",
+    "demoQuote": "\"Elevated seismic activity in the eastern Mediterranean correlates with 3 humanitarian signals and 2 geopolitical events in the last 6 hours. Recommended: monitor Cyprus and Türkiye corridors.\"",
+    "demoCaption": "Summaries reference real events from your feed — verifiable, citable, actionable.",
+    "cta": "Try AI briefings",
+    "items": {
+      "summaries": {
+        "title": "Context-aware summaries",
+        "description": "Briefings grounded in your live event feed — not generic web search."
+      },
+      "reports": {
+        "title": "Executive reports",
+        "description": "Auto-generated intelligence reports for stakeholders and presentations."
+      },
+      "chat": {
+        "title": "Analyst chat",
+        "description": "Ask questions about global events and receive answers backed by platform data."
+      },
+      "graph": {
+        "title": "Graph-aware reasoning",
+        "description": "AI understands entity relationships surfaced by the knowledge graph."
+      }
+    }
+  },
+  "testimonials": {
+    "label": "Testimonials",
+    "title": "Trusted by teams who cannot miss critical signals",
+    "description": "Researchers, analysts, and operators use Global Pulse to brief faster and respond with confidence.",
+    "items": {
+      "elena": {
+        "quote": "Global Pulse replaced three separate dashboards for our team. We see critical signals in minutes, not hours.",
+        "role": "Operations Analyst",
+        "org": "Humanitarian Response Team"
+      },
+      "james": {
+        "quote": "The knowledge graph alone changed how we brief leadership. Connections we used to miss are now obvious.",
+        "role": "Intelligence Lead",
+        "org": "Policy Research Unit"
+      },
+      "sofia": {
+        "quote": "Mission Control is presentation-ready out of the box. Our demos finally match the quality of the product.",
+        "role": "Product Director",
+        "org": "Geo-Intelligence Lab"
+      }
+    }
+  },
+  "statistics": {
+    "label": "Live metrics",
+    "title": "Intelligence that feels alive",
+    "description": "Real numbers from the Intelligence Engine — refreshed from live provider data, not hardcoded demos.",
+    "footnote": "24/7 global monitoring · Updated from live intelligence feed",
+    "items": {
+      "countries": "Countries monitored",
+      "events": "Active global events",
+      "critical": "Critical signals",
+      "earthquakes": "Earthquakes tracked",
+      "weather": "Weather & disasters",
+      "reports": "Intelligence reports"
+    }
+  },
+  "pricing": {
+    "label": "Pricing",
+    "title": "Start free. Scale when your mission grows.",
+    "description": "Transparent tiers for research teams, operators, and enterprise deployments. All plans include core planetary monitoring.",
+    "mostPopular": "Most popular",
+    "tiers": {
+      "community": {
+        "name": "Community",
+        "price": "Free",
+        "period": "",
+        "description": "For students, researchers, and competition projects.",
+        "features": [
+          "Live global event monitoring",
+          "World map & intelligence feed",
+          "Basic analytics",
+          "AI briefings (limited)"
+        ],
+        "cta": "Get started"
+      },
+      "professional": {
+        "name": "Professional",
+        "price": "$49",
+        "period": "/month",
+        "description": "For teams that need full operational intelligence — available soon.",
+        "features": [
+          "Everything in Community",
+          "Mission Control & alerts",
+          "Knowledge graph access",
+          "Unlimited AI briefings",
+          "Country intelligence & reports"
+        ],
+        "cta": "Coming Soon"
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "Custom",
+        "period": "",
+        "description": "For organizations with advanced deployment needs — available soon.",
+        "features": [
+          "Everything in Professional",
+          "Custom data providers",
+          "Dedicated support",
+          "SSO & audit logs",
+          "On-premise deployment"
+        ],
+        "cta": "Coming Soon"
+      }
+    }
+  },
+  "faq": {
+    "label": "FAQ",
+    "title": "Questions? We've got answers.",
+    "description": "Everything you need to know about Global Pulse before you enter the platform.",
+    "items": {
+      "what": {
+        "question": "What is Global Pulse?",
+        "answer": "Global Pulse is a planetary intelligence platform that monitors global events, analyzes risk, and delivers AI-powered briefings — helping teams understand a changing world in real time."
+      },
+      "data": {
+        "question": "Where does the data come from?",
+        "answer": "We aggregate open and configured intelligence providers including USGS, NASA EONET, ACLED, GNews, weather APIs, and more. All data is normalized through our Intelligence Engine."
+      },
+      "free": {
+        "question": "Is Global Pulse free to use?",
+        "answer": "The Community tier is free for exploration, research, and competition use. Mission Control, alerts, and AI are available now on Community. Professional and Enterprise plans will add billing, SSO, and advanced options in a future update."
+      },
+      "keys": {
+        "question": "Do I need API keys?",
+        "answer": "Some providers work out of the box. Optional keys (Mapbox, Gemini, Supabase) unlock the full experience including the 3D globe, AI chat, and saved reports."
+      },
+      "presentations": {
+        "question": "Can I use it for presentations?",
+        "answer": "Yes. Mission Control is designed as a flagship presentation mode with a cinematic dark interface optimized for demos and live monitoring."
+      },
+      "different": {
+        "question": "How is this different from a news aggregator?",
+        "answer": "Global Pulse correlates events, scores risk, maps entity relationships, and generates decision support — it is an intelligence platform, not a headline feed."
+      }
+    }
+  },
+  "finalCta": {
+    "title": "Ready to see the world clearly?",
+    "description": "Enter Global Pulse and step into a planetary intelligence platform built for teams who need to act — not react.",
+    "cta": "Go to dashboard"
+  },
+  "footer": {
+    "tagline": "Planetary intelligence for teams monitoring a changing world.",
+    "product": "Product",
+    "resources": "Resources",
+    "explore": "Explore",
+    "copyright": "© {{year}} {{brand}} · InfoEducație 2026",
+    "status": "Built for planetary intelligence · All systems operational",
+    "links": {
+      "dashboard": "Dashboard",
+      "worldMap": "World Map",
+      "missionControl": "Mission Control",
+      "analytics": "Analytics",
+      "aiBriefings": "AI Briefings",
+      "knowledgeGraph": "Knowledge Graph",
+      "reports": "Reports",
+      "alertCenter": "Alert Center",
+      "about": "About",
+      "countries": "Countries",
+      "compare": "Compare"
+    }
+  },
+  "app": {
+    "nav": {
+      "groups": {
+        "commandCenter": "Command Center",
+        "intelligence": "Intelligence",
+        "dataSources": "Data Sources",
+        "platform": "Platform",
+        "explore": "Explore",
+        "library": "Library"
+      },
+      "missionControl": "Mission Control",
+      "alertCenter": "Alert Center",
+      "dashboard": "Dashboard",
+      "discover": "Discover",
+      "trending": "Trending",
+      "settings": "Settings",
+      "savedArticles": "Saved Articles",
+      "readingHistory": "Reading History",
+      "collections": "Collections",
+      "notifications": "Notifications",
+      "intelligenceFeed": "Intelligence Feed",
+      "watchCenter": "Watch Center",
+      "analytics": "Analytics",
+      "globalPulseAi": "Global Pulse AI",
+      "knowledgeGraph": "Knowledge Graph",
+      "intelligenceReports": "Intelligence Reports",
+      "compareCountries": "Compare Countries",
+      "liveWorldMap": "Live World Map",
+      "countries": "Countries",
+      "earthquakes": "Earthquakes",
+      "weather": "Weather",
+      "savedData": "Saved Data",
+      "aboutProject": "About Project",
+      "presentationMode": "Presentation Mode",
+      "mainAria": "Main navigation",
+      "platformAria": "Platform navigation",
+      "mobileAria": "Mobile navigation",
+      "openCommandPalette": "Open command palette (Ctrl+K)",
+      "searchCommand": "Search / Command…",
+      "pressForShortcuts": "Press",
+      "forShortcuts": "for shortcuts",
+      "projectCredit": "InfoEducație · Educational project"
+    },
+    "auth": {
+      "signIn": "Sign In",
+      "logout": "Logout",
+      "account": "Account",
+      "lockBadge": "Account",
+      "continueGoogle": "Continue with Google",
+      "continueGitHub": "Continue with GitHub",
+      "continueEmail": "Continue with Email",
+      "continueBrowsing": "Continue Browsing",
+      "email": "Email",
+      "password": "Password",
+      "displayName": "Display name",
+      "createAccount": "Create Account",
+      "back": "Back",
+      "needAccount": "Need an account? Sign up",
+      "haveAccount": "Already have an account? Sign in",
+      "checkEmail": "Check your email to confirm your account.",
+      "completingSignIn": "Completing sign-in…",
+      "supabaseNotConfigured": "Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY.",
+      "modal": {
+        "title": "Create your free account",
+        "description": "Sign in to save articles, sync your data across devices and receive personalized AI recommendations.",
+        "saveTitle": "Save your articles forever",
+        "saveDescription": "Create a free account to save articles, sync across devices and build your personalized news feed."
+      },
+      "reasons": {
+        "save_article": "Saving articles requires a free account.",
+        "reading_history": "Reading history syncs across your devices when you sign in.",
+        "collections": "Collections let you organize intelligence — sign in to create one.",
+        "personalized_feed": "Personalized feed is available after you sign in.",
+        "notifications": "Cloud notifications require an account.",
+        "sync": "Cross-device sync unlocks when you sign in.",
+        "watchlist": "Watch Center requires an account to sync across devices.",
+        "saved_data": "Saved Data is private to your account."
+      },
+      "gate": {
+        "savedArticles": "Sign in to save articles and sync them across devices.",
+        "readingHistory": "Sign in to keep a private reading history.",
+        "collections": "Sign in to create and manage collections.",
+        "account": "Sign in to manage your account.",
+        "watchlist": "Sign in to manage your personal watchlist across devices.",
+        "savedData": "Sign in to view your private saved countries, alerts, and intelligence."
+      },
+      "errors": {
+        "generic": "Authentication failed. Please try again."
+      },
+      "userProfile": "User Profile"
+    },
+    "badges": {
+      "new": "NEW"
+    },
+    "shell": {
+      "viewMode": {
+        "simple": "Simple View",
+        "advanced": "Advanced View",
+        "simpleShort": "Simple",
+        "advancedShort": "Advanced",
+        "simpleTooltip": "Shows only the most important controls.",
+        "advancedTooltip": "Shows all filters, layers and technical tools.",
+        "toastSimple": "Simple View enabled",
+        "toastAdvanced": "Advanced View enabled"
+      },
+      "shortcuts": {
+        "title": "Keyboard Shortcuts",
+        "closeAria": "Close shortcuts overlay",
+        "aria": "Keyboard shortcuts",
+        "categories": {
+          "action": "Action",
+          "navigation": "Navigation"
+        },
+        "footer": "Press {{toggleKey}} to toggle · {{escKey}} to close",
+        "items": {
+          "openCommandPalette": "Open command palette",
+          "goDashboard": "Go to Dashboard",
+          "goIntelligence": "Go to Intelligence Feed",
+          "goWatchCenter": "Go to Watch Center",
+          "goAnalytics": "Go to Analytics",
+          "goCompare": "Compare Countries",
+          "goReports": "Intelligence Reports",
+          "goAi": "Global Pulse AI",
+          "goMap": "Live World Map",
+          "showHelp": "Show keyboard shortcuts",
+          "closeOverlay": "Close overlay / dialog"
+        }
+      },
+      "commandPalette": {
+        "aria": "Command palette",
+        "searchPlaceholder": "Search pages, actions, or ask AI…",
+        "searchAria": "Command palette search",
+        "resultsAria": "Command results",
+        "categories": {
+          "navigate": "Navigate",
+          "action": "Action",
+          "askAi": "Ask AI"
+        },
+        "emptyTitle": "No results for \"{{query}}\"",
+        "emptyHint": "Try a page name or action",
+        "footerBrand": "Global Pulse Intelligence Platform",
+        "navigate": "navigate",
+        "select": "select",
+        "close": "close",
+        "askAiSuffix": "Ask Global Pulse AI →",
+        "commands": {
+          "dashboard": {
+            "label": "Dashboard",
+            "sublabel": "Command center overview"
+          },
+          "intelligence": {
+            "label": "Intelligence Feed",
+            "sublabel": "Live news and global events"
+          },
+          "watchlist": {
+            "label": "Watch Center",
+            "sublabel": "Monitored countries & alerts"
+          },
+          "analytics": {
+            "label": "Analytics",
+            "sublabel": "Trends and intelligence stats"
+          },
+          "compare": {
+            "label": "Compare Countries",
+            "sublabel": "Side-by-side intelligence"
+          },
+          "reports": {
+            "label": "Intelligence Reports",
+            "sublabel": "AI-powered briefings"
+          },
+          "aiNews": {
+            "label": "Global Pulse AI",
+            "sublabel": "Intelligence assistant"
+          },
+          "map": {
+            "label": "Live World Map",
+            "sublabel": "Geospatial intelligence"
+          },
+          "countries": {
+            "label": "Countries",
+            "sublabel": "Country intelligence profiles"
+          },
+          "earthquakes": {
+            "label": "Earthquakes",
+            "sublabel": "Seismic activity monitor"
+          },
+          "weather": {
+            "label": "Weather",
+            "sublabel": "Global weather overview"
+          },
+          "alerts": {
+            "label": "Global Alerts",
+            "sublabel": "Active threat alerts"
+          },
+          "saved": {
+            "label": "Saved Data",
+            "sublabel": "Bookmarked intelligence"
+          },
+          "presentation": {
+            "label": "Presentation Mode",
+            "sublabel": "InfoEducație jury demo"
+          },
+          "about": {
+            "label": "About Global Pulse",
+            "sublabel": "Project information"
+          },
+          "openGlobe": {
+            "label": "Open Live Globe",
+            "sublabel": "Interactive world map"
+          },
+          "genReport": {
+            "label": "Generate Report",
+            "sublabel": "Create AI intelligence report"
+          }
+        },
+        "aiPrompts": {
+          "situation": "Summarize today's global situation",
+          "risks": "Explain current geopolitical risks",
+          "quakes": "Analyze recent earthquake activity",
+          "regions": "Which regions have the highest risk?",
+          "cyber": "Explain current cyber incidents",
+          "climate": "Show climate and weather threats"
+        }
+      },
+      "notifications": {
+        "title": "Notifications",
+        "unreadAria": "Notifications ({{count}} unread)",
+        "newCount": "{{count}} new",
+        "markAllRead": "Mark all read",
+        "empty": "No notifications",
+        "openAlertCenter": "Open Alert Center",
+        "acknowledge": "Acknowledge",
+        "dismiss": "Dismiss"
+      },
+      "notFound": {
+        "message": "Signal lost. This page isn't on the grid.",
+        "backToDashboard": "Back to Dashboard"
+      }
+    },
+    "ui": {
+      "loading": "Loading…",
+      "loadingAria": "Loading",
+      "refresh": "Refresh",
+      "retry": "Retry",
+      "tryAgain": "Try again",
+      "close": "Close",
+      "save": "Save",
+      "send": "Send",
+      "dismiss": "Dismiss",
+      "viewDetails": "View details",
+      "openSource": "Open source",
+      "updated": "Updated",
+      "waitSeconds": "Wait {{seconds}}s",
+      "pleaseWaitRefresh": "Please wait before refreshing again.",
+      "notConfigured": "Supabase not configured.",
+      "saveFailed": "Save failed",
+      "events": "events",
+      "severity": {
+        "critical": "Critical",
+        "high": "High",
+        "medium": "Medium",
+        "low": "Low",
+        "ariaLabel": "Severity: {{level}}"
+      },
+      "stability": {
+        "stable": "Stable",
+        "elevated": "Elevated",
+        "highAlert": "High Alert",
+        "critical": "Critical"
+      },
+      "dataStatus": {
+        "live": "LIVE",
+        "cached": "CACHED",
+        "demo": "DEMO"
+      },
+      "risk": "risk",
+      "confidence": "Confidence",
+      "resolved": "resolved",
+      "sourcesCount": "{{count}} sources",
+      "clearSearch": "Clear search",
+      "searchPlaceholder": "Search…",
+      "removeItem": "Remove {{label}}",
+      "time": {
+        "lessThanOneHour": "< 1h ago",
+        "hoursAgo": "{{count}}h ago",
+        "daysAgo": "{{count}}d ago",
+        "justNow": "Just now",
+        "minutesAgo": "{{count}}m ago"
+      },
+      "watchTypes": {
+        "country": "Country",
+        "region": "Region",
+        "category": "Category",
+        "topic": "Topic",
+        "keyword": "Keyword",
+        "organization": "Organization"
+      },
+      "watchPlaceholders": {
+        "country": "France",
+        "region": "Europe",
+        "category": "military",
+        "topic": "elections",
+        "keyword": "cyberattack",
+        "organization": "NATO"
+      },
+      "watchPlaceholderPrefix": "e.g. {{example}}",
+      "cancel": "Cancel",
+      "delete": "Delete"
+    },
+    "errors": {
+      "generic": "Something went wrong",
+      "genericWithContext": "Error in {{context}}",
+      "unexpected": "An unexpected error occurred. Please try again.",
+      "providerUnavailable": "{{provider}} data unavailable",
+      "dashboardRefreshFailed": "Failed to refresh dashboard",
+      "loadFailed": "Failed to load data"
+    },
+    "toasts": {
+      "eventSaved": "Event saved to library.",
+      "eventSavedShort": "Event saved.",
+      "countrySaved": "{{country}} saved.",
+      "cacheCleared": "Cache cleared",
+      "feedbackThanks": "Thank you for the feedback!",
+      "watchAdded": "Now watching: {{value}}",
+      "watchRemoved": "Removed from watchlist.",
+      "reportCountryRequired": "Please enter a country name for this report type.",
+      "reportAiFallback": "AI not configured — generated structured report from local data.",
+      "reportGenerationFailed": "Report generation failed.",
+      "reportEventsLoadFailed": "Could not load events for selection.",
+      "reportEnterCountry": "Enter a country name.",
+      "reportSelectEvent": "Select an event.",
+      "reportLocalFallback": "Report generated with local analyst (Gemini busy or unavailable).",
+      "reportFallbackModel": "Primary model busy — used fallback Gemini model.",
+      "reportGenerated": "Intelligence report generated.",
+      "reportSaved": "Report saved.",
+      "reportDeleted": "Report deleted.",
+      "reportLoadFailed": "Failed to load reports",
+      "reportSchemaMissing": "Run docs/legacy-supabase-schema.sql to create generated_reports table.",
+      "supabaseNotConfigured": "Supabase is not configured.",
+      "deleteFailed": "Delete failed",
+      "linkCopied": "Link copied to clipboard.",
+      "aiAnalysisFailed": "AI analysis failed. Check your API configuration.",
+      "aiAnalysisFailedShort": "AI analysis failed",
+      "eventSavedSupabase": "Event saved to Supabase.",
+      "removed": "Removed.",
+      "alreadyWatching": "Already watching this item.",
+      "enterWatchValue": "Please enter a value to watch.",
+      "feedLoadFailed": "Failed to load intelligence feed.",
+      "aiComparativeGenerated": "AI comparative analysis generated.",
+      "aiComparativeFailed": "AI analysis failed.",
+      "aiUnavailable": "AI analysis unavailable. Check Gemini API configuration.",
+      "localAnalystBusy": "Using local analyst — Gemini is temporarily busy or unavailable.",
+      "geminiError": "Gemini returned an error.",
+      "countriesNotFound": "One or both countries were not found.",
+      "savedToAlerts": "Saved to alerts.",
+      "connectSupabaseAlerts": "Connect Supabase to save alerts.",
+      "feedbackMessageRequired": "Please write a message.",
+      "feedbackMessageTooLong": "Message is too long (max 4000 characters).",
+      "feedbackNameTooLong": "Name is too long (max 200 characters).",
+      "submitFailed": "Submit failed",
+      "savedDataLoadFailed": "Failed to load saved data from Supabase",
+      "supabaseTestFailed": "Supabase test failed"
+    },
+    "pages": {
+      "dashboard": {
+        "metaTitle": "Operations Center — Global Pulse",
+        "metaDescription": "Global Pulse Operations Center — real-time intelligence, earthquakes, live video, and AI analysis.",
+        "ariaMain": "Global Operations Center",
+        "quickLinks": {
+          "globe": "Globe",
+          "ai": "AI",
+          "reports": "Reports",
+          "analytics": "Analytics",
+          "compare": "Compare",
+          "intel": "Intel",
+          "watchlist": "Watchlist",
+          "alerts": "Alerts"
+        },
+        "sections": {
+          "liveVideoBreaking": "Live video and breaking intelligence",
+          "operationalPanels": "Operational intelligence panels",
+          "worldActivity": "World activity analysis",
+          "sectorTrends": "Sector intelligence and trends",
+          "criticalRisk": "Critical signals and country risk",
+          "analyticsCharts": "Analytics and distribution charts",
+          "fullFeed": "Full intelligence feed",
+          "systemHealth": "System health and platform navigation",
+          "platformStats": "Platform statistics",
+          "quickNavSimple": "Quick navigation"
+        },
+        "statusBar": {
+          "title": "World Operations Center",
+          "subtitle": "Real-time global intelligence monitoring",
+          "assistantReady": "Assistant ready",
+          "liveMap": "Live Map",
+          "askAi": "Ask AI",
+          "intelEvents": "Intel Events",
+          "aiStatus": "AI Status",
+          "aiOnline": "Online",
+          "aiLimited": "Limited",
+          "globalStabilityIndex": "Global Stability Index — {{tier}}",
+          "computing": "Computing…",
+          "refreshTitle": "Refresh all intelligence data",
+          "refreshAriaLoading": "Loading…",
+          "refreshAriaCooldown": "Refresh available in {{seconds}}s",
+          "refreshAria": "Refresh dashboard"
+        },
+        "breakingIntel": {
+          "title": "Breaking Intelligence",
+          "subtitleCritical": "{{count}} critical event active",
+          "subtitleCriticalPlural": "{{count}} critical events active",
+          "subtitleDefault": "Priority-ranked events",
+          "loading": "Loading intelligence…",
+          "emptyTitle": "No intelligence events",
+          "emptyHint": "Data will appear when the intelligence feed loads.",
+          "fullFeed": "Full Intelligence Feed"
+        },
+        "stabilityPanel": {
+          "title": "Global Intelligence Status",
+          "eventsMonitored": "{{count}} events monitored",
+          "seismicEvents": "{{count}} seismic events",
+          "topDomain": "Top Domain"
+        },
+        "aiSummary": {
+          "title": "AI Executive Summary",
+          "subtitle": "Gemini-powered situational analysis",
+          "analyzing": "Analyzing {{count}} intelligence events…",
+          "openAi": "Open Global Pulse AI",
+          "generateReport": "Generate Report"
+        },
+        "activeThreats": {
+          "title": "Active Threats",
+          "subtitle": "Events by operational domain",
+          "emptyTitle": "No active threats",
+          "emptyHint": "Threat domains appear when intelligence events load.",
+          "viewAll": "View All Threats"
+        },
+        "timeline": {
+          "title": "World Activity Timeline",
+          "subtitle": "Combined live signals — newest first",
+          "empty": "No activity yet.",
+          "quakeSub": "USGS · depth {{depth}} km",
+          "savedFallback": "saved"
+        },
+        "earthquakeWidget": {
+          "title": "Seismic Activity",
+          "subtitle": "{{count}} earthquakes today",
+          "emptyTitle": "No seismic data",
+          "emptyHint": "USGS earthquake feed loading…",
+          "fullDashboard": "Full Seismic Dashboard"
+        },
+        "mapPreview": {
+          "title": "Global Activity Map",
+          "subtitle": "Live geo-located events",
+          "openControlCenter": "Open control center"
+        },
+        "liveFeed": {
+          "title": "Live Intelligence Feed",
+          "subtitle": "Up to {{preview}} priority headlines · {{total}} loaded"
+        },
+        "apiHealth": {
+          "title": "API Health",
+          "subtitle": "Live status of all integrated data sources"
+        },
+        "countryRiskIndex": {
+          "title": "Country Risk Index",
+          "subtitle": "Top 10 by combined intelligence risk score",
+          "loading": "Computing risk index…",
+          "empty": "No risk data available",
+          "fullIndex": "Full Risk Index"
+        },
+        "simpleMode": {
+          "askAi": "Ask Global Pulse AI",
+          "generateReport": "Generate Report",
+          "liveMap": "Live World Map",
+          "intelFeed": "Intelligence Feed"
+        },
+        "metrics": {
+          "stability": "Stability",
+          "critical": "Critical",
+          "intel": "Intel",
+          "earthquakes": "Earthquakes",
+          "maxMag": "Max Mag"
+        },
+        "earthquakeChart": {
+          "title": "Earthquake Magnitudes",
+          "subtitle": "Distribution over last 24 hours"
+        },
+        "platformNav": {
+          "title": "Platform Navigation",
+          "subtitle": "All sections of Global Pulse",
+          "ai": {
+            "label": "Global Pulse AI",
+            "hint": "Gemini-powered analysis"
+          },
+          "reports": {
+            "label": "Intelligence Reports",
+            "hint": "Generate & export"
+          },
+          "feed": {
+            "label": "Intelligence Feed",
+            "hint": "Full event stream"
+          },
+          "map": {
+            "label": "Live World Map",
+            "hint": "Interactive globe"
+          },
+          "countries": {
+            "label": "Countries",
+            "hint": "World database"
+          },
+          "earthquakes": {
+            "label": "Earthquakes",
+            "hint": "Seismic monitor"
+          },
+          "alerts": {
+            "label": "Global Alerts",
+            "hint": "Alert center"
+          },
+          "watchlist": {
+            "label": "Watch Center",
+            "hint": "Tracked entities"
+          },
+          "analytics": {
+            "label": "Analytics",
+            "hint": "Trend analysis"
+          },
+          "compare": {
+            "label": "Compare Countries",
+            "hint": "Intelligence comparison"
+          },
+          "saved": {
+            "label": "Saved Intelligence",
+            "hint": "Library"
+          },
+          "askAi": {
+            "label": "Ask AI",
+            "hint": "Quick questions"
+          }
+        },
+        "stats": {
+          "intelEvents": "Intel Events",
+          "earthquakes": "Earthquakes",
+          "highestMagnitude": "Highest Magnitude",
+          "criticalHigh": "Critical + High",
+          "countries": "Countries",
+          "savedAlerts": "Saved Alerts",
+          "usgs24h": "USGS · 24h",
+          "usgsFeed": "USGS feed",
+          "activeThreats": "Active threats",
+          "restCountries": "REST Countries",
+          "watchCenter": "Watch Center"
+        },
+        "criticalSignals": {
+          "title": "Critical Signals",
+          "subtitle": "Most urgent live events right now",
+          "empty": "No critical or high signals detected.",
+          "openUsgs": "Open USGS",
+          "quakeSub": "USGS · earthquake · depth {{depth}} km · {{time}}",
+          "savedFallback": "saved"
+        },
+        "sectors": {
+          "title": "Sector Intelligence",
+          "subtitle": "Events grouped by operational domain",
+          "fullFeed": "Full feed →",
+          "emptyTitle": "No {{sector}} intelligence",
+          "emptyHint": "Events appear here when data is loaded from providers.",
+          "seeAll": "See all {{sector}} events →",
+          "details": "Details",
+          "openDetails": "Open details",
+          "originalSource": "Original source",
+          "fullAnalysis": "Full analysis",
+          "potentiallyDamaging": "Potentially damaging.",
+          "quakeTitle": "M{{mag}} Earthquake — {{place}}",
+          "quakeDepth": "Depth: {{depth}} km. {{extra}}",
+          "conflicts": "Conflicts",
+          "cyber": "Cyber",
+          "economic": "Economic",
+          "disasters": "Disasters"
+        },
+        "trending": {
+          "title": "Trending Topics",
+          "subtitle": "Most mentioned terms in the current feed",
+          "emptyTitle": "No trending topics",
+          "emptyHint": "Topics emerge as intelligence events load.",
+          "aria": "Trending intelligence topics",
+          "exploreFeed": "Explore Feed"
+        },
+        "categoryDistribution": {
+          "title": "Category Distribution",
+          "subtitle": "Live intelligence items grouped by category",
+          "empty": "No data yet."
+        },
+        "commandVideo": {
+          "aria": "Live video monitoring feed",
+          "live": "LIVE",
+          "loading": "LOADING",
+          "offline": "OFFLINE",
+          "openNewTab": "Open in new tab",
+          "openStreamAria": "Open stream in new tab",
+          "streamUnavailable": "Stream unavailable",
+          "embedBlocked": "{{provider}} embed is blocked by the provider",
+          "openProvider": "Open {{provider}}",
+          "connecting": "Connecting to {{provider}}…",
+          "categoriesAria": "Video channel categories",
+          "channelsAria": "{{cat}} channels",
+          "switchTo": "Switch to {{provider}}",
+          "emptyCategory": "No streams in this category.",
+          "news": "News",
+          "space": "Space",
+          "weather": "Weather",
+          "cities": "Cities",
+          "events": "Events"
+        }
+      },
+      "intelligence": {
+        "metaTitle": "Global Intelligence Engine — Global Pulse",
+        "title": "Global Intelligence Engine",
+        "subtitle": "Every headline is processed through entity extraction, severity scoring, event clustering, and risk analysis.",
+        "refresh": "Refresh",
+        "clearCache": "Clear cache",
+        "loading": "Running intelligence engine…",
+        "emptyTitle": "No events match your filters",
+        "emptyHint": "Clear the search or adjust category / severity filters.",
+        "metaDescription": "Professional intelligence platform: entity extraction, event clustering, risk scoring, and AI analysis of global events.",
+        "refreshFeed": "Refresh feed",
+        "articles": "{{count}} articles",
+        "events": "{{count}} events",
+        "clustered": "{{count}} clustered",
+        "sort": "Sort",
+        "sortImportance": "Importance",
+        "sortNewest": "Newest",
+        "sortSeverity": "Severity",
+        "sortConfidence": "Confidence",
+        "view": "View",
+        "viewTimeline": "Timeline",
+        "viewGrid": "Grid",
+        "viewCompact": "Compact",
+        "viewDetailed": "Detailed",
+        "eventsTitle": "Intelligence Events",
+        "processing": "Processing…",
+        "processedSubtitle": "{{count}} events after filtering",
+        "loadMore": "Load more ({{remaining}} remaining)",
+        "globalRiskTitle": "Global Risk Index",
+        "globalRiskSubtitle": "Composite world risk score",
+        "countryRiskTitle": "Country Risk Engine",
+        "countryRiskSubtitle": "Top {{count}} countries by risk",
+        "riskLoadingTitle": "Loading risk data…",
+        "riskLoadingHint": "Risk index appears after events are processed.",
+        "statusLive": "LIVE",
+        "statusCached": "CACHED",
+        "statusRateLimited": "RATE LIMITED",
+        "statusError": "API ERROR",
+        "statusDemo": "DEMO",
+        "statusQuota": "QUOTA REACHED",
+        "sortCountry": "Country",
+        "sortSource": "Source"
+      },
+      "map": {
+        "metaTitle": "Live World Map — Global Pulse",
+        "title": "Live World Map",
+        "subtitle": "{{visible}} of {{total}} events visible",
+        "loading": "Loading map data…",
+        "resetView": "Reset view",
+        "refreshing": "Refreshing…",
+        "ui": {
+          "reset": "Reset",
+          "fullscreen": "Fullscreen",
+          "filters": "Filters",
+          "severity": "Severity",
+          "category": "Category",
+          "riskScore": "Risk score",
+          "confidence": "Confidence",
+          "saveToSupabase": "Save to Supabase",
+          "closePanel": "Close panel",
+          "noEvents": "No events",
+          "noEventsMatch": "No events match your filters.",
+          "legend": "Legend",
+          "clusters": "Clusters",
+          "clearFilters": "Clear filters",
+          "clearAll": "Clear all",
+          "apply": "Apply",
+          "searchEvents": "Search events",
+          "searchPlaceholder": "Search country, city, keyword, provider, category or tag…",
+          "eventDetails": "Event details",
+          "countryInsight": "Country insight",
+          "status": "Status",
+          "sources": "Sources",
+          "lastUpdated": "Last updated",
+          "sidePanel": "Side panel",
+          "markers": "Markers",
+          "heatmap": "Heatmap",
+          "both": "Both",
+          "replay": "Replay",
+          "layers": "Layers",
+          "layerOpacity": "Layer opacity",
+          "riskIndex": "Risk Index",
+          "heatmapOpacityAria": "Heatmap layer opacity",
+          "riskIndexOpacityAria": "Risk Index layer opacity",
+          "riskMin": "Risk ≥",
+          "confidenceMin": "Confidence ≥",
+          "verifiedOnly": "Verified only",
+          "liveOnly": "Live only",
+          "severityMarkerColor": "Severity (marker color)",
+          "activeLayers": "Active layers",
+          "heatmapSuffix": "(heatmap)",
+          "clusterHint": "Cluster (N events, colored by average severity)",
+          "visibleEvents": "Visible events",
+          "items": "{{count}} items",
+          "locateOnMap": "Locate on map",
+          "details": "Details",
+          "noSourceUrl": "No source URL available",
+          "noCoords": "no coords",
+          "country": "Country",
+          "time": "Time",
+          "provider": "Provider",
+          "importance": "Importance",
+          "coordinates": "Coordinates",
+          "verified": "Verified",
+          "live": "Live",
+          "yes": "Yes",
+          "no": "No",
+          "relatedEvents": "Related events ({{count}})",
+          "aiExplain": "AI Explain",
+          "aiExplainFailed": "AI Explain failed. Showing local data only.",
+          "eventsVisible": "{{visible}} / {{total}} events visible",
+          "liveProviders": "{{count}} live providers",
+          "refreshedAt": "Refreshed {{time}}",
+          "notYetRefreshed": "Not yet refreshed",
+          "activeFilters": "Active filters",
+          "allEventsVisible": "All events visible",
+          "severityChip": "Severity: {{level}}",
+          "searchChip": "Search: \"{{query}}\"",
+          "layerOff": "Layer off: {{label}}",
+          "extraLayersOn": "+{{count}} extra layers on",
+          "population": "Population",
+          "region": "Region",
+          "riskScoreRecent": "Risk score (recent events)",
+          "noRecentEvents": "No recent events",
+          "savedStatus": "Saved status",
+          "savedItems": "{{count}} saved item(s)",
+          "noneSaved": "None saved",
+          "loadWeather": "Load weather",
+          "refreshWeather": "Refresh weather",
+          "recentEvents": "Recent events",
+          "refreshTitle": "Refresh map data",
+          "resetViewTitle": "Reset to global view",
+          "toggleFullscreen": "Toggle fullscreen",
+          "toggleSidePanel": "Toggle side panel",
+          "showMode": "Show {{mode}}",
+          "replayTitle": "Chronological replay mode",
+          "clearFiltersTitle": "Clear all filters",
+          "clear": "clear",
+          "noMatches": "No matches.",
+          "all": "All",
+          "timeline": "Timeline",
+          "customRange": "Custom range",
+          "to": "to",
+          "play": "Play",
+          "pause": "Pause",
+          "speed": "Speed",
+          "riskWithScore": "risk {{score}}",
+          "categoryFilterTitle": "Filter map events by category."
+        }
+      },
+      "about": {
+        "metaTitle": "About — Global Pulse",
+        "title": "About Global Pulse",
+        "subtitle": "An educational project for InfoEducație",
+        "feedbackTitle": "Send us feedback",
+        "feedbackSend": "Send feedback",
+        "feedbackSending": "Sending…",
+        "projectInfo": "Project info",
+        "feedbackSubtitle": "Stored in Supabase · user_feedback",
+        "namePlaceholder": "Your name (optional)",
+        "messagePlaceholder": "Your message",
+        "rating": "Rating",
+        "connectHint": "Connect Supabase to enable feedback submission.",
+        "sections": {
+          "what": {
+            "title": "What is Global Pulse?",
+            "body": "An educational real-time situational awareness dashboard that aggregates public planetary data — earthquakes, weather, countries and alerts — into a single polished interface."
+          },
+          "problem": {
+            "title": "The problem it solves",
+            "body": "Public data exists across many fragmented APIs. Global Pulse demonstrates how a thoughtful UI can turn raw feeds into actionable, glanceable insight."
+          },
+          "users": {
+            "title": "Target users",
+            "body": "Students, educators, hobbyists in geopolitics, climate or seismology, and anyone curious about live world data."
+          },
+          "tech": {
+            "title": "Technologies used",
+            "body": "React 19, TypeScript, TanStack Router & Query, Tailwind CSS, MapLibre GL (Mapbox-ready), Recharts, lucide-react, and Lovable Cloud (Supabase)."
+          },
+          "apis": {
+            "title": "APIs used",
+            "body": "REST Countries (countries), USGS (earthquakes), OpenWeather (weather), and Supabase for persistence."
+          },
+          "supabase": {
+            "title": "Supabase integration",
+            "body": "Four tables — saved_countries, saved_alerts, user_feedback, project_logs — with RLS enabled. All saves and deletes are audited into project_logs."
+          },
+          "map": {
+            "title": "Why the map matters",
+            "body": "A professional dark map (MapLibre / Mapbox-compatible) gives spatial context to seismic and alert data — a hallmark of monitoring dashboards."
+          },
+          "education": {
+            "title": "Educational value",
+            "body": "Demonstrates async data fetching, error/loading/empty states, charting, geospatial visualization, and database CRUD with RLS — all common topics in modern web courses."
+          },
+          "future": {
+            "title": "Future improvements",
+            "body": "Authentication, per-user saved data, real-time websockets, forecast charts, satellite imagery overlays, internationalization."
+          },
+          "limits": {
+            "title": "Data limitations",
+            "body": "Free public APIs may rate-limit or lag; demo data is clearly labeled. This is not an operational tool."
+          },
+          "privacy": {
+            "title": "Privacy and ethics",
+            "body": "No personal data is collected without consent. The feedback form is optional and demo-grade."
+          },
+          "credits": {
+            "title": "Credits / data sources",
+            "body": "USGS Earthquake Hazards Program · REST Countries · OpenWeather · OpenStreetMap (basemap tiles via CARTO) · Supabase."
+          }
+        }
+      },
+      "alertCenter": {
+        "metaTitle": "Global Alert Center — Global Pulse",
+        "title": "Global Alert Center",
+        "subtitle": "Continuous evaluation of platform intelligence — severity, confidence, correlation, and crisis detection.",
+        "emptyTitle": "No alerts in this view",
+        "emptyHint": "The Alert Engine continuously evaluates live intelligence — check back shortly or adjust filters.",
+        "loadError": "Unable to load alert data",
+        "aiCrisisBriefing": "AI Crisis Briefing",
+        "supportingEvidence": "Supporting Evidence",
+        "recommendedInvestigation": "Recommended Investigation",
+        "trend": "Trend",
+        "watchlist": "Watchlist",
+        "watchlistHint": "personalized alerts",
+        "watchlistEmpty": "No watched items yet. Add a country, region, or keyword above.",
+        "addToWatchlist": "Add to watchlist",
+        "riskScore": "Risk Score",
+        "priority": "Priority",
+        "explanation": "Explanation",
+        "countries": "Countries",
+        "regions": "Regions",
+        "notSpecified": "Not specified",
+        "investigate": "Investigate",
+        "dismissCrisis": "Dismiss crisis banner",
+        "supportingSources": "Supporting Sources ({{count}})",
+        "relatedEvents": "Related Events ({{count}})",
+        "viewConnections": "View Connections in Knowledge Graph",
+        "tabs": {
+          "active": "Active",
+          "critical": "Critical",
+          "resolved": "Resolved",
+          "regional": "Regional",
+          "country": "Country",
+          "timeline": "Timeline"
+        }
+      },
+      "missionControl": {
+        "metaTitle": "Mission Control — Global Pulse",
+        "ariaMain": "Mission Control",
+        "presentationMode": "Presentation mode",
+        "forceRefresh": "Force refresh",
+        "toggleFullscreen": "Toggle fullscreen",
+        "live": "Live",
+        "events": "Events",
+        "critical": "Critical",
+        "countries": "Countries",
+        "quick": "Quick",
+        "loading": "Loading…",
+        "operational": "Operational",
+        "providersOnline": "{{online}}/{{total}} providers online",
+        "eventsProcessed": "{{count}} events processed",
+        "countriesMonitored": "{{count}} countries monitored",
+        "presentation": "Presentation",
+        "footerBrand": "Global Pulse Intelligence Platform · InfoEducație 2026",
+        "widgets": {
+          "threatTitle": "Global Threat Assessment",
+          "eventsFeed": "Live Intelligence Feed",
+          "aiBriefing": "AI Executive Briefing",
+          "regional": "Regional Stability",
+          "systemStatus": "System Status",
+          "liveMedia": "Live Media Center",
+          "categoryActivity": "Category Activity",
+          "confidence": "Confidence",
+          "providers": "Providers",
+          "active": "active",
+          "eventSeverity": "Event Severity",
+          "highestRisk": "Highest Risk",
+          "keyFactors": "Key Factors",
+          "noCriticalHigh": "No critical or high events",
+          "streamUnavailable": "Stream unavailable",
+          "openInNewTab": "Open in new tab",
+          "keyFindings": "Key Findings",
+          "mostStable": "Most Stable",
+          "mostTense": "Most Tense",
+          "lastSync": "Last sync",
+          "never": "Never",
+          "statProviders": "Providers",
+          "statEvents": "Events",
+          "statCountries": "Countries"
+        },
+        "commands": {
+          "globe": "Globe",
+          "ai": "AI",
+          "reports": "Reports",
+          "knowledgeGraph": "Knowledge Graph",
+          "countries": "Countries",
+          "analytics": "Analytics",
+          "liveMap": "Live Map",
+          "earthquakes": "Earthquakes"
+        },
+        "workspaceSynced": "Mission Control workspace synced to your account"
+      },
+      "aiNews": {
+        "metaTitle": "Global Pulse AI — Intelligence Assistant",
+        "title": "Intelligence Assistant",
+        "refreshContext": "Refresh context",
+        "metaDescription": "Intelligence Command Center — ask Global Pulse AI about breaking news, country risk, earthquakes, and global events.",
+        "subtitle": "Powered by {{model}} · Real-time data fusion · {{count}} events loaded",
+        "ariaMain": "Global Pulse AI Intelligence Command Center",
+        "ariaPrompts": "Suggested intelligence prompts",
+        "ariaSidebar": "AI context sidebar",
+        "askAria": "Ask: {{label}}",
+        "loadingContext": "Loading intelligence context…",
+        "contextReady": "Context ready · {{count}} events",
+        "knowledgeSources": "Knowledge Sources",
+        "quickAnalysis": "Quick Analysis",
+        "quickNav": "Quick Navigation",
+        "promptSituation": "Global situation today",
+        "promptRisks": "Current geopolitical risks",
+        "promptBriefing": "Executive intelligence brief",
+        "promptQuakes": "Analyze earthquake activity",
+        "promptRegions": "Highest-risk regions",
+        "promptCyber": "Cyber threat landscape",
+        "promptWeather": "Extreme weather events",
+        "promptBreaking": "Breaking news summary",
+        "sourceLiveNews": "Live News",
+        "sourceEarthquakes": "Earthquakes",
+        "sourceCountryRisk": "Country Risk",
+        "sourceSaved": "Saved Intelligence",
+        "navReport": "Generate Report",
+        "navMap": "Open World Map",
+        "navAnalytics": "View Analytics",
+        "navFeed": "Intel Feed",
+        "geminiLive": "Gemini Live",
+        "geminiFallback": "Gemini (Fallback)",
+        "localFallback": "Local Fallback",
+        "eventsBadge": "{{count}} events",
+        "chatSubtitle": "Global Pulse AI · Google Gemini when configured",
+        "thinking": "Global Pulse AI is thinking…",
+        "placeholder": "Ask Global Pulse AI about news, the map, or the platform…",
+        "saveBriefing": "Save briefing",
+        "clearChat": "Clear chat",
+        "askFirstTitle": "Ask a question first",
+        "saveTitle": "Save last Q&A to Supabase",
+        "toastContextFailed": "Could not load analyst context.",
+        "toastLocalFallback": "Using local analyst — Gemini is temporarily busy or unavailable.",
+        "toastFallbackModel": "Primary model busy — answered with fallback Gemini model.",
+        "toastGeminiError": "Gemini returned an error.",
+        "toastAiFailed": "Global Pulse AI failed to respond.",
+        "toastAskFirst": "Ask a question first to save a briefing.",
+        "toastBriefingSaved": "Briefing saved",
+        "toastBriefingTableMissing": "Briefing save table not configured yet.",
+        "processError": "I couldn't process that request: {{message}}"
+      },
+      "productPreview": {
+        "countries": "Countries",
+        "critical": "Critical",
+        "stability": "Stability",
+        "liveFeed": "Live feed"
+      },
+      "analytics": {
+        "metaTitle": "Analytics — Global Pulse",
+        "title": "Intelligence Analytics",
+        "subtitle": "Trend analysis from observable intelligence data. No predictions — only measured change.",
+        "loading": "Running trend analysis…",
+        "emptyTitle": "No intelligence data",
+        "emptyHint": "Wait for the intelligence feed to load, then refresh.",
+        "metaDescription": "Intelligence trend analysis and predictive analytics for global events.",
+        "eventsLoaded": "{{count}} events loaded",
+        "window24h": "24-hour window",
+        "updatedAt": "Updated {{time}}",
+        "globalTrend": "Global Intelligence Trend",
+        "globalTrendSubtitle": "Based on {{recent}} recent events vs {{baseline}} baseline",
+        "eventFrequency": "Event Frequency",
+        "eventFrequencySubtitle": "Events per 2-hour window — last 24 hours",
+        "countryTrends": "Country Activity Trends",
+        "countryTrendsSubtitle": "Countries ranked by recent event count",
+        "severityDist": "Severity Distribution",
+        "severityDistSubtitle": "Last 6 hours",
+        "sectorTrends": "Sector Trends",
+        "sectorTrendsSubtitle": "By intelligence category",
+        "methodology": "Methodology",
+        "recentWindow": "Recent window:",
+        "recentWindowVal": "Last 6 hours",
+        "baselineWindow": "Baseline window:",
+        "baselineWindowVal": "6–24 hours ago",
+        "trendScore": "Trend score:",
+        "trendScoreVal": "60% severity-weighted + 40% velocity",
+        "increasingRisk": "Increasing Risk:",
+        "increasingRiskVal": "ratio > 1.25",
+        "improving": "Improving:",
+        "improvingVal": "ratio < 0.75",
+        "stable": "Stable:",
+        "stableVal": "ratio between 0.75–1.25",
+        "methodologyFooter": "Data based on {{count}} current events. Trends do not predict future events.",
+        "rising": "Rising",
+        "calming": "Calming",
+        "stableLabel": "Stable",
+        "recent": "recent"
+      },
+      "watchlist": {
+        "metaTitle": "Watch Center — Global Pulse",
+        "title": "Watch Center",
+        "subtitle": "Monitor countries, categories, and keywords — auto-refreshes every 5 minutes",
+        "addTitle": "Add to Watchlist",
+        "watchButton": "Watch",
+        "emptyListTitle": "No watchlist items",
+        "emptyListHint": "Add a country, category, or keyword above to start monitoring.",
+        "addSubtitle": "Monitor a country, category, keyword, or severity level",
+        "typeCountry": "Country",
+        "typeCategory": "Category",
+        "typeKeyword": "Keyword",
+        "typeSeverity": "Severity",
+        "phCountry": "e.g. Ukraine, Japan, Germany",
+        "phCategory": "e.g. military, cyber, economy",
+        "phKeyword": "e.g. missile, sanctions, flood",
+        "phSeverity": "critical, high, medium, low",
+        "pin": "Pin",
+        "unpin": "Unpin",
+        "favorite": "Favorite",
+        "unfavorite": "Unfavorite",
+        "remove": "Remove",
+        "openDetails": "Open details",
+        "originalSource": "Original source",
+        "fullAnalysis": "Full analysis",
+        "selectTitle": "Select a watch item",
+        "selectHint": "Choose a country, category, or keyword from the list to see matching events.",
+        "matchingSubtitle": "{{count}} matching events · {{type}} watch",
+        "loadingEvents": "Loading events…",
+        "noMatchTitle": "No events matching \"{{label}}\"",
+        "noMatchHint": "Try refreshing the feed or broadening your watch criteria.",
+        "suggestedTitle": "Suggested Watches",
+        "suggestedSubtitle": "Quick-add popular monitoring queries",
+        "countryIntel": "Country Intel →",
+        "eventsCount": "{{count}} events",
+        "analyze": "Analyze",
+        "filterAll": "all",
+        "filterPinned": "pinned",
+        "filterFavorites": "favorites",
+        "filterHits": "hits",
+        "sortRecent": "recent",
+        "sortAlpha": "alpha",
+        "sortHits": "hits"
+      },
+      "compare": {
+        "metaTitle": "Compare Countries — Global Pulse",
+        "title": "Comparative Intelligence",
+        "subtitle": "Side-by-side analysis: country data, intelligence events, risk scores, and AI assessment",
+        "compareButton": "Compare",
+        "loading": "Loading comparative intelligence…",
+        "countryA": "Country A",
+        "countryB": "Country B",
+        "placeholderA": "e.g. Romania, Ukraine",
+        "placeholderB": "e.g. Germany, Russia",
+        "analyzing": "Analyzing…",
+        "aiAnalysis": "AI Analysis",
+        "visualTitle": "Visual Comparison",
+        "visualSubtitle": "Key metrics side-by-side",
+        "normalized": "0–100 normalized",
+        "aiComparativeTitle": "AI Comparative Analysis",
+        "aiComparativeSubtitle": "Gemini-powered intelligence assessment",
+        "timelineTitle": "Intelligence Timeline",
+        "timelineSubtitle": "Event frequency over the last 7 days",
+        "insightTitle": "Quick Intelligence Insight",
+        "generateAi": "Generate AI Comparative Analysis",
+        "generatingAi": "Generating AI Analysis…",
+        "noEvents": "No events",
+        "noEventsHint": "No intelligence events for this country in the current feed.",
+        "intelSubtitle": "{{count}} events in current feed",
+        "seismicTitle": "{{country}} Seismic",
+        "seismicSubtitle": "{{count}} earthquakes nearby (24h)",
+        "weatherTitle": "{{country}} Weather",
+        "economyTitle": "{{country}} Economy",
+        "economySubtitle": "World Bank indicators",
+        "intelTitle": "{{country}} Intelligence",
+        "population": "Population",
+        "area": "Area",
+        "intelEvents": "Intel Events",
+        "earthquakes": "Earthquakes",
+        "earthquakes24h": "{{count}} (24h)",
+        "riskLevel": "Risk Level",
+        "riskScore": "Risk Score",
+        "populationM": "Population (M)",
+        "areaK": "Area (k km²)",
+        "condition": "Condition",
+        "temperature": "Temperature",
+        "feelsLike": "Feels like",
+        "humidity": "Humidity",
+        "wind": "Wind",
+        "gdpPerCapita": "GDP / capita",
+        "lifeExpectancy": "Life expectancy",
+        "unemployment": "Unemployment",
+        "capital": "Capital",
+        "today": "Today",
+        "days2to3": "2–3d",
+        "days4to7": "4–7d",
+        "quick": "Quick:",
+        "pdf": "PDF",
+        "json": "JSON"
+      },
+      "countries": {
+        "metaTitle": "Countries — Global Pulse",
+        "title": "Countries",
+        "subtitle": "Reference metadata from REST Countries API",
+        "searchPlaceholder": "Search country (e.g. Japan, Romania)",
+        "emptyTitle": "Search any country to begin"
+      },
+      "earthquakes": {
+        "metaTitle": "Earthquakes — Global Pulse",
+        "title": "Earthquakes",
+        "subtitle": "Live seismic data from USGS · 24h via Intelligence Engine, 7d direct feed",
+        "live": "Live",
+        "lastDay": "Last day",
+        "lastWeek": "Last week",
+        "minMagnitude": "Min magnitude",
+        "newest": "Newest",
+        "highestMagnitude": "Highest magnitude",
+        "highSeverityOnly": "High severity only",
+        "magnitudeDistribution": "Magnitude distribution",
+        "depth": "depth {{depth}} km",
+        "saveAlert": "Save alert",
+        "empty": "No earthquakes match your filters.",
+        "loadFailed": "Failed to load earthquake data."
+      },
+      "weather": {
+        "metaTitle": "Weather — Global Pulse",
+        "title": "Weather",
+        "subtitleLive": "Live current conditions via OpenWeather",
+        "subtitleDemo": "Demo data — add OPENWEATHER_API_KEY for live",
+        "searchPlaceholder": "Search city (e.g. Cluj-Napoca)",
+        "live": "Live",
+        "demo": "Demo",
+        "feelsLike": "Feels like",
+        "humidity": "Humidity",
+        "wind": "Wind",
+        "icon": "Icon",
+        "outlook": "24-hour outlook",
+        "illustrative": "Illustrative",
+        "failed": "Failed."
+      },
+      "knowledgeGraph": {
+        "metaTitle": "Knowledge Graph — Global Pulse",
+        "title": "Global Knowledge Graph",
+        "building": "Building…",
+        "searchPlaceholder": "Search countries, topics, events…",
+        "buildingGraph": "Building Knowledge Graph…",
+        "loadingEvents": "Loading intelligence events",
+        "hub": "Hub",
+        "active": "Active",
+        "trending": "Trending",
+        "clusters": "Clusters",
+        "confidence": "Confidence",
+        "sourceEvents": "Source Events",
+        "occurredIn": "Occurred In",
+        "sameTimeWindow": "Same Time Window",
+        "relatedTo": "Related To",
+        "filters": "Filters",
+        "allTypes": "All types",
+        "close": "Close",
+        "noSelection": "No selection",
+        "selectNode": "Select a node",
+        "nodesEdges": "{{nodes}} nodes · {{edges}} edges",
+        "links": "{{count}} links",
+        "refreshGraph": "Refresh graph",
+        "severity": "Severity",
+        "nodeTypes": "Node types",
+        "minRisk": "Min risk: {{value}}",
+        "resetAllFilters": "Reset all filters",
+        "density": "density {{value}}%",
+        "graphFailed": "Graph generation failed",
+        "legend": "Legend",
+        "legendCountry": "Country",
+        "legendConflict": "Conflict / Critical",
+        "legendEarthquake": "Earthquake",
+        "legendWeather": "Weather",
+        "legendEconomy": "Economy",
+        "legendTopic": "Topic / Category",
+        "edges": "Edges",
+        "intelligenceCorrelation": "Intelligence Correlation",
+        "refreshing": "Refreshing…",
+        "riskScore": "Risk Score",
+        "severityLabel": "Severity: {{level}}",
+        "connections": "Connections ({{count}})",
+        "connectedEntities": "Connected Entities",
+        "lastUpdated": "Last updated",
+        "viewCountryIntel": "View Country Intelligence →",
+        "source": "Source: {{provider}}",
+        "entityNetwork": "Entity network · {{nodes}} nodes · {{edges}} relationships",
+        "hubsCount": "{{count}} hubs",
+        "countriesCount": "{{count}} countries",
+        "clustersCount": "{{count}} clusters",
+        "error": "Error",
+        "ready": "Ready",
+        "nodeType": {
+          "country": "Countries",
+          "conflict": "Conflicts",
+          "earthquake": "Earthquakes",
+          "wildfire": "Wildfires",
+          "cyber": "Cyber",
+          "economic": "Economy",
+          "political": "Politics",
+          "health": "Health",
+          "weather": "Weather",
+          "breaking_news": "News",
+          "topic": "Topics"
+        }
+      },
+      "reports": {
+        "metaTitle": "Intelligence Reports — Global Pulse",
+        "metaDescription": "Generate, save, and export intelligence-style country reports, event reports, and global briefings.",
+        "title": "Intelligence Reports",
+        "subtitle": "Generate structured briefings from live, cached, or demo data already in Global Pulse",
+        "tabs": {
+          "executive": "Executive Reports",
+          "executiveBadge": "New",
+          "generate": "Custom Report",
+          "saved": "Saved reports",
+          "how": "How it works"
+        },
+        "preview": "Preview",
+        "previewSubtitle": "Save or export after generation",
+        "emptyDraftTitle": "No report yet",
+        "emptyDraftHint": "Choose a report type and click Generate.",
+        "savedTitle": "Saved reports",
+        "configureSupabase": "Configure Supabase to save reports.",
+        "loadingReports": "Loading reports…",
+        "emptySavedTitle": "No saved reports",
+        "emptySavedHint": "Generate and save a report first.",
+        "selectReport": "Select a report",
+        "selectReportHint": "Open a saved report to view or print.",
+        "view": "View",
+        "delete": "Delete",
+        "printExportPdf": "Print / Export PDF",
+        "saving": "Saving…",
+        "saveToSupabase": "Save to Supabase",
+        "how": {
+          "title": "How Intelligence Reports work",
+          "dataTitle": "Data used",
+          "dataIntro": "Reports are generated from the centralized Intelligence Store, which spans every active provider — not just headlines:",
+          "dataGnews": "GNews, GDELT & RSS intelligence headlines",
+          "dataUsgs": "USGS earthquakes (last 24h)",
+          "dataGdacs": "GDACS & ReliefWeb disaster / humanitarian alerts",
+          "dataAcled": "ACLED conflict events & NASA FIRMS fire detections (where configured)",
+          "dataWorldBank": "World Bank economic indicators",
+          "dataRisk": "Country Risk Index (multi-source composite)",
+          "dataSupabase": "Supabase saved alerts & saved intelligence",
+          "dataCountries": "REST Countries metadata (country reports)",
+          "dataHealth": "API health / data status labels (LIVE, CACHED, DEMO)",
+          "genTitle": "How reports are generated",
+          "genBody": "Global Pulse builds a structured draft from in-app data, then optionally polishes it with Global Pulse AI (Google Gemini) when configured. If Gemini is busy or unavailable, a local structured fallback is used — still based only on loaded data.",
+          "limitsTitle": "Limitations",
+          "limitInvent": "Reports never invent headlines, magnitudes, or countries.",
+          "limitDemo": "DEMO data is clearly labeled and must not be treated as live breaking news.",
+          "limitCached": "CACHED data reflects previously fetched live headlines, not the open internet.",
+          "limitRisk": "Risk scores are educational composites, not official assessments."
+        },
+        "types": {
+          "morning": {
+            "label": "Morning Briefing",
+            "description": "Dawn intelligence summary — top events from the last 12 hours",
+            "badge": "Daily"
+          },
+          "evening": {
+            "label": "Evening Briefing",
+            "description": "Day-end review — key developments and threat assessment",
+            "badge": "Daily"
+          },
+          "daily": {
+            "label": "Daily Summary",
+            "description": "Comprehensive 24-hour intelligence digest with analysis"
+          },
+          "weekly": {
+            "label": "Weekly Summary",
+            "description": "Strategic overview based on current intelligence snapshot"
+          },
+          "country": {
+            "label": "Country Report",
+            "description": "Full intelligence profile for a specific country"
+          },
+          "conflict": {
+            "label": "Conflict Report",
+            "description": "Active conflicts, military movements, geopolitical tensions"
+          },
+          "economic": {
+            "label": "Economic Report",
+            "description": "Economic signals, trade developments, financial stability"
+          },
+          "climate": {
+            "label": "Climate Report",
+            "description": "Environmental events, natural disasters, weather extremes"
+          },
+          "cyber": {
+            "label": "Cyber Report",
+            "description": "Cybersecurity incidents, digital threats, technology vulnerabilities"
+          },
+          "technology": {
+            "label": "Technology Report",
+            "description": "Technology sector developments, digital economy, innovation"
+          }
+        },
+        "executive": {
+          "title": "Executive Report Generator",
+          "subtitle": "AI-powered briefings from live intelligence data",
+          "countryPlaceholder": "Enter country name (e.g. Ukraine, Japan)",
+          "generate": "Generate Report",
+          "generating": "Generating…",
+          "reportReady": "Report ready",
+          "generatingLabel": "Generating {{label}}…",
+          "generatingHint": "Fetching latest intelligence data and running AI analysis",
+          "emptyTitle": "No report generated yet",
+          "emptyHint": "Select a report type and click Generate Report.",
+          "generatedAt": "Generated {{time}}",
+          "eventsUsed": "{{count}} events used",
+          "exportPdf": "Export as PDF",
+          "exportJson": "Export as JSON",
+          "exportTxt": "Export as TXT",
+          "pdf": "PDF",
+          "json": "JSON",
+          "txt": "TXT",
+          "reportTitle": "{{label}} — {{date}}"
+        },
+        "custom": {
+          "globalBriefing": "Global Briefing",
+          "globalBriefingHint": "Planet-wide executive summary",
+          "countryReport": "Country Report",
+          "countryReportHint": "Focus on one country",
+          "eventReport": "Event Report",
+          "eventReportHint": "Deep dive on one headline",
+          "countryLabel": "Country name",
+          "countryPlaceholder": "e.g. Romania, Ukraine, United States",
+          "selectHeadline": "Select headline",
+          "loadingEvents": "Loading events…",
+          "generate": "Generate Intelligence Report",
+          "generating": "Generating report…"
+        }
+      },
+      "country": {
+        "metaTitle": "Country Intelligence — Global Pulse",
+        "loading": "Loading {{country}} intelligence profile…",
+        "ariaMain": "{{country}} Intelligence Dashboard",
+        "goBack": "Back",
+        "goBackAria": "Go back",
+        "flagAlt": "Flag of {{country}}",
+        "riskBadge": "{{label}} Risk",
+        "intelligenceProfile": "Intelligence Profile",
+        "restStatus": "REST {{status}}",
+        "kpiIntelEvents": "Intel Events",
+        "kpiSeismic": "Seismic (24h)",
+        "kpiCritical": "Critical",
+        "kpiHigh": "High",
+        "kpiPopulation": "Population",
+        "viewOnMap": "View on Map",
+        "compare": "Compare",
+        "countries": "Countries",
+        "analytics": "Analytics",
+        "googleMaps": "Google Maps",
+        "riskScore": "Risk Score",
+        "outOf100": "out of 100",
+        "riskScoreAria": "Risk score: {{score}}/100",
+        "heroAria": "Country profile header",
+        "metadataUnavailable": "Country metadata unavailable for \"{{country}}\". Showing intelligence data only.",
+        "usingBundled": " Using bundled country reference data.",
+        "aiBriefing": {
+          "title": "AI Country Briefing",
+          "subtitleLive": "Gemini-powered intelligence assessment",
+          "subtitleLocal": "Local intelligence assessment",
+          "regenerate": "Regenerate AI briefing",
+          "regenerateTitle": "Regenerate briefing",
+          "analyzing": "Analyzing {{country}} intelligence…",
+          "situation": "Situation",
+          "riskFactors": "Risk Factors",
+          "outlook": "Outlook",
+          "monitor": "Monitor",
+          "updating": "Updating analysis…",
+          "loadingData": "Loading intelligence data…",
+          "deepDive": "Deep-dive with Global Pulse AI →",
+          "aiLive": "AI LIVE",
+          "local": "LOCAL"
+        },
+        "timeline": {
+          "title": "Intelligence Timeline",
+          "subtitle": "{{count}} events",
+          "subtitleFiltered": "{{count}} events in last {{period}}",
+          "filterAria": "Timeline filter",
+          "today": "Today",
+          "days7": "7 Days",
+          "days30": "30 Days",
+          "all": "All Time",
+          "emptyTitle": "No events in this period",
+          "emptyHint": "Try expanding the filter. {{count}} total events available.",
+          "eventsAria": "Timeline events",
+          "earthquake": "M{{mag}} earthquake — {{place}}",
+          "viewDetails": "View details: {{title}}"
+        },
+        "recentIntel": {
+          "title": "Recent Intelligence",
+          "subtitle": "{{count}} events from intelligence feed",
+          "emptyTitle": "No intelligence events",
+          "emptyHint": "No events mentioning this country were found in the current feed.",
+          "moreEvents": "+{{count}} more events in feed"
+        },
+        "seismic": {
+          "title": "Seismic Activity",
+          "subtitle": "{{count}} earthquakes near {{country}} — last 24h (USGS)",
+          "depth": "Depth {{depth}} km · {{time}}",
+          "viewUsgs": "View on USGS",
+          "fullDatabase": "Full Seismic Database →"
+        },
+        "geoProfile": {
+          "title": "Geographic Profile",
+          "capital": "Capital",
+          "region": "Region",
+          "population": "Population",
+          "area": "Area",
+          "languages": "Languages",
+          "currency": "Currency",
+          "timezone": "Timezone",
+          "areaValue": "{{area}} km²"
+        },
+        "riskAssessment": {
+          "title": "Risk Assessment",
+          "compositeScore": "Composite Score",
+          "eventDistribution": "Event Distribution",
+          "activeFactors": "Active Factors"
+        },
+        "trending": {
+          "title": "Trending Topics",
+          "subtitle": "Most mentioned terms",
+          "aria": "Country trending topics"
+        },
+        "borders": {
+          "title": "Border Nations",
+          "subtitle": "Adjacent countries",
+          "viewAria": "View {{code}} intelligence"
+        },
+        "snapshot": {
+          "title": "Intelligence Snapshot",
+          "intelEvents": "Intel Events",
+          "seismic24h": "Seismic (24h)",
+          "critical": "Critical",
+          "highPriority": "High Priority",
+          "fullFeed": "Full Intelligence Feed →"
+        },
+        "viewDetails": "View details",
+        "fullAnalysis": "Details",
+        "viewItem": "View: {{title}}"
+      },
+      "saved": {
+        "metaTitle": "Saved Data — Global Pulse",
+        "title": "Saved Data",
+        "notConfiguredTitle": "Supabase is not configured yet",
+        "notConfiguredHint": "Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY in .env, then restart the dev server (Ctrl+C → npm run dev) and hard-refresh.",
+        "subtitle": "Loaded only from Supabase — never from local demo data",
+        "urlHostWarning": "URL host is not *.supabase.co — check VITE_SUPABASE_URL",
+        "refresh": "Refresh Supabase data",
+        "testConnection": "Test Supabase connection",
+        "countriesTitle": "Saved Countries",
+        "alertsTitle": "Saved Alerts",
+        "intelTitle": "Saved Intelligence",
+        "entries": "{{count}} entries",
+        "emptyCountries": "No saved countries yet",
+        "emptyAlerts": "No saved alerts yet",
+        "emptyIntel": "No saved intelligence yet",
+        "emptyIntelHint": "Open the Intelligence Feed and click Save on any item.",
+        "open": "Open"
+      },
+      "presentation": {
+        "metaTitle": "Presentation Mode — Global Pulse",
+        "title": "Presentation Mode",
+        "metaDescription": "Full-screen presentation mode for Global Pulse Mission Control briefings."
+      },
+      "eventDetail": {
+        "metaTitle": "Event Analysis — Global Pulse",
+        "loading": "Loading intelligence event…",
+        "back": "Back",
+        "notFoundTitle": "Event not found",
+        "notFoundHint": "This event may have expired from the live feed. Events are refreshed every 30 minutes.",
+        "browseFeed": "Browse Intelligence Feed",
+        "returnDashboard": "Return to Dashboard",
+        "live": "Live",
+        "sourceArticle": "Source article",
+        "saveEvent": "Save event",
+        "shareLink": "Share link",
+        "aiTitle": "AI Intelligence Analysis",
+        "aiSubtitle": "Gemini-powered contextual briefing",
+        "generateBriefing": "Generate AI Briefing",
+        "analyzing": "Analyzing…",
+        "noAnalysis": "No analysis available.",
+        "actionsTitle": "Recommended Actions",
+        "actionsSubtitle": "Based on category and severity level",
+        "relatedTitle": "Related Intelligence",
+        "relatedSubtitle": "Same country or category",
+        "metaTitleSection": "Event Metadata",
+        "metaSubtitle": "Intelligence object fields",
+        "metaId": "ID",
+        "metaSource": "Source",
+        "metaCategory": "Category",
+        "metaSeverity": "Severity",
+        "metaCountry": "Country",
+        "metaLive": "Live",
+        "metaYes": "Yes",
+        "metaNo": "No",
+        "metaCoordinates": "Coordinates",
+        "metaPublished": "Published",
+        "countryIntelTitle": "Country Intelligence",
+        "countryIntelHint": "View the full intelligence profile for {{country}}.",
+        "countryIntelLink": "{{country}} Intelligence",
+        "prioritize": "⚡ Prioritize immediate monitoring",
+        "actions": {
+          "military_0": "Monitor official government channels",
+          "military_1": "Follow established diplomatic sources",
+          "military_2": "Track UN Security Council statements",
+          "geopolitics_0": "Consult country-specific intelligence reports",
+          "geopolitics_1": "Review geopolitical risk assessments",
+          "geopolitics_2": "Monitor embassy advisories",
+          "politics_0": "Track official government statements",
+          "politics_1": "Monitor legislative developments",
+          "politics_2": "Review political risk indices",
+          "economy_0": "Review financial market indicators",
+          "economy_1": "Track central bank communications",
+          "economy_2": "Monitor trade flow data",
+          "cyber_0": "Check CERT/CC advisories",
+          "cyber_1": "Review CISA vulnerability databases",
+          "cyber_2": "Apply security patches proactively",
+          "technology_0": "Monitor vendor security bulletins",
+          "technology_1": "Review regulatory filings",
+          "technology_2": "Track patent and standards bodies",
+          "disaster_0": "Check GDACS disaster alerts",
+          "disaster_1": "Follow local emergency management agencies",
+          "disaster_2": "Monitor Red Cross/Red Crescent updates",
+          "climate_0": "Review IPCC and WMO reports",
+          "climate_1": "Track environmental agency data",
+          "climate_2": "Monitor climate science publications",
+          "health_0": "Consult WHO situation reports",
+          "health_1": "Track CDC health advisories",
+          "health_2": "Monitor regional health authority updates",
+          "general_0": "Verify information from multiple sources",
+          "general_1": "Consult primary sources directly",
+          "general_2": "Monitor official channels"
+        }
+      },
+      "countryIntel": {
+        "metaTitle": "Country Intelligence — Global Pulse"
+      },
+      "settings": {
+        "title": "Settings",
+        "subtitle": "Language and personalization preferences",
+        "language": "Language",
+        "cloudSync": "Cloud sync & personalization",
+        "cloudSyncHint": "Preferences sync across devices when you are signed in.",
+        "guestHint": "You can change language as a guest. Sign in to sync preferences and unlock personalization.",
+        "signedInAs": "Signed in as {{email}}",
+        "emailNotifications": "Email notifications",
+        "personalizedFeed": "Personalized feed",
+        "saved": "Settings saved"
+      },
+      "savedArticles": {
+        "title": "Saved Articles",
+        "subtitle": "Your cloud bookmarks — synced across devices",
+        "emptyTitle": "No saved articles yet",
+        "emptyHint": "Save intelligence items from the feed to find them here."
+      },
+      "readingHistory": {
+        "title": "Reading History",
+        "subtitle": "Articles and briefings you recently opened",
+        "emptyTitle": "No reading history",
+        "emptyHint": "Open an intelligence item while signed in to start tracking.",
+        "clear": "Clear history"
+      },
+      "collections": {
+        "title": "Collections",
+        "subtitle": "Organize saved intelligence into curated sets",
+        "emptyTitle": "No collections yet",
+        "emptyHint": "Create a collection to group related articles.",
+        "newName": "Collection name",
+        "newPlaceholder": "e.g. Eastern Europe watch",
+        "create": "Create Collection",
+        "createNew": "Create New Collection",
+        "searchPlaceholder": "Search collections…",
+        "sortLabel": "Sort",
+        "sort": {
+          "updated": "Recently Updated",
+          "newest": "Newest",
+          "oldest": "Oldest",
+          "alpha": "Alphabetical"
+        },
+        "noSearchResults": "No collections match your search",
+        "articleCount": "{{count}} articles",
+        "created": "Created",
+        "updated": "Updated",
+        "actions": "Actions",
+        "rename": "Rename",
+        "deleteTitle": "Delete Collection?",
+        "deleteDescription": "This action cannot be undone.",
+        "createdToast": "Collection \"{{name}}\" created",
+        "renamedToast": "Collection renamed",
+        "deletedToast": "Collection deleted",
+        "addToTitle": "Add to Collection",
+        "addedToast": "Added to \"{{name}}\"",
+        "back": "Back to collections",
+        "notFoundTitle": "Collection not found",
+        "notFoundHint": "This collection does not exist or you do not have access.",
+        "emptyArticlesTitle": "No articles in this collection",
+        "emptyArticlesHint": "Add articles from Saved Articles using Add to Collection.",
+        "move": "Move to…",
+        "movedToast": "Article moved",
+        "removeArticleTitle": "Remove from collection?",
+        "removeArticleDescription": "The article will be removed from this collection.",
+        "removedArticleToast": "Article removed",
+        "addToCollection": "Add to Collection"
+      },
+      "account": {
+        "title": "Account",
+        "subtitle": "Your Global Pulse profile"
+      }
+    },
+    "comingSoon": {
+      "badge": "Coming Soon",
+      "title": "Coming Soon",
+      "description": "This feature is currently under development and will be available in a future update.",
+      "gotIt": "Got it",
+      "tooltip": "Professional Edition will be available soon.",
+      "professionalTooltip": "Professional Edition will be available soon.",
+      "enterpriseTooltip": "Enterprise Edition will be available soon.",
+      "professionalDescription": "The Professional plan is currently under development and will be available in a future update.",
+      "enterpriseDescription": "The Enterprise plan is currently under development and will be available in a future update.",
+      "emailNotificationsTooltip": "Email notifications will be available soon.",
+      "professionalTitle": "Professional Edition",
+      "enterpriseTitle": "Enterprise Edition"
+    }
+  }
+}

@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Bookmark, ExternalLink } from "lucide-react";
 import { SearchInput } from "@/components/ui/SearchInput";
@@ -8,9 +8,10 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PopulationChart } from "@/components/charts/PopulationChart";
-import { searchCountryByName } from "@/services/countriesApi";
+import { searchCountryByName, getCountriesStatus, subscribeCountriesStatus, type CountriesStatus } from "@/services/countriesApi";
 import { supabaseService, isSupabaseConfigured } from "@/services/supabaseService";
 import type { Country } from "@/types";
+import { useT } from "@/i18n";
 
 export const Route = createFileRoute("/countries")({
   head: () => ({ meta: [{ title: "Countries — Global Pulse" }] }),
@@ -19,13 +20,20 @@ export const Route = createFileRoute("/countries")({
 });
 
 function CountriesPage() {
+  const t = useT();
   const initialQ = Route.useSearch().q;
   const [q, setQ] = useState(initialQ ?? "Romania");
   const [country, setCountry] = useState<Country | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [countriesStatus, setCountriesStatus] = useState<CountriesStatus>("idle");
 
-  async function run(name?: string) {
+  useEffect(() => {
+    setCountriesStatus(getCountriesStatus());
+    return subscribeCountriesStatus(setCountriesStatus);
+  }, []);
+
+  const run = useCallback(async (name?: string) => {
     const term = (name ?? q).trim();
     if (!term) return;
     setLoading(true); setError(null); setCountry(null);
@@ -33,12 +41,12 @@ function CountriesPage() {
       const res = await searchCountryByName(term);
       if (!res.length) setError("No country found.");
       else setCountry(res[0]);
-    } catch (e: any) { setError(e.message ?? "Failed to fetch."); }
+    } catch (e: unknown) { setError(e instanceof Error ? e.message : "Failed to fetch."); }
     finally { setLoading(false); }
-  }
+  }, [q]);
 
   // Auto-run when arriving with ?q=
-  useEffect(() => { if (initialQ) run(initialQ); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [initialQ]);
+  useEffect(() => { if (initialQ) void run(initialQ); }, [initialQ, run]);
 
   async function save() {
     if (!country) return;
@@ -54,35 +62,37 @@ function CountriesPage() {
         notes: null,
       });
       toast.success(`${country.name.common} saved.`);
-    } catch (e: any) { toast.error(e.message ?? "Save failed."); }
+    } catch (e: unknown) { toast.error(e instanceof Error ? e.message : "Save failed."); }
   }
 
   return (
-    <div className="space-y-5">
+    <div className="page-shell space-y-5">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Countries</h1>
-          <p className="text-xs text-muted-foreground">Live data from REST Countries API</p>
+          <h1 className="text-2xl font-semibold tracking-tight">{t("app.pages.countries.title")}</h1>
+          <p className="text-xs text-muted-foreground">{t("app.pages.countries.subtitle")}</p>
         </div>
-        <DataBadge variant="source">REST Countries API</DataBadge>
+        <DataBadge variant={countriesStatus === "live" ? "live" : countriesStatus === "local" ? "demo" : "neutral"}>
+          REST Countries · {countriesStatus === "idle" ? "loading" : countriesStatus}
+        </DataBadge>
       </div>
 
       <div className="glass-card p-4">
-        <SearchInput value={q} onChange={setQ} onSubmit={run} placeholder="Search country (e.g. Japan, Romania)" />
+        <SearchInput value={q} onChange={setQ} onSubmit={run} placeholder={t("app.pages.countries.searchPlaceholder")} />
       </div>
 
       {loading && <LoadingSpinner />}
       {error && <ErrorMessage message={error} />}
-      {!loading && !error && !country && <EmptyState title="Search any country to begin" />}
+      {!loading && !error && !country && <EmptyState title={t("app.pages.countries.emptyTitle")} />}
 
       {country && (
-        <div className="grid gap-4 lg:grid-cols-3">
-          <div className="glass-card p-4 lg:col-span-1">
-            <div className="flex items-center gap-3">
-              {country.flags?.svg && <img src={country.flags.svg} alt={country.name.common} className="h-10 w-14 rounded object-cover border border-border/60" />}
-              <div>
-                <div className="text-lg font-semibold">{country.name.common}</div>
-                <div className="text-xs text-muted-foreground">{country.name.official}</div>
+        <div className="grid gap-4 lg:grid-cols-3 min-w-0">
+          <div className="glass-card p-4 lg:col-span-1 contain-layout">
+            <div className="flex items-center gap-3 min-w-0">
+              {country.flags?.svg && <img src={country.flags.svg} alt={country.name.common} className="h-10 w-14 shrink-0 rounded object-cover border border-border/60" />}
+              <div className="min-w-0">
+                <div className="text-lg font-semibold truncate">{country.name.common}</div>
+                <div className="text-xs text-muted-foreground truncate">{country.name.official}</div>
               </div>
             </div>
             <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
@@ -96,7 +106,14 @@ function CountriesPage() {
               <Info k="Borders" v={country.borders?.join(", ") || "—"} />
             </div>
             <div className="mt-3 flex flex-wrap gap-2">
-              <button onClick={save} className="inline-flex items-center gap-2 rounded-md border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs text-primary">
+              <Link
+                to="/country/$name"
+                params={{ name: encodeURIComponent(country.name.common) }}
+                className="inline-flex items-center gap-2 rounded-md border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs text-primary"
+              >
+                Intelligence profile →
+              </Link>
+              <button onClick={save} className="inline-flex items-center gap-2 rounded-md border border-border/60 px-3 py-1.5 text-xs">
                 <Bookmark className="h-3.5 w-3.5" /> Save country
               </button>
               {country.maps?.googleMaps && (

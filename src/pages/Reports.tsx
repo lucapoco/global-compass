@@ -2,18 +2,22 @@ import { useCallback, useEffect, useState } from "react";
 import { FileText, RefreshCw, Info } from "lucide-react";
 import { toast } from "sonner";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { PageHero } from "@/components/ui/PageHero";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ReportGenerator } from "@/components/reports/ReportGenerator";
 import { ReportCard } from "@/components/reports/ReportCard";
 import { ReportDetails } from "@/components/reports/ReportDetails";
+import { ExecutiveReportPanel } from "@/components/reports/ExecutiveReportPanel";
 import { isSupabaseConfigured, supabaseService } from "@/services/supabaseService";
 import type { GeneratedReport } from "@/types";
 import type { ReportGenerationResult } from "@/services/reportService";
+import { useT } from "@/i18n";
 
-type Tab = "generate" | "saved" | "how";
+type Tab = "generate" | "executive" | "saved" | "how";
 
 export function ReportsPage() {
+  const t = useT();
   const [tab, setTab] = useState<Tab>("generate");
   const [saved, setSaved] = useState<GeneratedReport[] | null>(null);
   const [loading, setLoading] = useState(false);
@@ -24,6 +28,10 @@ export function ReportsPage() {
 
   const configured = isSupabaseConfigured();
 
+  useEffect(() => {
+    document.title = t("app.pages.reports.metaTitle");
+  }, [t]);
+
   const loadSaved = useCallback(async () => {
     if (!configured) {
       setSaved([]);
@@ -33,12 +41,12 @@ export function ReportsPage() {
     try {
       setSaved(await supabaseService.listGeneratedReports());
     } catch (e: unknown) {
-      toast.error(e instanceof Error ? e.message : "Failed to load reports");
+      toast.error(e instanceof Error ? e.message : t("app.toasts.reportLoadFailed"));
       setSaved([]);
     } finally {
       setLoading(false);
     }
-  }, [configured]);
+  }, [configured, t]);
 
   useEffect(() => {
     if (tab === "saved") void loadSaved();
@@ -47,7 +55,7 @@ export function ReportsPage() {
   async function saveDraft() {
     if (!draft) return;
     if (!configured) {
-      toast.error("Supabase is not configured.");
+      toast.error(t("app.toasts.supabaseNotConfigured"));
       return;
     }
     setSaving(true);
@@ -60,15 +68,15 @@ export function ReportsPage() {
         content: draft.content,
         data_status: draft.dataStatus,
       });
-      toast.success("Report saved.");
+      toast.success(t("app.toasts.reportSaved"));
       setDraft(null);
       setSelected(row);
       setTab("saved");
       void loadSaved();
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : "Save failed";
+      const msg = e instanceof Error ? e.message : t("app.ui.saveFailed");
       if (/generated_reports|does not exist|relation/i.test(msg)) {
-        toast.error("Run supabase-schema.sql to create generated_reports table.");
+        toast.error(t("app.toasts.reportSchemaMissing"));
       } else {
         toast.error(msg);
       }
@@ -81,48 +89,57 @@ export function ReportsPage() {
     setDeletingId(id);
     try {
       await supabaseService.deleteGeneratedReport(id, title);
-      toast.success("Report deleted.");
+      toast.success(t("app.toasts.reportDeleted"));
       if (selected?.id === id) setSelected(null);
       void loadSaved();
     } catch (e: unknown) {
-      toast.error(e instanceof Error ? e.message : "Delete failed");
+      toast.error(e instanceof Error ? e.message : t("app.toasts.deleteFailed"));
     } finally {
       setDeletingId(null);
     }
   }
 
-  const tabs: { id: Tab; label: string }[] = [
-    { id: "generate", label: "Generate" },
-    { id: "saved", label: "Saved reports" },
-    { id: "how", label: "How it works" },
+  const tabs: { id: Tab; label: string; badge?: string }[] = [
+    { id: "executive", label: t("app.pages.reports.tabs.executive"), badge: t("app.pages.reports.tabs.executiveBadge") },
+    { id: "generate", label: t("app.pages.reports.tabs.generate") },
+    { id: "saved", label: t("app.pages.reports.tabs.saved") },
+    { id: "how", label: t("app.pages.reports.tabs.how") },
   ];
 
   return (
-    <div className="space-y-5">
-      <div className="relative overflow-hidden rounded-xl border border-primary/20 bg-gradient-to-br from-primary/10 via-background to-background p-5 md:p-6">
-        <SectionHeader
-          title="Intelligence Reports"
-          subtitle="Generate structured briefings from live, cached, or demo data already in Global Pulse"
-        />
-      </div>
+    <div className="page-shell space-y-5">
+      <PageHero
+        title={t("app.pages.reports.title")}
+        subtitle={t("app.pages.reports.subtitle")}
+        icon={<FileText className="h-5 w-5" />}
+      />
 
       <div className="flex flex-wrap gap-2 border-b border-border/40 pb-2">
-        {tabs.map((t) => (
+        {tabs.map((tabItem) => (
           <button
-            key={t.id}
+            key={tabItem.id}
             type="button"
             onClick={() => {
-              setTab(t.id);
+              setTab(tabItem.id);
               setSelected(null);
             }}
-            className={`rounded-md px-3 py-1.5 text-sm ${
-              tab === t.id ? "bg-primary/15 text-primary" : "text-muted-foreground hover:text-foreground"
+            className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm ${
+              tab === tabItem.id ? "bg-primary/15 text-primary" : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            {t.label}
+            {tabItem.label}
+            {tabItem.badge && (
+              <span className="rounded-full border border-primary/40 bg-primary/10 px-1.5 py-0.5 text-[9px] font-bold text-primary">
+                {tabItem.badge}
+              </span>
+            )}
           </button>
         ))}
       </div>
+
+      {tab === "executive" ? (
+        <ExecutiveReportPanel />
+      ) : null}
 
       {tab === "generate" ? (
         <div className="grid gap-4 lg:grid-cols-2">
@@ -135,14 +152,14 @@ export function ReportsPage() {
             />
           </div>
           <div className="glass-card p-4">
-            <SectionHeader title="Preview" subtitle="Save or export after generation" />
+            <SectionHeader title={t("app.pages.reports.preview")} subtitle={t("app.pages.reports.previewSubtitle")} />
             {draft ? (
               <ReportDetails report={draft} aiStatus={draft.aiStatus} showSave onSave={() => void saveDraft()} saving={saving} />
             ) : (
               <EmptyState
                 icon={<FileText className="h-8 w-8" />}
-                title="No report yet"
-                description="Choose a report type and click Generate."
+                title={t("app.pages.reports.emptyDraftTitle")}
+                hint={t("app.pages.reports.emptyDraftHint")}
               />
             )}
           </div>
@@ -153,19 +170,19 @@ export function ReportsPage() {
         <div className="grid gap-4 lg:grid-cols-[1fr_1.2fr]">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-semibold">Saved reports</h2>
+              <h2 className="text-sm font-semibold">{t("app.pages.reports.savedTitle")}</h2>
               <button
                 type="button"
                 className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
                 onClick={() => void loadSaved()}
               >
-                <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} /> Refresh
+                <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} /> {t("app.ui.refresh")}
               </button>
             </div>
             {!configured ? (
-              <p className="text-xs text-muted-foreground">Configure Supabase to save reports.</p>
+              <p className="text-xs text-muted-foreground">{t("app.pages.reports.configureSupabase")}</p>
             ) : loading ? (
-              <LoadingSpinner label="Loading reports…" />
+              <LoadingSpinner label={t("app.pages.reports.loadingReports")} />
             ) : saved?.length ? (
               saved.map((r) => (
                 <ReportCard
@@ -177,14 +194,18 @@ export function ReportsPage() {
                 />
               ))
             ) : (
-              <EmptyState icon={<FileText className="h-8 w-8" />} title="No saved reports" description="Generate and save a report first." />
+              <EmptyState
+                icon={<FileText className="h-8 w-8" />}
+                title={t("app.pages.reports.emptySavedTitle")}
+                hint={t("app.pages.reports.emptySavedHint")}
+              />
             )}
           </div>
           <div className="glass-card p-4">
             {selected ? (
               <ReportDetails report={selected} showSave={false} />
             ) : (
-              <EmptyState title="Select a report" description="Open a saved report to view or print." />
+              <EmptyState title={t("app.pages.reports.selectReport")} hint={t("app.pages.reports.selectReportHint")} />
             )}
           </div>
         </div>
@@ -194,35 +215,34 @@ export function ReportsPage() {
         <div className="glass-card space-y-4 p-5 text-sm text-muted-foreground">
           <div className="flex items-center gap-2 text-foreground">
             <Info className="h-5 w-5 text-primary" />
-            <h2 className="font-semibold">How Intelligence Reports work</h2>
+            <h2 className="font-semibold">{t("app.pages.reports.how.title")}</h2>
           </div>
           <section>
-            <h3 className="mb-1 font-medium text-foreground">Data used</h3>
+            <h3 className="mb-1 font-medium text-foreground">{t("app.pages.reports.how.dataTitle")}</h3>
+            <p className="mb-1">{t("app.pages.reports.how.dataIntro")}</p>
             <ul className="list-inside list-disc space-y-1">
-              <li>GNews intelligence headlines (via same-origin proxy)</li>
-              <li>USGS earthquakes (last 24h)</li>
-              <li>Country Risk Index (heuristic)</li>
-              <li>Supabase saved alerts &amp; saved intelligence</li>
-              <li>REST Countries metadata (country reports)</li>
-              <li>API health / data status labels (LIVE, CACHED, DEMO)</li>
+              <li>{t("app.pages.reports.how.dataGnews")}</li>
+              <li>{t("app.pages.reports.how.dataUsgs")}</li>
+              <li>{t("app.pages.reports.how.dataGdacs")}</li>
+              <li>{t("app.pages.reports.how.dataAcled")}</li>
+              <li>{t("app.pages.reports.how.dataWorldBank")}</li>
+              <li>{t("app.pages.reports.how.dataRisk")}</li>
+              <li>{t("app.pages.reports.how.dataSupabase")}</li>
+              <li>{t("app.pages.reports.how.dataCountries")}</li>
+              <li>{t("app.pages.reports.how.dataHealth")}</li>
             </ul>
           </section>
           <section>
-            <h3 className="mb-1 font-medium text-foreground">How reports are generated</h3>
-            <p>
-              Global Pulse builds a structured draft from in-app data, then optionally polishes it with{" "}
-              <strong className="text-foreground">Global Pulse AI (Google Gemini)</strong> when configured. If Gemini is
-              busy or unavailable, a <strong className="text-foreground">local structured fallback</strong> is used —
-              still based only on loaded data.
-            </p>
+            <h3 className="mb-1 font-medium text-foreground">{t("app.pages.reports.how.genTitle")}</h3>
+            <p>{t("app.pages.reports.how.genBody")}</p>
           </section>
           <section>
-            <h3 className="mb-1 font-medium text-foreground">Limitations</h3>
+            <h3 className="mb-1 font-medium text-foreground">{t("app.pages.reports.how.limitsTitle")}</h3>
             <ul className="list-inside list-disc space-y-1">
-              <li>Reports never invent headlines, magnitudes, or countries.</li>
-              <li>DEMO data is clearly labeled and must not be treated as live breaking news.</li>
-              <li>CACHED data reflects previously fetched live headlines, not the open internet.</li>
-              <li>Risk scores are educational composites, not official assessments.</li>
+              <li>{t("app.pages.reports.how.limitInvent")}</li>
+              <li>{t("app.pages.reports.how.limitDemo")}</li>
+              <li>{t("app.pages.reports.how.limitCached")}</li>
+              <li>{t("app.pages.reports.how.limitRisk")}</li>
             </ul>
           </section>
         </div>

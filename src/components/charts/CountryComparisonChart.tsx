@@ -3,7 +3,7 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGri
 interface Row { label: string; a: number; b: number }
 export function CountryComparisonChart({ data, aName, bName }: { data: Row[]; aName: string; bName: string }) {
   return (
-    <div className="h-64 w-full">
+    <div className="h-64 w-full min-w-0 overflow-hidden">
       <ResponsiveContainer>
         <BarChart data={data}>
           <CartesianGrid strokeOpacity={0.1} vertical={false} />

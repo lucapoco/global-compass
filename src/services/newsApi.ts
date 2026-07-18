@@ -1,21 +1,18 @@
 import type { IntelligenceItem, IntelligenceCategory, IntelligenceSeverity } from "@/types";
-import { demoNews } from "@/data/demoNews";
+import { fallbackNews } from "@/data/fallbackNews";
 
 /**
- * Centralized GNews service (via same-origin `/api/public/gnews-proxy` only).
+ * Serviciu centralizat GNews (doar prin proxy same-origin `/api/public/gnews-proxy`).
  *
- * - One in-flight Promise coalesces concurrent callers.
- * - localStorage cache (30 min normal; manual refresh bypasses read cache via `force`).
- * - 30 min rate-limit lock after upstream 429/403.
- * - ≥3 s between real proxy calls when merging multiple categories.
- * - Dedupe by URL / normalized title; sort newest first.
- *
- * GNews free tier often returns ~10 articles per request; for higher `limit` we
- * merge additional category requests sequentially (never parallel spam).
+ * - Un Promise în zbor unifică apelurile concurrente.
+ * - Cache localStorage (30 min; refresh manual ocolește citirea cache via `force`).
+ * - Lock rate-limit 30 min după 429/403 upstream.
+ * - ≥3 s între apeluri reale de proxy la merge pe categorii.
+ * - Deduplicare după URL / titlu; sortare descrescătoare după dată.
  */
 
 const PROXY_URL = "/api/public/gnews-proxy";
-const NEWS_API_KEY = import.meta.env.VITE_NEWS_API_KEY as string | undefined;
+const NEWSAPI_PROXY_URL = "/api/public/newsapi-proxy";
 
 /** Current cache blob (v4). Legacy key migrated on read. */
 const CACHE_KEY = "global_pulse_gnews_cache_v4";
@@ -24,15 +21,14 @@ const CACHE_TS_KEY = "global_pulse_gnews_cache_timestamp_v4";
 const LEGACY_CACHE_TS_KEY = "global_pulse_gnews_cache_timestamp";
 const RATE_LIMIT_KEY = "global_pulse_gnews_rate_limit_until";
 const LAST_REQ_KEY = "global_pulse_gnews_last_request_at";
-export const NEWS_DEBUG_EVENT = "global-pulse-gnews-debug";
+const NEWS_DEBUG_EVENT = "global-pulse-gnews-debug";
 
 const CACHE_TTL_MS = 30 * 60 * 1000;
 const RATE_LIMIT_MS = 30 * 60 * 1000;
 const MIN_INTERVAL_MS = 3 * 1000;
 
-const DEV = !!import.meta.env.DEV;
-const log = (...a: unknown[]) => {
-  if (DEV) console.log("[newsApi]", ...a);
+const log = (..._a: unknown[]) => {
+  /* fără console în producție — starea de debug e în DevConsole */
 };
 
 export type NewsStatus = "live" | "cached" | "demo" | "error" | "rate_limited";
@@ -541,12 +537,12 @@ async function doHeadlinesFetch(
   }
   if (hit401) {
     return {
-      items: stampIsLive(demoNews.slice(0, networkTarget), "error"),
+      items: stampIsLive(fallbackNews.slice(0, networkTarget), "error"),
       status: "error",
       source: "Demo",
       message: "GNews API key is invalid or missing.",
       errorMessage: "GNews API key is invalid or missing.",
-      fetchedTotal: demoNews.length,
+      fetchedTotal: fallbackNews.length,
     };
   }
 
@@ -572,10 +568,8 @@ async function doHeadlinesFetch(
 
   if (!options.probe) {
     try {
-      if (NEWS_API_KEY) {
-        const r = await tryNewsApi(networkTarget);
-        if (r) return r;
-      }
+      const r = await tryNewsApi(networkTarget);
+      if (r) return r;
     } catch {
       /* fall through */
     }
@@ -597,7 +591,7 @@ async function doHeadlinesFetch(
   const friendly = networkError
     ? `Could not reach the GNews proxy${lastDetail ? `: ${lastDetail}` : ""}. Showing demo data.`
     : "No articles returned. Showing demo data.";
-  const demo = stampIsLive(sortIntelligenceByPublishedDesc(dedupeIntelligenceItems([...demoNews])), "demo");
+  const demo = stampIsLive(sortIntelligenceByPublishedDesc(dedupeIntelligenceItems([...fallbackNews])), "demo");
   return {
     items: demo,
     status: "error",
@@ -609,17 +603,10 @@ async function doHeadlinesFetch(
 }
 
 async function tryNewsApi(networkTarget: number): Promise<NewsResult | null> {
-  if (!NEWS_API_KEY) return null;
   try {
-    const params = new URLSearchParams({
-      language: "en",
-      pageSize: String(Math.min(100, networkTarget)),
-      category: "general",
-      apiKey: NEWS_API_KEY,
-    });
-    const res = await fetch(`https://newsapi.org/v2/top-headlines?${params}`);
-    if (!res.ok) throw new Error(`NewsAPI ${res.status}`);
-    const data = (await res.json()) as { articles?: unknown[] };
+    const res = await fetch(`${NEWSAPI_PROXY_URL}?pageSize=${Math.min(100, networkTarget)}`);
+    const data = (await res.json()) as { articles?: unknown[]; error?: string };
+    if (data.error === "not_configured" || !res.ok) return null; // no key configured — skip this fallback silently
     const items = (data.articles ?? []).map((raw, i) => {
       const a = raw as Record<string, unknown>;
       const s = a.source as Record<string, unknown> | undefined;
@@ -682,7 +669,7 @@ export async function fetchIntelligence(opts: FetchIntelligenceOptions = {}): Pr
             fetchedTotal: deduped.length,
           };
         }
-        const demo = stampIsLive(sortIntelligenceByPublishedDesc(dedupeIntelligenceItems([...demoNews])), "demo");
+        const demo = stampIsLive(sortIntelligenceByPublishedDesc(dedupeIntelligenceItems([...fallbackNews])), "demo");
         return {
           items: demo,
           status: "rate_limited",
@@ -800,7 +787,7 @@ function fallbackWhenBlocked(msg: string | undefined, status: NewsStatus, poolCa
     });
     return { ...result, items: result.items.slice(0, poolCap) };
   }
-  const demo = stampIsLive(sortIntelligenceByPublishedDesc(dedupeIntelligenceItems([...demoNews])), "demo");
+  const demo = stampIsLive(sortIntelligenceByPublishedDesc(dedupeIntelligenceItems([...fallbackNews])), "demo");
   const result = rememberResult({
     items: demo,
     status: status === "rate_limited" ? "rate_limited" : "demo",

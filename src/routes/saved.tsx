@@ -1,16 +1,23 @@
-import { createFileRoute } from "@tanstack/react-router";
+/**
+ * Saved Data — countries, alerts, intelligence (no project logs).
+ */
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { RefreshCw, TestTube2, Trash2 } from "lucide-react";
+import { Bookmark, FolderPlus, LogIn, RefreshCw, TestTube2, Trash2 } from "lucide-react";
 import { DataBadge } from "@/components/ui/DataBadge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { SeverityBadge } from "@/components/ui/SeverityBadge";
-import { SavedSupabaseDebugPanel } from "@/components/debug/SavedSupabaseDebugPanel";
+import { Button } from "@/components/ui/button";
+import { AddToCollectionModal, type CollectionArticlePayload } from "@/components/collections/AddToCollectionModal";
 import { getSupabaseViteEnvSummary } from "@/lib/supabaseEnv";
-import { supabaseService, isSupabaseConfigured, type SavedTableCountRow } from "@/services/supabaseService";
-import type { SavedCountry, SavedAlert, ProjectLog, SavedIntelligence } from "@/types";
+import { sanitizeUrl } from "@/lib/utils";
+import { supabaseService, isSupabaseConfigured } from "@/services/supabaseService";
+import type { SavedCountry, SavedAlert, SavedIntelligence } from "@/types";
+import { useT } from "@/i18n";
+import { useAuth } from "@/auth";
 
 export const Route = createFileRoute("/saved")({
   head: () => ({ meta: [{ title: "Saved Data — Global Pulse" }] }),
@@ -18,53 +25,41 @@ export const Route = createFileRoute("/saved")({
 });
 
 function SavedPage() {
+  const t = useT();
+  const { isAuthenticated, openAuthModal, loading: authLoading } = useAuth();
   const [countries, setCountries] = useState<SavedCountry[] | null>(null);
   const [alerts, setAlerts] = useState<SavedAlert[] | null>(null);
   const [intel, setIntel] = useState<SavedIntelligence[] | null>(null);
-  const [logs, setLogs] = useState<ProjectLog[] | null>(null);
   const [listRefreshing, setListRefreshing] = useState(false);
   const [testBusy, setTestBusy] = useState(false);
-  const [lastRefreshIso, setLastRefreshIso] = useState<string | null>(null);
-  const [tableCounts, setTableCounts] = useState<SavedTableCountRow[] | null>(null);
+  const [addTarget, setAddTarget] = useState<CollectionArticlePayload | null>(null);
 
   const configured = isSupabaseConfigured();
   const envMeta = getSupabaseViteEnvSummary();
 
-  const refreshDebugCounts = useCallback(async () => {
-    if (!import.meta.env.DEV || !configured) return;
-    try {
-      setTableCounts(await supabaseService.countSavedDataDebugTableRows());
-    } catch {
-      setTableCounts(null);
-    }
-  }, [configured]);
-
   const refreshListsFromSupabase = useCallback(async () => {
-    if (!configured) return;
+    if (!configured || !isAuthenticated) return;
     setListRefreshing(true);
     try {
-      const [c, a, i, l] = await Promise.all([
+      const [c, a, i] = await Promise.all([
         supabaseService.listSavedCountries(),
         supabaseService.listSavedAlerts(),
         supabaseService.listSavedIntelligence(),
-        supabaseService.listLogs(),
       ]);
       setCountries(c);
       setAlerts(a);
       setIntel(i as SavedIntelligence[]);
-      setLogs(l);
-      setLastRefreshIso(new Date().toISOString());
-      await refreshDebugCounts();
-    } catch (e: any) {
-      toast.error(e?.message ?? "Failed to load saved data from Supabase");
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : t("app.toasts.savedDataLoadFailed"));
     } finally {
       setListRefreshing(false);
     }
-  }, [configured, refreshDebugCounts]);
+  }, [configured, isAuthenticated, t]);
 
   useEffect(() => {
+    if (!isAuthenticated) return;
     void refreshListsFromSupabase();
-  }, [refreshListsFromSupabase]);
+  }, [refreshListsFromSupabase, isAuthenticated]);
 
   async function testConnection() {
     setTestBusy(true);
@@ -72,19 +67,39 @@ function SavedPage() {
       const r = await supabaseService.testSavedDataConnection();
       if (r.ok) toast.success(r.message);
       else toast.error(r.message);
-      await refreshDebugCounts();
-    } catch (e: any) {
-      toast.error(e?.message ?? "Supabase test failed");
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : t("app.toasts.supabaseTestFailed"));
     } finally {
       setTestBusy(false);
     }
   }
 
+  if (authLoading) return <LoadingSpinner />;
+
+  if (!isAuthenticated) {
+    return (
+      <div className="page-shell">
+        <div className="glass-card flex flex-col items-center gap-4 p-10 text-center">
+          <Bookmark className="h-8 w-8 text-primary" aria-hidden="true" />
+          <h1 className="text-xl font-semibold text-foreground">{t("app.pages.saved.title")}</h1>
+          <p className="max-w-md text-sm text-muted-foreground">{t("app.auth.gate.savedData")}</p>
+          <Button onClick={() => openAuthModal("saved_data")}>
+            <LogIn className="mr-1.5 h-4 w-4" />
+            {t("app.auth.signIn")}
+          </Button>
+          <Link to="/dashboard" className="text-sm text-primary hover:underline">
+            {t("app.auth.continueBrowsing")}
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   if (!configured) {
     return (
       <EmptyState
-        title="Supabase is not configured yet"
-        hint="Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY in .env, then restart the dev server (Ctrl+C → npm run dev) and hard-refresh."
+        title={t("app.pages.saved.notConfiguredTitle")}
+        hint={t("app.pages.saved.notConfiguredHint")}
       />
     );
   }
@@ -92,28 +107,28 @@ function SavedPage() {
   async function delCountry(c: SavedCountry) {
     try {
       await supabaseService.deleteSavedCountry(c.id, c.country_name);
-      toast.success("Removed.");
-      await refreshListsFromSupabase();
-    } catch (e: any) {
-      toast.error(e.message ?? "Delete failed");
+      toast.success(t("app.toasts.removed"));
+      setCountries((prev) => (prev ? prev.filter((x) => x.id !== c.id) : prev));
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : t("app.toasts.deleteFailed"));
     }
   }
   async function delAlert(a: SavedAlert) {
     try {
       await supabaseService.deleteSavedAlert(a.id, a.title);
-      toast.success("Removed.");
-      await refreshListsFromSupabase();
-    } catch (e: any) {
-      toast.error(e.message ?? "Delete failed");
+      toast.success(t("app.toasts.removed"));
+      setAlerts((prev) => (prev ? prev.filter((x) => x.id !== a.id) : prev));
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : t("app.toasts.deleteFailed"));
     }
   }
   async function delIntel(i: SavedIntelligence) {
     try {
       await supabaseService.deleteSavedIntelligence(i.id, i.title);
-      toast.success("Removed.");
-      await refreshListsFromSupabase();
-    } catch (e: any) {
-      toast.error(e.message ?? "Delete failed");
+      toast.success(t("app.toasts.removed"));
+      setIntel((prev) => (prev ? prev.filter((x) => x.id !== i.id) : prev));
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : t("app.toasts.deleteFailed"));
     }
   }
 
@@ -121,17 +136,20 @@ function SavedPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Saved Data</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">{t("app.pages.saved.title")}</h1>
           <p className="text-xs text-muted-foreground">
-            Loaded only from Supabase (no local mock).{" "}
+            {t("app.pages.saved.subtitle")}{" "}
             {envMeta.projectRef ? (
               <span className="font-mono text-foreground/80">ref {envMeta.projectRef}</span>
             ) : (
-              <span className="text-amber-600">URL host is not *.supabase.co — check VITE_SUPABASE_URL</span>
+              <span className="text-amber-600">{t("app.pages.saved.urlHostWarning")}</span>
             )}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/collections">{t("app.nav.collections")}</Link>
+          </Button>
           <button
             type="button"
             disabled={listRefreshing}
@@ -139,7 +157,7 @@ function SavedPage() {
             className="inline-flex items-center gap-1.5 rounded-md border border-border/60 bg-background/60 px-3 py-1.5 text-[11px] hover:bg-secondary disabled:opacity-50"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${listRefreshing ? "animate-spin" : ""}`} />
-            Refresh Supabase data
+            {t("app.pages.saved.refresh")}
           </button>
           <button
             type="button"
@@ -148,22 +166,21 @@ function SavedPage() {
             className="inline-flex items-center gap-1.5 rounded-md border border-border/60 bg-background/60 px-3 py-1.5 text-[11px] hover:bg-secondary disabled:opacity-50"
           >
             <TestTube2 className="h-3.5 w-3.5" />
-            Test Supabase connection
+            {t("app.pages.saved.testConnection")}
           </button>
           <DataBadge variant="live">Supabase</DataBadge>
         </div>
       </div>
 
-      {import.meta.env.DEV && (
-        <SavedSupabaseDebugPanel lastRefreshIso={lastRefreshIso} tableCounts={tableCounts} />
-      )}
-
       <section>
-        <SectionHeader title="Saved Countries" subtitle={countries ? `${countries.length} entries` : ""} />
+        <SectionHeader
+          title={t("app.pages.saved.countriesTitle")}
+          subtitle={countries ? t("app.pages.saved.entries", { count: countries.length }) : ""}
+        />
         {!countries ? (
           <LoadingSpinner />
         ) : countries.length === 0 ? (
-          <EmptyState title="No saved countries yet" />
+          <EmptyState title={t("app.pages.saved.emptyCountries")} />
         ) : (
           <div className="grid gap-2 md:grid-cols-2">
             {countries.map((c) => (
@@ -179,12 +196,10 @@ function SavedPage() {
                   <div className="truncate text-[11px] text-muted-foreground">
                     {c.capital ?? "—"} · {c.region ?? "—"} · {c.population?.toLocaleString() ?? "—"}
                   </div>
-                  <div className="text-[10px] text-muted-foreground">
-                    {c.created_at && new Date(c.created_at).toLocaleString()}
-                  </div>
                 </div>
                 <button
-                  onClick={() => delCountry(c)}
+                  type="button"
+                  onClick={() => void delCountry(c)}
                   className="rounded-md border border-rose-glow/30 px-2 py-1 text-rose-glow hover:bg-rose-glow/10"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
@@ -196,11 +211,14 @@ function SavedPage() {
       </section>
 
       <section>
-        <SectionHeader title="Saved Alerts" subtitle={alerts ? `${alerts.length} entries` : ""} />
+        <SectionHeader
+          title={t("app.pages.saved.alertsTitle")}
+          subtitle={alerts ? t("app.pages.saved.entries", { count: alerts.length }) : ""}
+        />
         {!alerts ? (
           <LoadingSpinner />
         ) : alerts.length === 0 ? (
-          <EmptyState title="No saved alerts yet" />
+          <EmptyState title={t("app.pages.saved.emptyAlerts")} />
         ) : (
           <div className="space-y-2">
             {alerts.map((a) => (
@@ -210,12 +228,12 @@ function SavedPage() {
                     <SeverityBadge severity={a.severity} /> <span className="truncate">{a.title}</span>
                   </div>
                   <div className="text-[11px] text-muted-foreground">
-                    {a.type} · {a.source ?? "—"} · {a.location ?? "—"} ·{" "}
-                    {a.created_at && new Date(a.created_at).toLocaleString()}
+                    {a.type} · {a.source ?? "—"} · {a.location ?? "—"}
                   </div>
                 </div>
                 <button
-                  onClick={() => delAlert(a)}
+                  type="button"
+                  onClick={() => void delAlert(a)}
                   className="rounded-md border border-rose-glow/30 px-2 py-1 text-rose-glow hover:bg-rose-glow/10"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
@@ -227,13 +245,16 @@ function SavedPage() {
       </section>
 
       <section>
-        <SectionHeader title="Saved Intelligence" subtitle={intel ? `${intel.length} entries` : ""} />
+        <SectionHeader
+          title={t("app.pages.saved.intelTitle")}
+          subtitle={intel ? t("app.pages.saved.entries", { count: intel.length }) : ""}
+        />
         {!intel ? (
           <LoadingSpinner />
         ) : intel.length === 0 ? (
           <EmptyState
-            title="No saved intelligence yet"
-            hint="Open the Intelligence Feed and click Save on any item."
+            title={t("app.pages.saved.emptyIntel")}
+            hint={t("app.pages.saved.emptyIntelHint")}
           />
         ) : (
           <div className="space-y-2">
@@ -250,23 +271,38 @@ function SavedPage() {
                     <span className="truncate">{i.title}</span>
                   </div>
                   <div className="truncate text-[11px] text-muted-foreground">
-                    {i.source ?? "—"} · {i.country ?? "—"} ·{" "}
-                    {i.published_at && new Date(i.published_at).toLocaleString()}
+                    {i.source ?? "—"} · {i.country ?? "—"}
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  {i.url && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setAddTarget({
+                        article_id: i.id,
+                        title: i.title,
+                        url: i.url,
+                        source: i.source,
+                      })
+                    }
+                    className="inline-flex items-center gap-1 rounded-md border border-border/60 px-2 py-1 text-[10px] text-muted-foreground hover:text-foreground"
+                  >
+                    <FolderPlus className="h-3 w-3" />
+                    {t("app.pages.collections.addToCollection")}
+                  </button>
+                  {sanitizeUrl(i.url) && (
                     <a
-                      href={i.url}
+                      href={sanitizeUrl(i.url)}
                       target="_blank"
                       rel="noreferrer"
                       className="rounded-md border border-border/60 px-2 py-1 text-[10px] text-muted-foreground hover:text-foreground"
                     >
-                      Open
+                      {t("app.pages.saved.open")}
                     </a>
                   )}
                   <button
-                    onClick={() => delIntel(i)}
+                    type="button"
+                    onClick={() => void delIntel(i)}
                     className="rounded-md border border-rose-glow/30 px-2 py-1 text-rose-glow hover:bg-rose-glow/10"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -278,28 +314,11 @@ function SavedPage() {
         )}
       </section>
 
-      <section>
-        <SectionHeader title="Project Logs" subtitle="Recent activity audit trail" />
-        {!logs ? (
-          <LoadingSpinner />
-        ) : logs.length === 0 ? (
-          <EmptyState title="No activity yet" />
-        ) : (
-          <div className="glass-card max-h-64 overflow-auto p-3 text-xs">
-            {logs.map((l) => (
-              <div key={l.id} className="flex justify-between border-b border-border/30 py-1.5 last:border-0">
-                <span className="text-foreground">
-                  {l.action}{" "}
-                  {l.details ? <span className="text-muted-foreground">— {l.details}</span> : null}
-                </span>
-                <span className="text-muted-foreground">
-                  {l.created_at && new Date(l.created_at).toLocaleString()}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
+      <AddToCollectionModal
+        open={!!addTarget}
+        article={addTarget}
+        onClose={() => setAddTarget(null)}
+      />
     </div>
   );
 }

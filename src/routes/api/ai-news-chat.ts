@@ -1,6 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { callGeminiChat, GeminiChatError } from "@/lib/geminiChatServer";
 import { getGeminiConfig } from "@/server/geminiConfig";
+import { checkRateLimit } from "@/server/rateLimiter";
+import { toAiClientError } from "@/lib/userErrorMessage";
+import { validateAiChatBody } from "@/server/aiRequestGuard";
 import type {
   AIChatErrorResponse,
   AIChatRequestBody,
@@ -15,8 +18,10 @@ const JSON_HEADERS = {
   "Access-Control-Allow-Headers": "Content-Type",
 } as const;
 
-function json(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), { status, headers: JSON_HEADERS });
+function json(body: unknown, status = 200, retryAfterSec?: number) {
+  const headers: Record<string, string> = { ...JSON_HEADERS };
+  if (retryAfterSec) headers["Retry-After"] = String(retryAfterSec);
+  return new Response(JSON.stringify(body), { status, headers });
 }
 
 function providerStatus(): AIProviderStatusResponse {
@@ -36,10 +41,21 @@ export const Route = createFileRoute("/api/ai-news-chat")({
       OPTIONS: async () => new Response(null, { status: 204, headers: JSON_HEADERS }),
       GET: async () => json(providerStatus()),
       POST: async ({ request }) => {
+        // Public, unauthenticated endpoint — cap per-IP usage so the shared
+        // GEMINI_API_KEY quota can't be exhausted by a single caller.
+        const rate = checkRateLimit(request, "ai-news-chat", 20, 60_000);
+        if (!rate.allowed) {
+          return json(
+            { error: "Too many requests — please slow down.", errorCode: "RATE_LIMIT", configured: true },
+            429,
+            rate.retryAfterSec,
+          );
+        }
+
         const { configured } = getGeminiConfig();
         if (!configured) {
           const err: AIChatErrorResponse = {
-            error: "GEMINI_API_KEY is missing on the server",
+            error: toAiClientError("MISSING_API_KEY"),
             errorCode: "MISSING_API_KEY",
             configured: false,
             status: "GEMINI NOT CONFIGURED",
@@ -47,21 +63,11 @@ export const Route = createFileRoute("/api/ai-news-chat")({
           return json(err, 503);
         }
 
-        let body: AIChatRequestBody;
-        try {
-          body = (await request.json()) as AIChatRequestBody;
-        } catch {
-          return json({ error: "Invalid JSON body", configured: true }, 400);
+        const validated = await validateAiChatBody(request);
+        if (!validated.ok) {
+          return json({ error: validated.error, configured: true }, validated.status);
         }
-
-        if (!body?.messages?.length || !body.context) {
-          return json({ error: "messages and context are required", configured: true }, 400);
-        }
-
-        const last = body.messages[body.messages.length - 1];
-        if (!last?.content?.trim() || last.role !== "user") {
-          return json({ error: "Last message must be a non-empty user message", configured: true }, 400);
-        }
+        const body = validated.body;
 
         try {
           const result: AIChatSuccessResponse = await callGeminiChat(body);
@@ -80,9 +86,10 @@ export const Route = createFileRoute("/api/ai-news-chat")({
                       : e.code === "HIGH_DEMAND"
                         ? 503
                         : 502;
+            const safeMessage = toAiClientError(e.code);
             const err: AIChatErrorResponse = {
-              error: e.message,
-              errorMessage: e.message,
+              error: safeMessage,
+              errorMessage: safeMessage,
               errorCode: e.code,
               status:
                 e.code === "HIGH_DEMAND" || e.code === "RATE_LIMIT"
@@ -91,11 +98,12 @@ export const Route = createFileRoute("/api/ai-news-chat")({
               retryCount: e.retryCount,
               configured: e.code !== "MISSING_API_KEY",
             };
+            console.error("[ai-news-chat] Gemini error:", e.code, e.message);
             return json(err, httpStatus);
           }
-          const msg = e instanceof Error ? e.message : "Gemini API is temporarily unavailable.";
+          console.error("[ai-news-chat] unexpected error:", e);
           const err: AIChatErrorResponse = {
-            error: msg,
+            error: toAiClientError(),
             errorCode: "UNKNOWN",
             configured: true,
           };

@@ -5,6 +5,7 @@ import type { GlobalEvent, GlobalEventSeverity } from "@/domain/models/GlobalEve
 import type { EventCluster, MapViewport, MapVisualizationMode } from "@/domain/services/map-engine";
 import type { HeatmapFeatureCollection } from "@/domain/services/map-engine/heatmap/heatmapData";
 import type { RelationLineFeatureCollection } from "@/domain/services/map-engine/relationships/relatedEventLines";
+import { sanitizeUrl } from "@/lib/utils";
 
 interface Props {
   clusters: EventCluster[];
@@ -16,6 +17,12 @@ interface Props {
   onExpandCluster?: (cluster: EventCluster) => void;
   onViewportChange?: (viewport: MapViewport) => void;
   height?: string;
+  /** Density/severity/risk heatmap opacity (0-1), independent of visibility. */
+  heatmapOpacity?: number;
+  /** Risk Index intelligence layer — country/coordinate risk density (reuses the Alert System's heatmap). */
+  showRiskIndex?: boolean;
+  riskIndexData?: HeatmapFeatureCollection;
+  riskIndexOpacity?: number;
 }
 
 export interface ProfessionalWorldMapHandle {
@@ -26,6 +33,8 @@ export interface ProfessionalWorldMapHandle {
 const MAPBOX_TOKEN = (import.meta.env.VITE_MAPBOX_TOKEN as string | undefined)?.trim();
 const HEATMAP_SOURCE_ID = "gp-heatmap-source";
 const HEATMAP_LAYER_ID = "gp-heatmap-layer";
+const RISK_SOURCE_ID = "gp-risk-heatmap-source";
+const RISK_LAYER_ID = "gp-risk-heatmap-layer";
 const LINES_SOURCE_ID = "gp-relation-lines-source";
 const LINES_LAYER_ID = "gp-relation-lines-layer";
 
@@ -53,7 +62,10 @@ function categoryAbbrev(category: string): string {
 
 export const ProfessionalWorldMap = forwardRef<ProfessionalWorldMapHandle, Props>(
   function ProfessionalWorldMap(
-    { clusters, visualizationMode, heatmapData, relationLines, selectedEventId, onSelectEvent, onExpandCluster, onViewportChange, height = "70vh" },
+    {
+      clusters, visualizationMode, heatmapData, relationLines, selectedEventId, onSelectEvent, onExpandCluster, onViewportChange, height = "70vh",
+      heatmapOpacity = 0.75, showRiskIndex = false, riskIndexData, riskIndexOpacity = 0.7,
+    },
     ref,
   ) {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -76,7 +88,7 @@ export const ProfessionalWorldMap = forwardRef<ProfessionalWorldMapHandle, Props
       try {
         mapRef.current = new mapboxgl.Map({
           container: containerRef.current,
-          style: "mapbox://styles/mapbox/dark-v11",
+          style: "mapbox://styles/mapbox/satellite-streets-v12",
           center: [10, 20],
           zoom: 1.6,
           projection: "globe" as any,
@@ -86,13 +98,14 @@ export const ProfessionalWorldMap = forwardRef<ProfessionalWorldMapHandle, Props
         mapRef.current.on("style.load", () => {
           styleLoadedRef.current = true;
           mapRef.current?.setFog({
-            color: "rgb(15, 23, 42)",
+            color: "rgb(186, 210, 235)",
             "high-color": "rgb(36, 92, 223)",
-            "horizon-blend": 0.02,
-            "space-color": "rgb(8, 12, 24)",
-            "star-intensity": 0.6,
+            "horizon-blend": 0.08,
+            "space-color": "rgb(12, 20, 35)",
+            "star-intensity": 0.15,
           } as any);
           addHeatmapLayer(mapRef.current!);
+          addRiskIndexLayer(mapRef.current!);
           addRelationLinesLayer(mapRef.current!);
         });
 
@@ -137,10 +150,10 @@ export const ProfessionalWorldMap = forwardRef<ProfessionalWorldMapHandle, Props
         if (isCluster) {
           el.style.cssText = `
             width:${size}px;height:${size}px;border-radius:9999px;background:${color};
-            opacity:0.85;display:flex;align-items:center;justify-content:center;
-            box-shadow:0 0 0 2px rgba(0,0,0,0.55), 0 0 16px ${color};
-            cursor:pointer;border:1.5px solid rgba(255,255,255,0.75);
-            color:#0b1220;font-weight:700;font-size:${size > 40 ? 13 : 11}px;font-family:inherit;
+            opacity:0.92;display:flex;align-items:center;justify-content:center;
+            box-shadow:0 2px 8px rgb(15 23 42 / 0.18);
+            cursor:pointer;border:2px solid #ffffff;
+            color:#0f172a;font-weight:600;font-size:${size > 40 ? 13 : 11}px;font-family:inherit;
           `;
           el.title = `${cluster.count} events · ${cluster.dominantCategory} · avg ${cluster.averageSeverity}`;
           el.textContent = String(cluster.count);
@@ -151,8 +164,10 @@ export const ProfessionalWorldMap = forwardRef<ProfessionalWorldMapHandle, Props
         } else {
           el.style.cssText = `
             width:${size}px;height:${size}px;border-radius:9999px;background:${color};
-            box-shadow:0 0 0 ${selected ? 3 : 2}px ${selected ? "rgba(255,255,255,0.95)" : "rgba(0,0,0,0.6)"}, 0 0 10px ${color};
-            cursor:pointer;border:1px solid rgba(255,255,255,0.65);
+            box-shadow:0 2px 6px rgb(15 23 42 / 0.2);
+            cursor:pointer;border:2px solid ${selected ? "#ffffff" : "#ffffff"};
+            outline:${selected ? "2px solid #0284c7" : "none"};
+            outline-offset:1px;
           `;
           if (cluster.soleEvent) {
             const ev = cluster.soleEvent;
@@ -162,18 +177,23 @@ export const ProfessionalWorldMap = forwardRef<ProfessionalWorldMapHandle, Props
             });
 
             const popupRoot = document.createElement("div");
-            popupRoot.style.minWidth = "200px";
-            popupRoot.style.color = "#e6f1ff";
+            popupRoot.style.minWidth = "220px";
+            popupRoot.style.color = "#0f172a";
             popupRoot.innerHTML = `
-              <div style="font-weight:600;font-size:13px;margin-bottom:4px">${escapeHtml(ev.title)}</div>
-              ${ev.description ? `<div style="font-size:11px;color:#9fb3c8;margin-bottom:6px">${escapeHtml(ev.description.slice(0, 160))}</div>` : ""}
-              <div style="font-size:10px;color:#7e93a8;text-transform:uppercase;letter-spacing:0.08em">
+              <div style="font-weight:600;font-size:13px;margin-bottom:4px;line-height:1.35">${escapeHtml(ev.title)}</div>
+              ${ev.description ? `<div style="font-size:12px;color:#64748b;margin-bottom:8px;line-height:1.45">${escapeHtml(ev.description.slice(0, 160))}</div>` : ""}
+              <div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
                 ${escapeHtml(cluster.dominantCategory)} · ${escapeHtml(ev.severity)} · risk ${ev.riskScore}
               </div>
-              <div style="font-size:10px;color:#7e93a8;margin-top:4px">${escapeHtml(ev.source)} · ${escapeHtml(new Date(ev.timestamp).toLocaleString())}</div>
-              ${ev.sourceUrl ? `<div style="margin-top:8px"><a href="${escapeAttr(ev.sourceUrl)}" target="_blank" rel="noreferrer" style="color:#38bdf8;font-size:11px">Open source</a></div>` : ""}
+              <div style="font-size:11px;color:#64748b;margin-top:6px">${escapeHtml(ev.source)} · ${escapeHtml(new Date(ev.timestamp).toLocaleString())}</div>
+              ${(() => {
+                const safeUrl = ev.sourceUrl ? sanitizeUrl(ev.sourceUrl) : null;
+                return safeUrl
+                  ? `<div style="margin-top:10px"><a href="${escapeAttr(safeUrl)}" target="_blank" rel="noreferrer" style="color:#0284c7;font-size:12px;font-weight:500">Open source →</a></div>`
+                  : "";
+              })()}
             `;
-            const popup = new Popup({ offset: 14, closeButton: true, maxWidth: "300px" }).setDOMContent(popupRoot);
+            const popup = new Popup({ offset: 14, closeButton: true, maxWidth: "320px", className: "gp-map-popup" }).setDOMContent(popupRoot);
             const marker = new Marker({ element: el }).setLngLat([cluster.lng, cluster.lat]).setPopup(popup).addTo(map);
             markersRef.current.push(marker);
             continue;
@@ -185,7 +205,7 @@ export const ProfessionalWorldMap = forwardRef<ProfessionalWorldMapHandle, Props
       }
     }, [clusters, visualizationMode, selectedEventId, onSelectEvent, onExpandCluster]);
 
-    // Heatmap layer data + visibility
+    // Heatmap layer data + visibility + opacity
     useEffect(() => {
       const map = mapRef.current;
       if (!map || !styleLoadedRef.current) return;
@@ -194,8 +214,21 @@ export const ProfessionalWorldMap = forwardRef<ProfessionalWorldMapHandle, Props
       const visible = visualizationMode === "heatmap" || visualizationMode === "both";
       if (map.getLayer(HEATMAP_LAYER_ID)) {
         map.setLayoutProperty(HEATMAP_LAYER_ID, "visibility", visible ? "visible" : "none");
+        map.setPaintProperty(HEATMAP_LAYER_ID, "heatmap-opacity", heatmapOpacity);
       }
-    }, [heatmapData, visualizationMode]);
+    }, [heatmapData, visualizationMode, heatmapOpacity]);
+
+    // Risk Index layer data + visibility + opacity (independent overlay, reuses Alert System heatmap)
+    useEffect(() => {
+      const map = mapRef.current;
+      if (!map || !styleLoadedRef.current) return;
+      const src = map.getSource(RISK_SOURCE_ID) as mapboxgl.GeoJSONSource | undefined;
+      if (riskIndexData) src?.setData(riskIndexData as any);
+      if (map.getLayer(RISK_LAYER_ID)) {
+        map.setLayoutProperty(RISK_LAYER_ID, "visibility", showRiskIndex ? "visible" : "none");
+        map.setPaintProperty(RISK_LAYER_ID, "heatmap-opacity", riskIndexOpacity);
+      }
+    }, [riskIndexData, showRiskIndex, riskIndexOpacity]);
 
     // Relation lines data
     useEffect(() => {
@@ -252,6 +285,33 @@ function addHeatmapLayer(map: MbMap) {
         0.4, "#34d399",
         0.6, "#f59e0b",
         0.8, "#fb7185",
+        1, "#ef4444",
+      ],
+    },
+  });
+}
+
+function addRiskIndexLayer(map: MbMap) {
+  if (map.getSource(RISK_SOURCE_ID)) return;
+  map.addSource(RISK_SOURCE_ID, { type: "geojson", data: { type: "FeatureCollection", features: [] } as any });
+  map.addLayer({
+    id: RISK_LAYER_ID,
+    type: "heatmap",
+    source: RISK_SOURCE_ID,
+    layout: { visibility: "none" },
+    paint: {
+      "heatmap-weight": ["get", "weight"],
+      "heatmap-intensity": 1.4,
+      "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 0, 14, 6, 45, 12, 90],
+      "heatmap-opacity": 0.7,
+      "heatmap-color": [
+        "interpolate",
+        ["linear"],
+        ["heatmap-density"],
+        0, "rgba(0,0,0,0)",
+        0.2, "#a78bfa",
+        0.45, "#f472b6",
+        0.7, "#f59e0b",
         1, "#ef4444",
       ],
     },

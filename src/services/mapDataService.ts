@@ -1,5 +1,5 @@
 import { eventEngine } from "@/domain/services/event-engine";
-import { createGlobalEvent, type GlobalEvent } from "@/domain/models/GlobalEvent";
+import { createGlobalEvent, type GlobalEvent, type GlobalEventProvider } from "@/domain/models/GlobalEvent";
 
 /**
  * Live World Map data source — now a thin wrapper around the shared `EventEngine`.
@@ -44,12 +44,15 @@ const DEMO_WEATHER_EVENTS: GlobalEvent[] = [
   }),
 ];
 
-/** Loads and normalizes every map source into unified `GlobalEvent[]` via the EventEngine. */
-export async function collectGlobalMapEvents(force = false): Promise<GlobalEvent[]> {
-  const events = await eventEngine.loadAll({
-    providerIds: ["gnews", "usgs", "rest_countries", "supabase_alerts", "supabase_intelligence"],
-    force,
-  });
-
+/**
+ * Loads and normalizes every map source into unified `GlobalEvent[]` via the EventEngine.
+ *
+ * `providerIds` scopes the fetch to only the providers required by the map's
+ * currently-enabled intelligence layers (see `src/utils/filterEvents.ts`) —
+ * layers left off never trigger a network request until the user turns them
+ * on. Pass `undefined` to load every registered provider (all layers on).
+ */
+export async function collectGlobalMapEvents(force = false, providerIds?: GlobalEventProvider[]): Promise<GlobalEvent[]> {
+  const events = await eventEngine.loadAll({ providerIds, force });
   return [...events, ...DEMO_WEATHER_EVENTS];
 }

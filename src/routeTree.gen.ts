@@ -10,27 +10,65 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WeatherRouteImport } from './routes/weather'
+import { Route as WatchlistRouteImport } from './routes/watchlist'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as SavedArticlesRouteImport } from './routes/saved-articles'
 import { Route as SavedRouteImport } from './routes/saved'
 import { Route as ReportsRouteImport } from './routes/reports'
+import { Route as ReadingHistoryRouteImport } from './routes/reading-history'
 import { Route as PresentationRouteImport } from './routes/presentation'
+import { Route as MissionControlRouteImport } from './routes/mission-control'
 import { Route as MapRouteImport } from './routes/map'
+import { Route as KnowledgeGraphRouteImport } from './routes/knowledge-graph'
 import { Route as IntelligenceRouteImport } from './routes/intelligence'
 import { Route as EarthquakesRouteImport } from './routes/earthquakes'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CountriesRouteImport } from './routes/countries'
 import { Route as CompareRouteImport } from './routes/compare'
+import { Route as CollectionsRouteImport } from './routes/collections'
+import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as AlertsRouteImport } from './routes/alerts'
+import { Route as AlertCenterRouteImport } from './routes/alert-center'
 import { Route as AiNewsRouteImport } from './routes/ai-news'
+import { Route as AccountRouteImport } from './routes/account'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as EventIdRouteImport } from './routes/event.$id'
+import { Route as CountryNameRouteImport } from './routes/country.$name'
+import { Route as CollectionsIdRouteImport } from './routes/collections.$id'
+import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as ApiGenerateReportRouteImport } from './routes/api/generate-report'
 import { Route as ApiDebugGeminiEnvRouteImport } from './routes/api/debug-gemini-env'
 import { Route as ApiAiNewsChatRouteImport } from './routes/api/ai-news-chat'
+import { Route as ApiPublicRssProxyRouteImport } from './routes/api/public/rss-proxy'
 import { Route as ApiPublicRestcountriesProxyRouteImport } from './routes/api/public/restcountries-proxy'
+import { Route as ApiPublicReliefwebProxyRouteImport } from './routes/api/public/reliefweb-proxy'
+import { Route as ApiPublicOpenweatherProxyRouteImport } from './routes/api/public/openweather-proxy'
+import { Route as ApiPublicNewsapiProxyRouteImport } from './routes/api/public/newsapi-proxy'
 import { Route as ApiPublicGnewsProxyRouteImport } from './routes/api/public/gnews-proxy'
+import { Route as ApiPublicGdeltProxyRouteImport } from './routes/api/public/gdelt-proxy'
+import { Route as ApiPublicGdacsProxyRouteImport } from './routes/api/public/gdacs-proxy'
+import { Route as ApiFirmsFiresRouteImport } from './routes/api/firms/fires'
+import { Route as ApiAcledEventsRouteImport } from './routes/api/acled/events'
 
 const WeatherRoute = WeatherRouteImport.update({
   id: '/weather',
   path: '/weather',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WatchlistRoute = WatchlistRouteImport.update({
+  id: '/watchlist',
+  path: '/watchlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SavedArticlesRoute = SavedArticlesRouteImport.update({
+  id: '/saved-articles',
+  path: '/saved-articles',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SavedRoute = SavedRouteImport.update({
@@ -43,14 +81,29 @@ const ReportsRoute = ReportsRouteImport.update({
   path: '/reports',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReadingHistoryRoute = ReadingHistoryRouteImport.update({
+  id: '/reading-history',
+  path: '/reading-history',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PresentationRoute = PresentationRouteImport.update({
   id: '/presentation',
   path: '/presentation',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MissionControlRoute = MissionControlRouteImport.update({
+  id: '/mission-control',
+  path: '/mission-control',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MapRoute = MapRouteImport.update({
   id: '/map',
   path: '/map',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KnowledgeGraphRoute = KnowledgeGraphRouteImport.update({
+  id: '/knowledge-graph',
+  path: '/knowledge-graph',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IntelligenceRoute = IntelligenceRouteImport.update({
@@ -63,6 +116,11 @@ const EarthquakesRoute = EarthquakesRouteImport.update({
   path: '/earthquakes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CountriesRoute = CountriesRouteImport.update({
   id: '/countries',
   path: '/countries',
@@ -73,14 +131,34 @@ const CompareRoute = CompareRouteImport.update({
   path: '/compare',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CollectionsRoute = CollectionsRouteImport.update({
+  id: '/collections',
+  path: '/collections',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalyticsRoute = AnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AlertsRoute = AlertsRouteImport.update({
   id: '/alerts',
   path: '/alerts',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AlertCenterRoute = AlertCenterRouteImport.update({
+  id: '/alert-center',
+  path: '/alert-center',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AiNewsRoute = AiNewsRouteImport.update({
   id: '/ai-news',
   path: '/ai-news',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountRoute = AccountRouteImport.update({
+  id: '/account',
+  path: '/account',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -91,6 +169,26 @@ const AboutRoute = AboutRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EventIdRoute = EventIdRouteImport.update({
+  id: '/event/$id',
+  path: '/event/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CountryNameRoute = CountryNameRouteImport.update({
+  id: '/country/$name',
+  path: '/country/$name',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollectionsIdRoute = CollectionsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => CollectionsRoute,
+} as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/auth/callback',
+  path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiGenerateReportRoute = ApiGenerateReportRouteImport.update({
@@ -108,161 +206,362 @@ const ApiAiNewsChatRoute = ApiAiNewsChatRouteImport.update({
   path: '/api/ai-news-chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicRssProxyRoute = ApiPublicRssProxyRouteImport.update({
+  id: '/api/public/rss-proxy',
+  path: '/api/public/rss-proxy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicRestcountriesProxyRoute =
   ApiPublicRestcountriesProxyRouteImport.update({
     id: '/api/public/restcountries-proxy',
     path: '/api/public/restcountries-proxy',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicReliefwebProxyRoute = ApiPublicReliefwebProxyRouteImport.update({
+  id: '/api/public/reliefweb-proxy',
+  path: '/api/public/reliefweb-proxy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicOpenweatherProxyRoute =
+  ApiPublicOpenweatherProxyRouteImport.update({
+    id: '/api/public/openweather-proxy',
+    path: '/api/public/openweather-proxy',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicNewsapiProxyRoute = ApiPublicNewsapiProxyRouteImport.update({
+  id: '/api/public/newsapi-proxy',
+  path: '/api/public/newsapi-proxy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicGnewsProxyRoute = ApiPublicGnewsProxyRouteImport.update({
   id: '/api/public/gnews-proxy',
   path: '/api/public/gnews-proxy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicGdeltProxyRoute = ApiPublicGdeltProxyRouteImport.update({
+  id: '/api/public/gdelt-proxy',
+  path: '/api/public/gdelt-proxy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicGdacsProxyRoute = ApiPublicGdacsProxyRouteImport.update({
+  id: '/api/public/gdacs-proxy',
+  path: '/api/public/gdacs-proxy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiFirmsFiresRoute = ApiFirmsFiresRouteImport.update({
+  id: '/api/firms/fires',
+  path: '/api/firms/fires',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAcledEventsRoute = ApiAcledEventsRouteImport.update({
+  id: '/api/acled/events',
+  path: '/api/acled/events',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/account': typeof AccountRoute
   '/ai-news': typeof AiNewsRoute
+  '/alert-center': typeof AlertCenterRoute
   '/alerts': typeof AlertsRoute
+  '/analytics': typeof AnalyticsRoute
+  '/collections': typeof CollectionsRouteWithChildren
   '/compare': typeof CompareRoute
   '/countries': typeof CountriesRoute
+  '/dashboard': typeof DashboardRoute
   '/earthquakes': typeof EarthquakesRoute
   '/intelligence': typeof IntelligenceRoute
+  '/knowledge-graph': typeof KnowledgeGraphRoute
   '/map': typeof MapRoute
+  '/mission-control': typeof MissionControlRoute
   '/presentation': typeof PresentationRoute
+  '/reading-history': typeof ReadingHistoryRoute
   '/reports': typeof ReportsRoute
   '/saved': typeof SavedRoute
+  '/saved-articles': typeof SavedArticlesRoute
+  '/settings': typeof SettingsRoute
+  '/watchlist': typeof WatchlistRoute
   '/weather': typeof WeatherRoute
   '/api/ai-news-chat': typeof ApiAiNewsChatRoute
   '/api/debug-gemini-env': typeof ApiDebugGeminiEnvRoute
   '/api/generate-report': typeof ApiGenerateReportRoute
+  '/auth/callback': typeof AuthCallbackRoute
+  '/collections/$id': typeof CollectionsIdRoute
+  '/country/$name': typeof CountryNameRoute
+  '/event/$id': typeof EventIdRoute
+  '/api/acled/events': typeof ApiAcledEventsRoute
+  '/api/firms/fires': typeof ApiFirmsFiresRoute
+  '/api/public/gdacs-proxy': typeof ApiPublicGdacsProxyRoute
+  '/api/public/gdelt-proxy': typeof ApiPublicGdeltProxyRoute
   '/api/public/gnews-proxy': typeof ApiPublicGnewsProxyRoute
+  '/api/public/newsapi-proxy': typeof ApiPublicNewsapiProxyRoute
+  '/api/public/openweather-proxy': typeof ApiPublicOpenweatherProxyRoute
+  '/api/public/reliefweb-proxy': typeof ApiPublicReliefwebProxyRoute
   '/api/public/restcountries-proxy': typeof ApiPublicRestcountriesProxyRoute
+  '/api/public/rss-proxy': typeof ApiPublicRssProxyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/account': typeof AccountRoute
   '/ai-news': typeof AiNewsRoute
+  '/alert-center': typeof AlertCenterRoute
   '/alerts': typeof AlertsRoute
+  '/analytics': typeof AnalyticsRoute
+  '/collections': typeof CollectionsRouteWithChildren
   '/compare': typeof CompareRoute
   '/countries': typeof CountriesRoute
+  '/dashboard': typeof DashboardRoute
   '/earthquakes': typeof EarthquakesRoute
   '/intelligence': typeof IntelligenceRoute
+  '/knowledge-graph': typeof KnowledgeGraphRoute
   '/map': typeof MapRoute
+  '/mission-control': typeof MissionControlRoute
   '/presentation': typeof PresentationRoute
+  '/reading-history': typeof ReadingHistoryRoute
   '/reports': typeof ReportsRoute
   '/saved': typeof SavedRoute
+  '/saved-articles': typeof SavedArticlesRoute
+  '/settings': typeof SettingsRoute
+  '/watchlist': typeof WatchlistRoute
   '/weather': typeof WeatherRoute
   '/api/ai-news-chat': typeof ApiAiNewsChatRoute
   '/api/debug-gemini-env': typeof ApiDebugGeminiEnvRoute
   '/api/generate-report': typeof ApiGenerateReportRoute
+  '/auth/callback': typeof AuthCallbackRoute
+  '/collections/$id': typeof CollectionsIdRoute
+  '/country/$name': typeof CountryNameRoute
+  '/event/$id': typeof EventIdRoute
+  '/api/acled/events': typeof ApiAcledEventsRoute
+  '/api/firms/fires': typeof ApiFirmsFiresRoute
+  '/api/public/gdacs-proxy': typeof ApiPublicGdacsProxyRoute
+  '/api/public/gdelt-proxy': typeof ApiPublicGdeltProxyRoute
   '/api/public/gnews-proxy': typeof ApiPublicGnewsProxyRoute
+  '/api/public/newsapi-proxy': typeof ApiPublicNewsapiProxyRoute
+  '/api/public/openweather-proxy': typeof ApiPublicOpenweatherProxyRoute
+  '/api/public/reliefweb-proxy': typeof ApiPublicReliefwebProxyRoute
   '/api/public/restcountries-proxy': typeof ApiPublicRestcountriesProxyRoute
+  '/api/public/rss-proxy': typeof ApiPublicRssProxyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/account': typeof AccountRoute
   '/ai-news': typeof AiNewsRoute
+  '/alert-center': typeof AlertCenterRoute
   '/alerts': typeof AlertsRoute
+  '/analytics': typeof AnalyticsRoute
+  '/collections': typeof CollectionsRouteWithChildren
   '/compare': typeof CompareRoute
   '/countries': typeof CountriesRoute
+  '/dashboard': typeof DashboardRoute
   '/earthquakes': typeof EarthquakesRoute
   '/intelligence': typeof IntelligenceRoute
+  '/knowledge-graph': typeof KnowledgeGraphRoute
   '/map': typeof MapRoute
+  '/mission-control': typeof MissionControlRoute
   '/presentation': typeof PresentationRoute
+  '/reading-history': typeof ReadingHistoryRoute
   '/reports': typeof ReportsRoute
   '/saved': typeof SavedRoute
+  '/saved-articles': typeof SavedArticlesRoute
+  '/settings': typeof SettingsRoute
+  '/watchlist': typeof WatchlistRoute
   '/weather': typeof WeatherRoute
   '/api/ai-news-chat': typeof ApiAiNewsChatRoute
   '/api/debug-gemini-env': typeof ApiDebugGeminiEnvRoute
   '/api/generate-report': typeof ApiGenerateReportRoute
+  '/auth/callback': typeof AuthCallbackRoute
+  '/collections/$id': typeof CollectionsIdRoute
+  '/country/$name': typeof CountryNameRoute
+  '/event/$id': typeof EventIdRoute
+  '/api/acled/events': typeof ApiAcledEventsRoute
+  '/api/firms/fires': typeof ApiFirmsFiresRoute
+  '/api/public/gdacs-proxy': typeof ApiPublicGdacsProxyRoute
+  '/api/public/gdelt-proxy': typeof ApiPublicGdeltProxyRoute
   '/api/public/gnews-proxy': typeof ApiPublicGnewsProxyRoute
+  '/api/public/newsapi-proxy': typeof ApiPublicNewsapiProxyRoute
+  '/api/public/openweather-proxy': typeof ApiPublicOpenweatherProxyRoute
+  '/api/public/reliefweb-proxy': typeof ApiPublicReliefwebProxyRoute
   '/api/public/restcountries-proxy': typeof ApiPublicRestcountriesProxyRoute
+  '/api/public/rss-proxy': typeof ApiPublicRssProxyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/about'
+    | '/account'
     | '/ai-news'
+    | '/alert-center'
     | '/alerts'
+    | '/analytics'
+    | '/collections'
     | '/compare'
     | '/countries'
+    | '/dashboard'
     | '/earthquakes'
     | '/intelligence'
+    | '/knowledge-graph'
     | '/map'
+    | '/mission-control'
     | '/presentation'
+    | '/reading-history'
     | '/reports'
     | '/saved'
+    | '/saved-articles'
+    | '/settings'
+    | '/watchlist'
     | '/weather'
     | '/api/ai-news-chat'
     | '/api/debug-gemini-env'
     | '/api/generate-report'
+    | '/auth/callback'
+    | '/collections/$id'
+    | '/country/$name'
+    | '/event/$id'
+    | '/api/acled/events'
+    | '/api/firms/fires'
+    | '/api/public/gdacs-proxy'
+    | '/api/public/gdelt-proxy'
     | '/api/public/gnews-proxy'
+    | '/api/public/newsapi-proxy'
+    | '/api/public/openweather-proxy'
+    | '/api/public/reliefweb-proxy'
     | '/api/public/restcountries-proxy'
+    | '/api/public/rss-proxy'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
+    | '/account'
     | '/ai-news'
+    | '/alert-center'
     | '/alerts'
+    | '/analytics'
+    | '/collections'
     | '/compare'
     | '/countries'
+    | '/dashboard'
     | '/earthquakes'
     | '/intelligence'
+    | '/knowledge-graph'
     | '/map'
+    | '/mission-control'
     | '/presentation'
+    | '/reading-history'
     | '/reports'
     | '/saved'
+    | '/saved-articles'
+    | '/settings'
+    | '/watchlist'
     | '/weather'
     | '/api/ai-news-chat'
     | '/api/debug-gemini-env'
     | '/api/generate-report'
+    | '/auth/callback'
+    | '/collections/$id'
+    | '/country/$name'
+    | '/event/$id'
+    | '/api/acled/events'
+    | '/api/firms/fires'
+    | '/api/public/gdacs-proxy'
+    | '/api/public/gdelt-proxy'
     | '/api/public/gnews-proxy'
+    | '/api/public/newsapi-proxy'
+    | '/api/public/openweather-proxy'
+    | '/api/public/reliefweb-proxy'
     | '/api/public/restcountries-proxy'
+    | '/api/public/rss-proxy'
   id:
     | '__root__'
     | '/'
     | '/about'
+    | '/account'
     | '/ai-news'
+    | '/alert-center'
     | '/alerts'
+    | '/analytics'
+    | '/collections'
     | '/compare'
     | '/countries'
+    | '/dashboard'
     | '/earthquakes'
     | '/intelligence'
+    | '/knowledge-graph'
     | '/map'
+    | '/mission-control'
     | '/presentation'
+    | '/reading-history'
     | '/reports'
     | '/saved'
+    | '/saved-articles'
+    | '/settings'
+    | '/watchlist'
     | '/weather'
     | '/api/ai-news-chat'
     | '/api/debug-gemini-env'
     | '/api/generate-report'
+    | '/auth/callback'
+    | '/collections/$id'
+    | '/country/$name'
+    | '/event/$id'
+    | '/api/acled/events'
+    | '/api/firms/fires'
+    | '/api/public/gdacs-proxy'
+    | '/api/public/gdelt-proxy'
     | '/api/public/gnews-proxy'
+    | '/api/public/newsapi-proxy'
+    | '/api/public/openweather-proxy'
+    | '/api/public/reliefweb-proxy'
     | '/api/public/restcountries-proxy'
+    | '/api/public/rss-proxy'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AccountRoute: typeof AccountRoute
   AiNewsRoute: typeof AiNewsRoute
+  AlertCenterRoute: typeof AlertCenterRoute
   AlertsRoute: typeof AlertsRoute
+  AnalyticsRoute: typeof AnalyticsRoute
+  CollectionsRoute: typeof CollectionsRouteWithChildren
   CompareRoute: typeof CompareRoute
   CountriesRoute: typeof CountriesRoute
+  DashboardRoute: typeof DashboardRoute
   EarthquakesRoute: typeof EarthquakesRoute
   IntelligenceRoute: typeof IntelligenceRoute
+  KnowledgeGraphRoute: typeof KnowledgeGraphRoute
   MapRoute: typeof MapRoute
+  MissionControlRoute: typeof MissionControlRoute
   PresentationRoute: typeof PresentationRoute
+  ReadingHistoryRoute: typeof ReadingHistoryRoute
   ReportsRoute: typeof ReportsRoute
   SavedRoute: typeof SavedRoute
+  SavedArticlesRoute: typeof SavedArticlesRoute
+  SettingsRoute: typeof SettingsRoute
+  WatchlistRoute: typeof WatchlistRoute
   WeatherRoute: typeof WeatherRoute
   ApiAiNewsChatRoute: typeof ApiAiNewsChatRoute
   ApiDebugGeminiEnvRoute: typeof ApiDebugGeminiEnvRoute
   ApiGenerateReportRoute: typeof ApiGenerateReportRoute
+  AuthCallbackRoute: typeof AuthCallbackRoute
+  CountryNameRoute: typeof CountryNameRoute
+  EventIdRoute: typeof EventIdRoute
+  ApiAcledEventsRoute: typeof ApiAcledEventsRoute
+  ApiFirmsFiresRoute: typeof ApiFirmsFiresRoute
+  ApiPublicGdacsProxyRoute: typeof ApiPublicGdacsProxyRoute
+  ApiPublicGdeltProxyRoute: typeof ApiPublicGdeltProxyRoute
   ApiPublicGnewsProxyRoute: typeof ApiPublicGnewsProxyRoute
+  ApiPublicNewsapiProxyRoute: typeof ApiPublicNewsapiProxyRoute
+  ApiPublicOpenweatherProxyRoute: typeof ApiPublicOpenweatherProxyRoute
+  ApiPublicReliefwebProxyRoute: typeof ApiPublicReliefwebProxyRoute
   ApiPublicRestcountriesProxyRoute: typeof ApiPublicRestcountriesProxyRoute
+  ApiPublicRssProxyRoute: typeof ApiPublicRssProxyRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -272,6 +571,27 @@ declare module '@tanstack/react-router' {
       path: '/weather'
       fullPath: '/weather'
       preLoaderRoute: typeof WeatherRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/watchlist': {
+      id: '/watchlist'
+      path: '/watchlist'
+      fullPath: '/watchlist'
+      preLoaderRoute: typeof WatchlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/saved-articles': {
+      id: '/saved-articles'
+      path: '/saved-articles'
+      fullPath: '/saved-articles'
+      preLoaderRoute: typeof SavedArticlesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/saved': {
@@ -288,6 +608,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReportsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reading-history': {
+      id: '/reading-history'
+      path: '/reading-history'
+      fullPath: '/reading-history'
+      preLoaderRoute: typeof ReadingHistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/presentation': {
       id: '/presentation'
       path: '/presentation'
@@ -295,11 +622,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PresentationRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mission-control': {
+      id: '/mission-control'
+      path: '/mission-control'
+      fullPath: '/mission-control'
+      preLoaderRoute: typeof MissionControlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/map': {
       id: '/map'
       path: '/map'
       fullPath: '/map'
       preLoaderRoute: typeof MapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/knowledge-graph': {
+      id: '/knowledge-graph'
+      path: '/knowledge-graph'
+      fullPath: '/knowledge-graph'
+      preLoaderRoute: typeof KnowledgeGraphRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/intelligence': {
@@ -316,6 +657,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EarthquakesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/countries': {
       id: '/countries'
       path: '/countries'
@@ -330,6 +678,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompareRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/collections': {
+      id: '/collections'
+      path: '/collections'
+      fullPath: '/collections'
+      preLoaderRoute: typeof CollectionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analytics': {
+      id: '/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/alerts': {
       id: '/alerts'
       path: '/alerts'
@@ -337,11 +699,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AlertsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/alert-center': {
+      id: '/alert-center'
+      path: '/alert-center'
+      fullPath: '/alert-center'
+      preLoaderRoute: typeof AlertCenterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/ai-news': {
       id: '/ai-news'
       path: '/ai-news'
       fullPath: '/ai-news'
       preLoaderRoute: typeof AiNewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account': {
+      id: '/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AccountRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -356,6 +732,34 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/event/$id': {
+      id: '/event/$id'
+      path: '/event/$id'
+      fullPath: '/event/$id'
+      preLoaderRoute: typeof EventIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/country/$name': {
+      id: '/country/$name'
+      path: '/country/$name'
+      fullPath: '/country/$name'
+      preLoaderRoute: typeof CountryNameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/$id': {
+      id: '/collections/$id'
+      path: '/$id'
+      fullPath: '/collections/$id'
+      preLoaderRoute: typeof CollectionsIdRouteImport
+      parentRoute: typeof CollectionsRoute
+    }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/generate-report': {
@@ -379,11 +783,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAiNewsChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/rss-proxy': {
+      id: '/api/public/rss-proxy'
+      path: '/api/public/rss-proxy'
+      fullPath: '/api/public/rss-proxy'
+      preLoaderRoute: typeof ApiPublicRssProxyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/restcountries-proxy': {
       id: '/api/public/restcountries-proxy'
       path: '/api/public/restcountries-proxy'
       fullPath: '/api/public/restcountries-proxy'
       preLoaderRoute: typeof ApiPublicRestcountriesProxyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/reliefweb-proxy': {
+      id: '/api/public/reliefweb-proxy'
+      path: '/api/public/reliefweb-proxy'
+      fullPath: '/api/public/reliefweb-proxy'
+      preLoaderRoute: typeof ApiPublicReliefwebProxyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/openweather-proxy': {
+      id: '/api/public/openweather-proxy'
+      path: '/api/public/openweather-proxy'
+      fullPath: '/api/public/openweather-proxy'
+      preLoaderRoute: typeof ApiPublicOpenweatherProxyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/newsapi-proxy': {
+      id: '/api/public/newsapi-proxy'
+      path: '/api/public/newsapi-proxy'
+      fullPath: '/api/public/newsapi-proxy'
+      preLoaderRoute: typeof ApiPublicNewsapiProxyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/gnews-proxy': {
@@ -393,28 +825,90 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicGnewsProxyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/gdelt-proxy': {
+      id: '/api/public/gdelt-proxy'
+      path: '/api/public/gdelt-proxy'
+      fullPath: '/api/public/gdelt-proxy'
+      preLoaderRoute: typeof ApiPublicGdeltProxyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/gdacs-proxy': {
+      id: '/api/public/gdacs-proxy'
+      path: '/api/public/gdacs-proxy'
+      fullPath: '/api/public/gdacs-proxy'
+      preLoaderRoute: typeof ApiPublicGdacsProxyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/firms/fires': {
+      id: '/api/firms/fires'
+      path: '/api/firms/fires'
+      fullPath: '/api/firms/fires'
+      preLoaderRoute: typeof ApiFirmsFiresRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/acled/events': {
+      id: '/api/acled/events'
+      path: '/api/acled/events'
+      fullPath: '/api/acled/events'
+      preLoaderRoute: typeof ApiAcledEventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
+
+interface CollectionsRouteChildren {
+  CollectionsIdRoute: typeof CollectionsIdRoute
+}
+
+const CollectionsRouteChildren: CollectionsRouteChildren = {
+  CollectionsIdRoute: CollectionsIdRoute,
+}
+
+const CollectionsRouteWithChildren = CollectionsRoute._addFileChildren(
+  CollectionsRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AccountRoute: AccountRoute,
   AiNewsRoute: AiNewsRoute,
+  AlertCenterRoute: AlertCenterRoute,
   AlertsRoute: AlertsRoute,
+  AnalyticsRoute: AnalyticsRoute,
+  CollectionsRoute: CollectionsRouteWithChildren,
   CompareRoute: CompareRoute,
   CountriesRoute: CountriesRoute,
+  DashboardRoute: DashboardRoute,
   EarthquakesRoute: EarthquakesRoute,
   IntelligenceRoute: IntelligenceRoute,
+  KnowledgeGraphRoute: KnowledgeGraphRoute,
   MapRoute: MapRoute,
+  MissionControlRoute: MissionControlRoute,
   PresentationRoute: PresentationRoute,
+  ReadingHistoryRoute: ReadingHistoryRoute,
   ReportsRoute: ReportsRoute,
   SavedRoute: SavedRoute,
+  SavedArticlesRoute: SavedArticlesRoute,
+  SettingsRoute: SettingsRoute,
+  WatchlistRoute: WatchlistRoute,
   WeatherRoute: WeatherRoute,
   ApiAiNewsChatRoute: ApiAiNewsChatRoute,
   ApiDebugGeminiEnvRoute: ApiDebugGeminiEnvRoute,
   ApiGenerateReportRoute: ApiGenerateReportRoute,
+  AuthCallbackRoute: AuthCallbackRoute,
+  CountryNameRoute: CountryNameRoute,
+  EventIdRoute: EventIdRoute,
+  ApiAcledEventsRoute: ApiAcledEventsRoute,
+  ApiFirmsFiresRoute: ApiFirmsFiresRoute,
+  ApiPublicGdacsProxyRoute: ApiPublicGdacsProxyRoute,
+  ApiPublicGdeltProxyRoute: ApiPublicGdeltProxyRoute,
   ApiPublicGnewsProxyRoute: ApiPublicGnewsProxyRoute,
+  ApiPublicNewsapiProxyRoute: ApiPublicNewsapiProxyRoute,
+  ApiPublicOpenweatherProxyRoute: ApiPublicOpenweatherProxyRoute,
+  ApiPublicReliefwebProxyRoute: ApiPublicReliefwebProxyRoute,
   ApiPublicRestcountriesProxyRoute: ApiPublicRestcountriesProxyRoute,
+  ApiPublicRssProxyRoute: ApiPublicRssProxyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

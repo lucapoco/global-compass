@@ -38,6 +38,8 @@ function getClient(): SupabaseClient<Database> {
       storage: typeof window !== "undefined" ? window.localStorage : undefined,
       persistSession: true,
       autoRefreshToken: true,
+      detectSessionInUrl: true,
+      flowType: "pkce",
       // Isolate auth storage per Supabase project so switching `VITE_SUPABASE_URL` does not reuse old session keys.
       storageKey: `gc-sb-${ref}-auth`,
     },

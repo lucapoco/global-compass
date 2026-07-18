@@ -6,8 +6,10 @@ import { DataBadge } from "@/components/ui/DataBadge";
 import { Button } from "@/components/ui/button";
 import { PresentationPreviewCard } from "@/components/presentation/PresentationPreviewCard";
 import { PRESENTATION_STEPS } from "@/data/presentationSteps";
+import { useT } from "@/i18n";
 
 export function PresentationPage() {
+  const t = useT();
   const [index, setIndex] = useState(0);
   const step = PRESENTATION_STEPS[index];
   const Icon = step.icon;
@@ -18,7 +20,7 @@ export function PresentationPage() {
     <div className="space-y-5">
       <div className="relative overflow-hidden rounded-xl border border-primary/20 bg-gradient-to-br from-primary/10 via-background to-background p-5 md:p-6">
         <SectionHeader
-          title="Presentation Mode"
+          title={t("app.pages.presentation.title")}
           subtitle="Guided demo flow for InfoEducație jury — step through each capability, then open the live feature"
           right={<DataBadge variant="live">Jury demo</DataBadge>}
         />
@@ -83,7 +85,7 @@ export function PresentationPage() {
           {index + 1} / {PRESENTATION_STEPS.length}
         </span>
         {isLast ? (
-          <Link to="/">
+          <Link to="/dashboard">
             <Button type="button">
               Finish demo
               <ChevronRight className="ml-1 h-4 w-4" />

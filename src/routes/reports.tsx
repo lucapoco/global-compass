@@ -1,14 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ReportsPage } from "@/pages/Reports";
+import en from "@/locales/en.json";
 
 export const Route = createFileRoute("/reports")({
   head: () => ({
     meta: [
-      { title: "Intelligence Reports — Global Pulse" },
+      { title: en.app.pages.reports.metaTitle },
       {
         name: "description",
-        content:
-          "Generate, save, and export intelligence-style country reports, event reports, and global briefings.",
+        content: en.app.pages.reports.metaDescription,
       },
     ],
   }),

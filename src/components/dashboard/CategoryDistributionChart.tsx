@@ -3,6 +3,7 @@ import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip, Cell } from 
 import { LayoutGrid } from "lucide-react";
 import type { IntelligenceItem } from "@/types";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { useT } from "@/i18n";
 
 interface Props { items: IntelligenceItem[] }
 
@@ -12,6 +13,7 @@ const COLORS = [
 ];
 
 export function CategoryDistributionChart({ items }: Props) {
+  const t = useT();
   const data = useMemo(() => {
     const m = new Map<string, number>();
     for (const i of items) m.set(i.category, (m.get(i.category) ?? 0) + 1);
@@ -23,17 +25,24 @@ export function CategoryDistributionChart({ items }: Props) {
   return (
     <div className="glass-card p-4">
       <SectionHeader
-        title="Category Distribution"
-        subtitle="Live intelligence items grouped by category"
+        title={t("app.pages.dashboard.categoryDistribution.title")}
+        subtitle={t("app.pages.dashboard.categoryDistribution.subtitle")}
         right={<LayoutGrid className="h-4 w-4 text-cyan-glow" />}
       />
       {data.length === 0 ? (
-        <div className="rounded-md border border-dashed border-border/50 p-6 text-center text-xs text-muted-foreground">No data yet.</div>
+        <div className="rounded-md border border-dashed border-border/50 p-6 text-center text-xs text-muted-foreground">{t("app.pages.dashboard.categoryDistribution.empty")}</div>
       ) : (
-        <div className="h-56">
+        <div className="h-56 min-w-0 overflow-hidden">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 8 }}>
-              <XAxis dataKey="category" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
+            <BarChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 28 }}>
+              <XAxis
+                dataKey="category"
+                tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
+                interval={0}
+                angle={-25}
+                textAnchor="end"
+                height={48}
+              />
               <YAxis allowDecimals={false} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
               <Tooltip
                 contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }}

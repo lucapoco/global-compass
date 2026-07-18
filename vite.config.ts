@@ -9,6 +9,7 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 import type { Plugin } from "vite";
 import { resolve } from "node:path";
 import { loadEnv } from "vite";
+// @ts-expect-error — plain JS helper; no declaration file needed for this build-tool script
 import { syncGeminiDevVars } from "./scripts/sync-gemini-dev-vars.mjs";
 
 function geminiEnvPlugin(): Plugin {

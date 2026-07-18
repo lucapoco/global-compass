@@ -9,31 +9,43 @@
  *
  * Cache hierarchy (three levels):
  *   1. Client in-memory cache (12 h for "all", 30 min for name searches)
- *      → avoids repeated round-trips within a session
  *   2. Server-side cache inside the proxy (same TTLs)
- *      → avoids hitting restcountries.com on every page load
- *   3. Bundled DEMO_COUNTRIES fallback (50 key countries)
- *      → used only when both proxy layers fail, so the app never breaks
+ *   3. Bundled FALLBACK_COUNTRIES fallback (50 key countries)
  *
  * Status values (exposed via `getCountriesStatus()`):
  *   "live"   — fresh data from restcountries.com through the proxy
- *   "cached" — data returned by the server cache layer
+ *   "cached" — data returned by the server or client cache layer
  *   "local"  — bundled fallback (network/proxy entirely unreachable)
- *   "error"  — all fallbacks failed (should never happen)
+ *   "error"  — all fallbacks failed for a name search (returns empty array)
  */
 
 import type { Country } from "@/types";
-import { DEMO_COUNTRIES, searchDemoCountries } from "@/data/demoCountries";
+import { FALLBACK_COUNTRIES, searchFallbackCountries } from "@/data/fallbackCountries";
 
 const PROXY = "/api/public/restcountries-proxy";
 
-const CLIENT_CACHE_TTL_ALL_MS = 12 * 60 * 60 * 1000; // 12 hours
-const CLIENT_CACHE_TTL_NAME_MS = 30 * 60 * 1000;      // 30 minutes
+const CLIENT_CACHE_TTL_ALL_MS = 12 * 60 * 60 * 1000;
+const CLIENT_CACHE_TTL_NAME_MS = 30 * 60 * 1000;
+const FETCH_TIMEOUT_MS = 10_000;
+const MAX_RETRIES = 2;
+const RETRY_DELAYS_MS = [400, 900] as const;
 
-// ─── Status type ─────────────────────────────────────────────────────────────
+/** Common aliases → REST Countries search term */
+const SEARCH_ALIASES: Record<string, string> = {
+  usa: "United States",
+  us: "United States",
+  america: "United States",
+  uk: "United Kingdom",
+  britain: "United Kingdom",
+  england: "United Kingdom",
+  uae: "United Arab Emirates",
+  korea: "South Korea",
+  drc: "Democratic Republic of the Congo",
+  russia: "Russia",
+};
+
 export type CountriesStatus = "live" | "cached" | "local" | "error" | "idle";
 
-// Module-level observable status (read via getCountriesStatus / subscribeCountriesStatus)
 let _status: CountriesStatus = "idle";
 const _listeners = new Set<(s: CountriesStatus) => void>();
 
@@ -52,7 +64,6 @@ export function subscribeCountriesStatus(listener: (s: CountriesStatus) => void)
   return () => _listeners.delete(listener);
 }
 
-// ─── Client-side in-memory cache ─────────────────────────────────────────────
 interface ClientCacheEntry<T> {
   data: T;
   fetchedAt: number;
@@ -67,7 +78,14 @@ function isFresh<T>(entry: ClientCacheEntry<T> | null | undefined, now = Date.no
   return !!entry && now - entry.fetchedAt < entry.ttlMs;
 }
 
-// ─── Proxy helpers ────────────────────────────────────────────────────────────
+/** Normalize user input (aliases, trim) before upstream search. */
+export function normalizeCountryQuery(name: string): string {
+  const trimmed = name.trim();
+  if (!trimmed) return "";
+  const alias = SEARCH_ALIASES[trimmed.toLowerCase()];
+  return alias ?? trimmed;
+}
+
 interface ProxyResponse {
   countries?: unknown[];
   error?: string;
@@ -76,98 +94,191 @@ interface ProxyResponse {
   fetchedAt?: number;
 }
 
-async function callProxy(params: Record<string, string>): Promise<ProxyResponse> {
-  const sp = new URLSearchParams(params);
-  const res = await fetch(`${PROXY}?${sp.toString()}`, {
-    headers: { Accept: "application/json" },
-  });
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({})) as ProxyResponse;
-    throw new Error(body.message ?? `Proxy error ${res.status}`);
-  }
-  return res.json() as Promise<ProxyResponse>;
+function sleep(ms: number): Promise<void> {
+  return new Promise((r) => setTimeout(r, ms));
 }
 
-// ─── Public API ───────────────────────────────────────────────────────────────
+async function callProxyOnce(params: Record<string, string>): Promise<ProxyResponse> {
+  const sp = new URLSearchParams(params);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  try {
+    const res = await fetch(`${PROXY}?${sp.toString()}`, {
+      headers: { Accept: "application/json" },
+      signal: controller.signal,
+    });
+    const body = (await res.json().catch(() => ({}))) as ProxyResponse;
+    // 404 with empty list — caller will use local fallback
+    if (!res.ok) {
+      if (res.status === 404 && Array.isArray(body.countries)) {
+        return { ...body, countries: body.countries };
+      }
+      throw new Error(body.message ?? `Proxy error ${res.status}`);
+    }
+    return body;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function resolveFromLocal(name: string): Country[] {
+  const local = searchLocalCountries(name);
+  if (local.length) return local;
+  // Warm all-countries cache from demo if needed, then search again
+  if (!clientCacheAll.entry) {
+    clientCacheAll.entry = {
+      data: FALLBACK_COUNTRIES,
+      fetchedAt: Date.now(),
+      ttlMs: CLIENT_CACHE_TTL_ALL_MS,
+      source: "local",
+    };
+  }
+  return searchLocalCountries(name);
+}
+
+async function callProxyWithRetry(params: Record<string, string>): Promise<ProxyResponse> {
+  let lastError: Error | null = null;
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    if (attempt > 0) await sleep(RETRY_DELAYS_MS[attempt - 1] ?? 900);
+    try {
+      return await callProxyOnce(params);
+    } catch (e) {
+      lastError = e instanceof Error ? e : new Error(String(e));
+      if (attempt >= MAX_RETRIES) break;
+    }
+  }
+  throw lastError ?? new Error("REST Countries proxy unavailable");
+}
+
+function searchLocalCountries(name: string): Country[] {
+  const normalized = normalizeCountryQuery(name);
+  const demo = searchFallbackCountries(normalized);
+  if (demo.length) return demo;
+
+  const q = normalized.toLowerCase();
+  const fromAll = clientCacheAll.entry?.data.filter(
+    (c) =>
+      c.name.common.toLowerCase().includes(q) ||
+      c.name.official.toLowerCase().includes(q) ||
+      c.cca2?.toLowerCase() === q ||
+      c.cca3?.toLowerCase() === q,
+  );
+  return fromAll?.length ? fromAll : [];
+}
 
 /**
  * Returns all countries.
- *
- * Flow:
- *   1. Client in-memory cache (fresh within 12 h) → return immediately
- *   2. Proxy GET ?endpoint=all → server cache or live upstream
- *   3. Bundled DEMO_COUNTRIES fallback
+ * Never throws — degrades to demo data on total failure.
  */
 export async function getAllCountries(): Promise<Country[]> {
-  // 1. Client cache
   if (isFresh(clientCacheAll.entry)) {
     setStatus(clientCacheAll.entry.source === "live" ? "live" : "cached");
     return clientCacheAll.entry.data;
   }
 
   try {
-    // 2. Proxy (server cache or live upstream)
-    const response = await callProxy({ endpoint: "all" });
+    const response = await callProxyWithRetry({ endpoint: "all" });
     const countries = (response.countries ?? []) as Country[];
+    if (countries.length === 0) throw new Error("Empty country list");
     const source = response.source === "live" ? "live" : "cached";
-
     clientCacheAll.entry = { data: countries, fetchedAt: Date.now(), ttlMs: CLIENT_CACHE_TTL_ALL_MS, source };
     setStatus(source);
     return countries;
   } catch {
-    // 3. Bundled fallback (stale client cache takes priority over bundled data)
     if (clientCacheAll.entry) {
       setStatus("cached");
       return clientCacheAll.entry.data;
     }
     setStatus("local");
-    return DEMO_COUNTRIES;
+    return FALLBACK_COUNTRIES;
   }
 }
 
 /**
- * Searches countries by name.
- *
- * Flow:
- *   1. Client in-memory cache for this exact query
- *   2. Proxy GET ?endpoint=name&q=<name>
- *   3. Search inside bundled DEMO_COUNTRIES
- *   4. Empty array (never throws)
+ * Searches countries by name, code, or alias.
+ * Never throws — returns [] only when nothing matches anywhere.
  */
 export async function searchCountryByName(name: string): Promise<Country[]> {
-  const key = name.trim().toLowerCase();
+  const normalized = normalizeCountryQuery(name);
+  const key = normalized.toLowerCase();
   if (!key) return [];
 
-  // 1. Client cache
   const cached = clientCacheName.get(key);
   if (isFresh(cached)) {
-    setStatus(cached.source === "live" ? "live" : "cached");
+    setStatus(cached.source === "live" ? "live" : cached.source === "local" ? "local" : "cached");
     return cached.data;
   }
 
   try {
-    // 2. Proxy
-    const response = await callProxy({ endpoint: "name", q: name.trim() });
-    const countries = (response.countries ?? []) as Country[];
-    const source = response.source === "live" ? "live" : "cached";
+    const response = await callProxyWithRetry({ endpoint: "name", q: normalized });
+    let countries = (response.countries ?? []) as Country[];
 
+    if (countries.length === 0) {
+      countries = resolveFromLocal(normalized);
+      if (countries.length) {
+        clientCacheName.set(key, {
+          data: countries,
+          fetchedAt: Date.now(),
+          ttlMs: CLIENT_CACHE_TTL_NAME_MS,
+          source: "local",
+        });
+        setStatus("local");
+        return countries;
+      }
+      setStatus("error");
+      return [];
+    }
+
+    const source = response.source === "live" ? "live" : response.source === "local" ? "local" : "cached";
     clientCacheName.set(key, { data: countries, fetchedAt: Date.now(), ttlMs: CLIENT_CACHE_TTL_NAME_MS, source });
     setStatus(source);
     return countries;
   } catch {
-    // 3. Bundled fallback
-    const demo = searchDemoCountries(name);
-    if (demo.length) {
-      clientCacheName.set(key, { data: demo, fetchedAt: Date.now(), ttlMs: CLIENT_CACHE_TTL_NAME_MS, source: "local" });
-      setStatus("local");
-      return demo;
+    const stale = clientCacheName.get(key);
+    if (stale) {
+      setStatus("cached");
+      return stale.data;
     }
+
+    const local = resolveFromLocal(normalized);
+    if (local.length) {
+      clientCacheName.set(key, {
+        data: local,
+        fetchedAt: Date.now(),
+        ttlMs: CLIENT_CACHE_TTL_NAME_MS,
+        source: "local",
+      });
+      setStatus("local");
+      return local;
+    }
+
     setStatus("error");
     return [];
   }
 }
 
-/** Clears both client-side caches (useful for forced refresh). */
+/** Resolve a single country — convenience wrapper for pages. */
+export async function resolveCountry(name: string): Promise<Country | null> {
+  const results = await searchCountryByName(name);
+  return results[0] ?? null;
+}
+
+/** Resolve by ISO alpha-2/alpha-3 code using cached all-countries or demo data. */
+export async function resolveCountryByCode(code: string): Promise<Country | null> {
+  const q = code.trim().toUpperCase();
+  if (!q) return null;
+
+  const demo = FALLBACK_COUNTRIES.find((c) => c.cca2 === q || c.cca3 === q);
+  if (demo) return demo;
+
+  try {
+    const all = await getAllCountries();
+    return all.find((c) => c.cca2?.toUpperCase() === q || c.cca3?.toUpperCase() === q) ?? null;
+  } catch {
+    return demo ?? null;
+  }
+}
+
 export function clearCountriesCache() {
   clientCacheAll.entry = null;
   clientCacheName.clear();

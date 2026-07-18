@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Bookmark, ExternalLink, Loader2, Sparkles, X } from "lucide-react";
 import type { GlobalEvent } from "@/domain/models/GlobalEvent";
 import { buildNewsContext, sendGlobalPulseAIChat } from "@/services/aiNewsAnalystService";
+import { useT } from "@/i18n";
 
 interface Props {
   event: GlobalEvent;
@@ -23,6 +24,7 @@ function StatRow({ label, value }: { label: string; value: React.ReactNode }) {
 
 /** Professional selection side panel — full GlobalEvent detail, related events, AI Explain. */
 export function MapEventDetailsPanel({ event, relatedEvents, onClose, onLocate, onSave, onSelectRelated }: Props) {
+  const t = useT();
   const [aiExplanation, setAiExplanation] = useState<string | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
@@ -37,7 +39,7 @@ export function MapEventDetailsPanel({ event, relatedEvents, onClose, onLocate, 
       const result = await sendGlobalPulseAIChat([], question, ctx);
       setAiExplanation(result.answer);
     } catch (e) {
-      setAiError(e instanceof Error ? e.message : "AI Explain failed. Showing local data only.");
+      setAiError(e instanceof Error ? e.message : t("app.pages.map.ui.aiExplainFailed"));
     } finally {
       setAiLoading(false);
     }
@@ -51,7 +53,7 @@ export function MapEventDetailsPanel({ event, relatedEvents, onClose, onLocate, 
           <span className="rounded border border-border/50 px-1">{event.severity}</span>
           <span className="rounded border border-border/50 px-1">{event.status}</span>
         </div>
-        <button type="button" onClick={onClose} className="rounded border border-border/50 p-1 text-muted-foreground hover:text-foreground">
+        <button type="button" onClick={onClose} className="rounded border border-border/50 p-1 text-muted-foreground hover:text-foreground" aria-label={t("app.pages.map.ui.closePanel")}>
           <X className="h-3.5 w-3.5" />
         </button>
       </div>
@@ -63,26 +65,26 @@ export function MapEventDetailsPanel({ event, relatedEvents, onClose, onLocate, 
         </div>
 
         <div className="rounded-md border border-border/40 bg-secondary/15 p-2">
-          <StatRow label="Country" value={event.country ?? "—"} />
-          <StatRow label="Time" value={new Date(event.timestamp).toLocaleString()} />
-          <StatRow label="Provider" value={event.provider} />
-          <StatRow label="Category" value={event.category} />
-          <StatRow label="Severity" value={event.severity} />
-          <StatRow label="Risk score" value={`${event.riskScore} / 100`} />
-          <StatRow label="Confidence" value={`${event.confidence} / 100`} />
-          <StatRow label="Importance" value={`${event.importance} / 100`} />
+          <StatRow label={t("app.pages.map.ui.country")} value={event.country ?? "—"} />
+          <StatRow label={t("app.pages.map.ui.time")} value={new Date(event.timestamp).toLocaleString()} />
+          <StatRow label={t("app.pages.map.ui.provider")} value={event.provider} />
+          <StatRow label={t("app.pages.map.ui.category")} value={event.category} />
+          <StatRow label={t("app.pages.map.ui.severity")} value={event.severity} />
+          <StatRow label={t("app.pages.map.ui.riskScore")} value={`${event.riskScore} / 100`} />
+          <StatRow label={t("app.ui.confidence")} value={`${event.confidence} / 100`} />
+          <StatRow label={t("app.pages.map.ui.importance")} value={`${event.importance} / 100`} />
           <StatRow
-            label="Coordinates"
+            label={t("app.pages.map.ui.coordinates")}
             value={hasCoords ? `${event.coordinates!.lat.toFixed(3)}, ${event.coordinates!.lng.toFixed(3)}` : "—"}
           />
-          <StatRow label="Verified" value={event.verified ? "Yes" : "No"} />
-          <StatRow label="Live" value={event.live ? "Yes" : "No"} />
+          <StatRow label={t("app.pages.map.ui.verified")} value={event.verified ? t("app.pages.map.ui.yes") : t("app.pages.map.ui.no")} />
+          <StatRow label={t("app.pages.map.ui.live")} value={event.live ? t("app.pages.map.ui.yes") : t("app.pages.map.ui.no")} />
         </div>
 
         {relatedEvents.length > 0 && (
           <div>
             <div className="mb-1 text-[10px] uppercase tracking-wider text-muted-foreground">
-              Related events ({relatedEvents.length})
+              {t("app.pages.map.ui.relatedEvents", { count: relatedEvents.length })}
             </div>
             <div className="space-y-1">
               {relatedEvents.map((r) => (
@@ -110,7 +112,7 @@ export function MapEventDetailsPanel({ event, relatedEvents, onClose, onLocate, 
             className="flex w-full items-center justify-center gap-1.5 rounded-md border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs text-primary disabled:opacity-60"
           >
             {aiLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
-            AI Explain
+            {t("app.pages.map.ui.aiExplain")}
           </button>
           {aiExplanation && <p className="mt-2 rounded-md border border-border/40 bg-secondary/15 p-2 text-xs leading-relaxed">{aiExplanation}</p>}
           {aiError && <p className="mt-2 text-[11px] text-amber-600">{aiError}</p>}
@@ -124,17 +126,17 @@ export function MapEventDetailsPanel({ event, relatedEvents, onClose, onLocate, 
           disabled={!hasCoords}
           className="rounded-md border border-border/60 px-3 py-1.5 text-xs hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
         >
-          Locate on map
+          {t("app.pages.map.ui.locateOnMap")}
         </button>
         {event.sourceUrl ? (
           <a href={event.sourceUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded-md border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs text-primary">
-            <ExternalLink className="h-3 w-3" /> Open source
+            <ExternalLink className="h-3 w-3" /> {t("app.ui.openSource")}
           </a>
         ) : (
-          <span className="cursor-not-allowed rounded-md border border-border/40 px-3 py-1.5 text-xs text-muted-foreground opacity-50">Open source</span>
+          <span className="cursor-not-allowed rounded-md border border-border/40 px-3 py-1.5 text-xs text-muted-foreground opacity-50">{t("app.ui.openSource")}</span>
         )}
         <button type="button" onClick={() => onSave(event)} className="inline-flex items-center gap-1 rounded-md border border-border/60 px-3 py-1.5 text-xs hover:text-primary">
-          <Bookmark className="h-3 w-3" /> Save
+          <Bookmark className="h-3 w-3" /> {t("app.ui.save")}
         </button>
       </div>
     </div>

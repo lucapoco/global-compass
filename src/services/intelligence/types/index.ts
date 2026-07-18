@@ -142,7 +142,7 @@ export interface GlobalRiskIndex {
 
 // ─── Filter ───────────────────────────────────────────────────────────────────
 export type TimeRange = "1h" | "6h" | "24h" | "48h" | "7d" | "all";
-export type SortMode = "newest" | "importance" | "severity" | "country" | "source";
+export type SortMode = "newest" | "importance" | "severity" | "confidence" | "country" | "source";
 
 export interface IntelligenceFilter {
   query: string;

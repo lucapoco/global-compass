@@ -17,6 +17,14 @@ export type GlobalEventProvider =
   | "rest_countries"
   | "supabase_alerts"
   | "supabase_intelligence"
+  | "nasa_eonet"
+  | "acled"
+  | "world_bank"
+  | "gdacs"
+  | "reliefweb"
+  | "gdelt"
+  | "rss"
+  | "nasa_firms"
   | "internal";
 
 /** Broad topical bucket. Superset of every category already used across the app. */

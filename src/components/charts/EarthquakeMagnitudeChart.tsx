@@ -7,7 +7,7 @@ export function EarthquakeMagnitudeChart({ data }: { data: Earthquake[] }) {
     count: data.filter((d) => d.magnitude >= m && d.magnitude < m + 1).length,
   }));
   return (
-    <div className="h-56 w-full">
+    <div className="h-56 w-full min-w-0 overflow-hidden">
       <ResponsiveContainer>
         <BarChart data={buckets}>
           <CartesianGrid strokeOpacity={0.1} vertical={false} />

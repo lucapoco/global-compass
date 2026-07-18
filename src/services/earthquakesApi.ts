@@ -5,11 +5,17 @@ const FEEDS = {
   week: "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson",
 };
 
+interface UsgsFeature {
+  id: string;
+  properties: { place?: string; mag?: number; time: number; url?: string };
+  geometry?: { coordinates?: [number, number, number] };
+}
+
 export async function getEarthquakes(range: "day" | "week" = "day"): Promise<Earthquake[]> {
   const res = await fetch(FEEDS[range]);
   if (!res.ok) throw new Error(`USGS feed failed (${res.status})`);
-  const data = await res.json();
-  return (data.features ?? []).map((f: any) => ({
+  const data = (await res.json()) as { features?: UsgsFeature[] };
+  return (data.features ?? []).map((f) => ({
     id: f.id,
     place: f.properties.place ?? "Unknown",
     magnitude: f.properties.mag ?? 0,

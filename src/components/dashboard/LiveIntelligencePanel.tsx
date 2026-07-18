@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { ExternalLink, Bookmark, RefreshCw, Eye, Radio } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
+import { useT } from "@/i18n";
 import type { IntelligenceItem } from "@/types";
 import type { NewsStatus } from "@/services/newsApi";
 import { DataBadge } from "@/components/ui/DataBadge";
@@ -25,12 +26,11 @@ function variant(s: NewsStatus): "live" | "neutral" | "demo" | "error" {
   return "demo";
 }
 
-function label(s: NewsStatus): string {
-  if (s === "live") return "Live";
-  if (s === "cached") return "Cached live data";
-  if (s === "rate_limited") return "Rate limited";
-  if (s === "error") return "API error";
-  return "Demo";
+function label(s: NewsStatus, t: (key: string) => string): string {
+  if (s === "live") return t("app.ui.dataStatus.live");
+  if (s === "cached") return t("app.ui.dataStatus.cached");
+  if (s === "demo") return t("app.ui.dataStatus.demo");
+  return s.toUpperCase();
 }
 
 const SEV_RANK: Record<string, number> = { critical: 0, high: 1, medium: 2, low: 3 };
@@ -50,6 +50,7 @@ function prioritizeForPreview(items: IntelligenceItem[], n: number): Intelligenc
 const PREVIEW_COUNT = 12;
 
 export function LiveIntelligencePanel({ items, status, loading, onRefresh, cooldownLeft = 0 }: Props) {
+  const t = useT();
   const [active, setActive] = useState<IntelligenceItem | null>(null);
 
   const preview = useMemo(
@@ -59,35 +60,35 @@ export function LiveIntelligencePanel({ items, status, loading, onRefresh, coold
 
   async function save(i: IntelligenceItem) {
     if (!isSupabaseConfigured()) {
-      toast.error("Supabase is not configured.");
+      toast.error(t("app.ui.notConfigured"));
       return;
     }
     try {
       await supabaseService.saveIntelligence(i);
-      toast.success("Event saved");
+      toast.success(t("app.toasts.eventSavedShort"));
     } catch (e: unknown) {
-      toast.error(e instanceof Error ? e.message : "Save failed");
+      toast.error(e instanceof Error ? e.message : t("app.ui.saveFailed"));
     }
   }
 
   const disabled = loading || cooldownLeft > 0;
 
   return (
-    <div className="glass-card flex min-h-[320px] flex-col p-4 lg:min-h-[380px]">
+    <div className="glass-card flex min-w-0 flex-col p-4">
       <SectionHeader
-        title="Live Intelligence Feed"
-        subtitle={`Up to ${PREVIEW_COUNT} priority headlines · ${items?.length ?? 0} loaded`}
+        title={t("app.pages.dashboard.liveFeed.title")}
+        subtitle={t("app.pages.dashboard.liveFeed.subtitle", { preview: PREVIEW_COUNT, total: items?.length ?? 0 })}
         right={
           <div className="flex flex-wrap items-center justify-end gap-2">
-            <DataBadge variant={variant(status)}>{label(status)}</DataBadge>
+            <DataBadge variant={variant(status)}>{label(status, t)}</DataBadge>
             <button
               type="button"
               onClick={onRefresh}
               disabled={disabled}
-              title={cooldownLeft > 0 ? `Wait ${cooldownLeft}s` : "Refresh"}
+              title={cooldownLeft > 0 ? t("app.ui.waitSeconds", { seconds: cooldownLeft }) : t("app.ui.refresh")}
               className="inline-flex items-center gap-1 rounded-md border border-border/60 px-2 py-1 text-[10px] hover:text-primary disabled:opacity-50"
             >
-              <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} /> Refresh
+              <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} /> {t("app.ui.refresh")}
             </button>
           </div>
         }
@@ -95,10 +96,10 @@ export function LiveIntelligencePanel({ items, status, loading, onRefresh, coold
 
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <Button asChild variant="default" size="sm" className="h-8 text-xs">
-          <Link to="/intelligence">View Full Intelligence Feed</Link>
+          <Link to="/intelligence">{t("app.pages.dashboard.breakingIntel.fullFeed")}</Link>
         </Button>
         <Link to="/intelligence" className="text-[11px] text-muted-foreground hover:text-primary hover:underline">
-          Open monitoring workspace →
+          {t("app.nav.intelligenceFeed")} →
         </Link>
       </div>
 
@@ -113,11 +114,11 @@ export function LiveIntelligencePanel({ items, status, loading, onRefresh, coold
           <Radio className="mr-2 h-5 w-5 shrink-0" /> No headlines available right now.
         </div>
       ) : (
-        <div className="grid flex-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid min-w-0 flex-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {preview.map((i) => (
             <div
               key={i.id}
-              className="flex flex-col gap-1.5 rounded-lg border border-border/50 bg-secondary/15 p-3 transition-colors hover:border-primary/40"
+              className="flex min-w-0 flex-col gap-1.5 rounded-lg border border-border/50 bg-secondary/15 p-3 transition-colors hover:border-primary/40"
             >
               <div className="flex flex-wrap items-center gap-1">
                 <span className="rounded-full border border-rose-glow/30 bg-rose-glow/10 px-1.5 py-0.5 text-[9px] font-semibold uppercase text-rose-glow">
@@ -127,7 +128,7 @@ export function LiveIntelligencePanel({ items, status, loading, onRefresh, coold
                   {i.category}
                 </span>
                 {i.country ? <span className="text-[9px] text-muted-foreground">· {i.country}</span> : null}
-                <span className="ml-auto text-[9px] text-muted-foreground">
+                <span suppressHydrationWarning className="ml-auto text-[9px] text-muted-foreground">
                   {new Date(i.publishedAt).toLocaleTimeString()}
                 </span>
               </div>
@@ -143,7 +144,7 @@ export function LiveIntelligencePanel({ items, status, loading, onRefresh, coold
                   <button
                     type="button"
                     onClick={() => setActive(i)}
-                    title="Details"
+                    title={t("app.ui.viewDetails")}
                     className="rounded border border-border/50 p-1 hover:text-primary"
                   >
                     <Eye className="h-3 w-3" />
@@ -153,7 +154,7 @@ export function LiveIntelligencePanel({ items, status, loading, onRefresh, coold
                       href={i.url}
                       target="_blank"
                       rel="noreferrer"
-                      title="Open source"
+                      title={t("app.ui.openSource")}
                       className="rounded border border-border/50 p-1 hover:text-primary"
                     >
                       <ExternalLink className="h-3 w-3" />
@@ -162,7 +163,7 @@ export function LiveIntelligencePanel({ items, status, loading, onRefresh, coold
                   <button
                     type="button"
                     onClick={() => save(i)}
-                    title="Save"
+                    title={t("app.ui.save")}
                     className="rounded border border-primary/40 bg-primary/10 p-1 text-primary"
                   >
                     <Bookmark className="h-3 w-3" />

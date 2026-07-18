@@ -14,18 +14,22 @@ import { MapReplayControls } from "@/components/map/MapReplayControls";
 import { MapStatusPanel } from "@/components/map/MapStatusPanel";
 import { MapEventDetailsPanel } from "@/components/map/MapEventDetailsPanel";
 import { MapCountryInsightPanel } from "@/components/map/MapCountryInsightPanel";
+import { Globe2 } from "lucide-react";
+import { PageHero } from "@/components/ui/PageHero";
 import { DataBadge } from "@/components/ui/DataBadge";
 import { isSupabaseConfigured, supabaseService } from "@/services/supabaseService";
 import { useMapEngine } from "@/hooks/useMapEngine";
 import { useReplay } from "@/hooks/useReplay";
 import { clusterEvents } from "@/domain/services/map-engine/clustering/clusterEvents";
 import { buildHeatmapGeoJSON } from "@/domain/services/map-engine/heatmap/heatmapData";
+import { buildRiskIndexGeoJSON } from "@/domain/services/map-engine/heatmap/riskIndexHeatmap";
 import { buildRelatedEventLines } from "@/domain/services/map-engine/relationships/relatedEventLines";
 import { searchEvents } from "@/domain/services/event-engine/search/searchEvents";
 import type { EventCluster } from "@/domain/services/map-engine";
 import type { GlobalEvent, GlobalEventCategory } from "@/domain/models/GlobalEvent";
 import type { Severity } from "@/types";
 import { useViewMode } from "@/context/ViewModeContext";
+import { useT } from "@/i18n";
 
 export const Route = createFileRoute("/map")({
   head: () => ({ meta: [{ title: "Live World Map — Global Pulse" }] }),
@@ -46,6 +50,7 @@ const SIMPLE_GROUPS: { value: string; label: string; cats: GlobalEventCategory[]
 ];
 
 function MapPage() {
+  const t = useT();
   const { isSimple, isAdvanced } = useViewMode();
   const engine = useMapEngine();
   const replay = useReplay(engine.filteredEvents, engine.replayActive);
@@ -61,7 +66,9 @@ function MapPage() {
   useEffect(() => {
     try {
       setHintDismissed(localStorage.getItem(HINT_KEY) === "1");
-    } catch {}
+    } catch {
+      // localStorage unavailable — show the hint by default
+    }
   }, []);
 
   const mapRef = useRef<ProfessionalWorldMapHandle>(null);
@@ -74,6 +81,11 @@ function MapPage() {
   const heatmapData = useMemo(
     () => buildHeatmapGeoJSON(visibleEvents, engine.heatmapWeightMode),
     [visibleEvents, engine.heatmapWeightMode],
+  );
+
+  const riskIndexData = useMemo(
+    () => buildRiskIndexGeoJSON(engine.allEvents),
+    [engine.allEvents],
   );
 
   const relationLines = useMemo(
@@ -182,7 +194,9 @@ function MapPage() {
     setHintDismissed(true);
     try {
       localStorage.setItem(HINT_KEY, "1");
-    } catch {}
+    } catch {
+      // localStorage unavailable — hint will just reappear next visit
+    }
   }
 
   const allLayersOff = engine.enabledLayerGroups.length === 0;
@@ -191,25 +205,25 @@ function MapPage() {
   const selectedSeverities = engine.filterState.severities ?? [];
 
   return (
-    <div className={`space-y-3 ${fullscreenMode ? "fixed inset-0 z-40 overflow-auto bg-background p-4" : ""}`}>
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Live World Map · Global Intelligence Control Center</h1>
-          <p className="text-xs text-muted-foreground">
-            {visibleEvents.length} of {engine.allEvents.length} events visible
-            {engine.error ? <span className="ml-2 text-rose-500">· {engine.error}</span> : null}
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {isAdvanced && <DataBadge variant="source">{hasMapbox ? "Mapbox GL" : "Mapbox · set VITE_MAPBOX_TOKEN"}</DataBadge>}
-          <DataBadge variant="source">EventEngine</DataBadge>
-          <DataBadge variant="source">USGS</DataBadge>
-          <DataBadge variant="source">GNews proxy</DataBadge>
-          <DataBadge variant="source">REST Countries</DataBadge>
-          {isSupabaseConfigured() ? <DataBadge variant="source">Supabase</DataBadge> : <DataBadge variant="neutral">Supabase off</DataBadge>}
-          <DataBadge variant="demo">Demo weather</DataBadge>
-        </div>
-      </div>
+    <div className={`page-shell space-y-5 ${fullscreenMode ? "fixed inset-0 z-40 overflow-auto bg-background p-4 lg:p-6 !max-w-none" : ""}`}>
+      <PageHero
+        title={t("app.pages.map.title")}
+        subtitle={
+          <>
+            {t("app.pages.map.subtitle", { visible: visibleEvents.length, total: engine.allEvents.length })}
+            {engine.replayActive && <span className="ml-2 text-primary">· Replay active</span>}
+            {engine.error ? <span className="ml-2 text-destructive">· {engine.error}</span> : null}
+          </>
+        }
+        icon={<Globe2 className="h-5 w-5" />}
+        badges={
+          <>
+            <DataBadge variant="live">Live</DataBadge>
+            {isAdvanced && <DataBadge variant="neutral">{hasMapbox ? "Mapbox GL" : "MapLibre"}</DataBadge>}
+            <DataBadge variant="neutral">{engine.enabledLayerGroups.length} layers active</DataBadge>
+          </>
+        }
+      />
 
       {!hintDismissed && (
         <div className="glass-card flex items-start justify-between gap-3 border-primary/30 bg-primary/5 p-3 text-xs">
@@ -233,6 +247,7 @@ function MapPage() {
 
       {isSimple ? (
         <SimpleControls
+          t={t}
           loading={engine.loading}
           searchQuery={engine.filterState.searchQuery}
           setSearchQuery={engine.setSearchQuery}
@@ -284,6 +299,11 @@ function MapPage() {
             onToggleVerifiedOnly={engine.toggleVerifiedOnly}
             liveOnly={Boolean(engine.filterState.liveOnly)}
             onToggleLiveOnly={engine.toggleLiveOnly}
+            heatmapOpacity={engine.getLayerOpacity("heatmap")}
+            onHeatmapOpacity={(v) => engine.setLayerOpacity("heatmap", v)}
+            riskIndexOpacity={engine.getLayerOpacity("risk_index")}
+            onRiskIndexOpacity={(v) => engine.setLayerOpacity("risk_index", v)}
+            showRiskIndex={engine.showRiskIndexLayer}
           />
           <MapCategoryFilters
             selected={selectedCategories}
@@ -332,10 +352,10 @@ function MapPage() {
       )}
 
       <div className={`grid gap-3 ${sidePanelOpen ? "max-lg:grid-cols-1 lg:grid-cols-[1fr_320px]" : "grid-cols-1"} max-lg:gap-2`}>
-        <div className="relative min-h-[50vh]">
+        <div className="relative min-h-[50vh] overflow-hidden rounded-2xl border border-border bg-card shadow-md">
           {engine.loading && (
             <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-background/50 backdrop-blur-[1px]">
-              <div className="rounded-md border border-border/60 bg-card/90 px-4 py-2 text-xs text-muted-foreground">Loading map data…</div>
+              <div className="rounded-md border border-border/60 bg-card/90 px-4 py-2 text-xs text-muted-foreground">{t("app.pages.map.loading")}</div>
             </div>
           )}
           <ProfessionalWorldMap
@@ -348,7 +368,11 @@ function MapPage() {
             onSelectEvent={onSelectEvent}
             onExpandCluster={onExpandCluster}
             onViewportChange={engine.setViewport}
-            height={fullscreenMode ? "calc(100vh - 360px)" : "70vh"}
+            height={fullscreenMode ? "calc(100vh - 180px)" : "75vh"}
+            heatmapOpacity={engine.getLayerOpacity("heatmap")}
+            showRiskIndex={engine.showRiskIndexLayer}
+            riskIndexData={riskIndexData}
+            riskIndexOpacity={engine.getLayerOpacity("risk_index")}
           />
         </div>
         {(isSimple || sidePanelOpen) && (
@@ -376,12 +400,13 @@ function MapPage() {
         )}
       </div>
 
-      <MapLegend />
+      <MapLegend enabledLayerGroups={engine.enabledLayerGroups} />
     </div>
   );
 }
 
 function SimpleControls({
+  t,
   loading,
   searchQuery,
   setSearchQuery,
@@ -394,6 +419,7 @@ function SimpleControls({
   onRefresh,
   onResetView,
 }: {
+  t: ReturnType<typeof useT>;
   loading: boolean;
   searchQuery: string;
   setSearchQuery: (s: string) => void;
@@ -426,10 +452,10 @@ function SimpleControls({
         {highSeverityOnly ? "Important only" : "All events"}
       </button>
       <button type="button" onClick={onRefresh} disabled={loading} className="rounded-md border border-border/60 px-3 py-2 text-xs disabled:opacity-50">
-        {loading ? "Refreshing…" : "Refresh"}
+        {loading ? t("app.pages.map.refreshing") : t("app.ui.refresh")}
       </button>
       <button type="button" onClick={onResetView} className="rounded-md border border-border/60 px-3 py-2 text-xs">
-        Reset view
+        {t("app.pages.map.resetView")}
       </button>
     </div>
   );

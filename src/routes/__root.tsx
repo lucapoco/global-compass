@@ -11,14 +11,19 @@ import { Toaster } from "sonner";
 
 import appCss from "../styles.css?url";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { toUserMessage } from "@/lib/userErrorMessage";
+import { I18nProvider, useT } from "@/i18n";
 
 function NotFoundComponent() {
+  const t = useT();
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold">404</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Signal lost. This page isn't on the grid.</p>
-        <Link to="/" className="mt-6 inline-flex rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">Back to Dashboard</Link>
+        <p className="mt-2 text-sm text-muted-foreground">{t("app.shell.notFound.message")}</p>
+        <Link to="/dashboard" className="mt-6 inline-flex rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
+          {t("app.shell.notFound.backToDashboard")}
+        </Link>
       </div>
     </div>
   );
@@ -26,16 +31,18 @@ function NotFoundComponent() {
 
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   const router = useRouter();
+  const t = useT();
+  const safeMessage = toUserMessage(error, t("app.errors.generic"));
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-lg font-semibold">Something went wrong</h1>
-        <p className="mt-2 text-xs text-muted-foreground">{error.message}</p>
+        <h1 className="text-lg font-semibold">{t("app.errors.generic")}</h1>
+        <p className="mt-2 text-xs text-muted-foreground">{safeMessage}</p>
         <button
           onClick={() => { router.invalidate(); reset(); }}
           className="mt-4 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground"
         >
-          Retry
+          {t("app.ui.retry")}
         </button>
       </div>
     </div>
@@ -54,7 +61,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
-    links: [{ rel: "stylesheet", href: appCss }],
+    links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap",
+      },
+      { rel: "icon", type: "image/png", href: "/brand/favicon-32.png" },
+      { rel: "apple-touch-icon", href: "/brand/apple-touch-icon.png" },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
@@ -64,7 +81,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <head><HeadContent /></head>
       <body>{children}<Scripts /></body>
     </html>
@@ -74,9 +91,11 @@ function RootShell({ children }: { children: React.ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
-    <QueryClientProvider client={queryClient}>
-      <AppLayout />
-      <Toaster theme="dark" position="bottom-right" richColors />
-    </QueryClientProvider>
+    <I18nProvider>
+      <QueryClientProvider client={queryClient}>
+        <AppLayout />
+        <Toaster theme="light" position="bottom-right" richColors className="z-[60]" offset={16} />
+      </QueryClientProvider>
+    </I18nProvider>
   );
 }

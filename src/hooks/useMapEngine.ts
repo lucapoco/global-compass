@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import type { GlobalEvent, GlobalEventCategory, GlobalEventProvider, GlobalEventSeverity } from "@/domain/models/GlobalEvent";
 import { eventEngine } from "@/domain/services/event-engine";
@@ -16,7 +16,7 @@ import {
   type TimelineRange,
 } from "@/domain/services/map-engine";
 import { collectGlobalMapEvents } from "@/services/mapDataService";
-import { DEFAULT_ENABLED_LAYER_GROUPS, providersForLayerGroups } from "@/utils/filterEvents";
+import { DEFAULT_ENABLED_LAYER_GROUPS, filterEventsByLayerGroups, providerIdsForLayerGroups } from "@/utils/filterEvents";
 
 const DEFAULT_VIEWPORT: MapViewport = { center: [10, 20], zoom: 1.6 };
 
@@ -48,12 +48,18 @@ export function useMapEngine() {
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [replayActive, setReplayActive] = useState(false);
   const [enabledLayerGroups, setEnabledLayerGroups] = useState<string[]>(DEFAULT_ENABLED_LAYER_GROUPS);
+  const [layerOpacity, setLayerOpacityState] = useState<Record<string, number>>({});
 
+  // Only fetch providers required by the layers currently switched on —
+  // toggling on a new layer for the first time triggers exactly one network
+  // round-trip for its provider(s); everything else is served from that
+  // provider's own TTL cache (Performance: avoid unnecessary requests).
   const refresh = useCallback(async (force = false) => {
     setLoading(true);
     setError(null);
     try {
-      const events = await collectGlobalMapEvents(force);
+      const providerIds = providerIdsForLayerGroups(enabledLayerGroups);
+      const events = await collectGlobalMapEvents(force, providerIds);
       setAllEvents(events);
       setProviderStatus(eventEngine.getProviderStatus());
       setLastUpdated(new Date());
@@ -64,21 +70,37 @@ export function useMapEngine() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [enabledLayerGroups]);
 
   useEffect(() => {
     void refresh(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /** Timeline -> shared filters (layer groups + severity/category/country/risk/confidence/verified/live) -> search. */
+  // Lazy layer loading: whenever the enabled layer set changes (after the
+  // initial mount), re-run the (non-forced) load so newly-enabled layers
+  // fetch their provider for the first time — cached providers resolve instantly.
+  const didMountRef = useRef(false);
+  useEffect(() => {
+    if (!didMountRef.current) {
+      didMountRef.current = true;
+      return;
+    }
+    void refresh(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enabledLayerGroups]);
+
+  const setLayerOpacity = useCallback((layerId: string, opacity: number) => {
+    setLayerOpacityState((prev) => ({ ...prev, [layerId]: Math.min(1, Math.max(0, opacity)) }));
+  }, []);
+
+  const getLayerOpacity = useCallback((layerId: string) => layerOpacity[layerId] ?? 1, [layerOpacity]);
+
+  /** Timeline -> layer groups (provider + category/subCategory) -> shared filters -> search. */
   const filteredEvents = useMemo(() => {
     const inWindow = filterByTimeline(allEvents, timeline);
-    const effectiveFilters: EventFilterOptions = {
-      ...filterState,
-      providers: filterState.providers ?? providersForLayerGroups(enabledLayerGroups),
-    };
-    const filtered = filterEvents(inWindow, effectiveFilters);
+    const layered = filterEventsByLayerGroups(inWindow, enabledLayerGroups);
+    const filtered = filterEvents(layered, filterState);
     return filterState.searchQuery.trim() ? searchEvents(filtered, filterState.searchQuery) : filtered;
   }, [allEvents, timeline, filterState, enabledLayerGroups]);
 
@@ -177,15 +199,14 @@ export function useMapEngine() {
 
   const categoryCounts = useMemo(() => {
     const inWindow = filterByTimeline(allEvents, timeline);
-    const base = filterEvents(inWindow, {
-      ...filterState,
-      categories: undefined,
-      providers: filterState.providers ?? providersForLayerGroups(enabledLayerGroups),
-    });
+    const layered = filterEventsByLayerGroups(inWindow, enabledLayerGroups);
+    const base = filterEvents(layered, { ...filterState, categories: undefined });
     const counts = new Map<GlobalEventCategory, number>();
     for (const e of base) counts.set(e.category, (counts.get(e.category) ?? 0) + 1);
     return counts;
   }, [allEvents, timeline, filterState, enabledLayerGroups]);
+
+  const showRiskIndexLayer = enabledLayerGroups.includes("risk_index");
 
   return {
     // data
@@ -219,6 +240,10 @@ export function useMapEngine() {
     enabledLayerGroups,
     toggleLayerGroup,
     enableAllLayerGroups,
+    layerOpacity,
+    setLayerOpacity,
+    getLayerOpacity,
+    showRiskIndexLayer,
 
     // viewport
     viewport,

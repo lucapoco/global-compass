@@ -9,6 +9,8 @@ import { getGeminiConfig } from "@/server/geminiConfig";
 
 const GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta";
 const MAX_HISTORY_TURNS = 10;
+/** Hard cap on a single Gemini HTTP round-trip (ms). */
+const REQUEST_TIMEOUT_MS = 45_000;
 /** After the first attempt, wait before retries 1–3 (ms). */
 const RETRY_DELAYS_MS = [800, 1600, 3000] as const;
 
@@ -34,17 +36,6 @@ export class GeminiChatError extends Error {
     this.httpStatus = httpStatus;
     this.retryCount = retryCount;
   }
-}
-
-function isDev(): boolean {
-  return (
-    (typeof import.meta !== "undefined" && import.meta.env?.DEV) ||
-    process.env.NODE_ENV === "development"
-  );
-}
-
-function devLog(...args: unknown[]) {
-  if (isDev()) console.log("[Gemini]", ...args);
 }
 
 function sleep(ms: number): Promise<void> {
@@ -106,6 +97,8 @@ async function callGeminiOnce(
   contents: { role: "user" | "model"; parts: { text: string }[] }[],
 ): Promise<{ answer: string; model: string }> {
   const url = `${GEMINI_API_BASE}/models/${encodeURIComponent(model)}:generateContent`;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
   let res: Response;
   try {
@@ -115,6 +108,7 @@ async function callGeminiOnce(
         "Content-Type": "application/json",
         "x-goog-api-key": apiKey,
       },
+      signal: controller.signal,
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: systemContent }] },
         contents,
@@ -124,8 +118,13 @@ async function callGeminiOnce(
         },
       }),
     });
-  } catch {
+  } catch (e) {
+    if (e instanceof Error && e.name === "AbortError") {
+      throw new GeminiChatError("Gemini request timed out.", "NETWORK");
+    }
     throw new GeminiChatError("Could not reach Gemini API.", "NETWORK");
+  } finally {
+    clearTimeout(timeoutId);
   }
 
   let payload: GeminiPayload;
@@ -156,20 +155,17 @@ async function callModelWithRetries(
   model: string,
   systemContent: string,
   contents: { role: "user" | "model"; parts: { text: string }[] }[],
-  label: "primary" | "fallback",
 ): Promise<{ answer: string; model: string; retryCount: number }> {
   const maxAttempts = 1 + RETRY_DELAYS_MS.length;
   let lastError: GeminiChatError | null = null;
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     if (attempt > 0) {
-      devLog(`${label} retry`, attempt, "model:", model, "delay:", RETRY_DELAYS_MS[attempt - 1], "ms");
       await sleep(RETRY_DELAYS_MS[attempt - 1]!);
     }
 
     try {
       const result = await callGeminiOnce(apiKey, model, systemContent, contents);
-      devLog(`${label} success`, "model:", result.model, "retries:", attempt);
       return { ...result, retryCount: attempt };
     } catch (e) {
       if (!(e instanceof GeminiChatError)) throw e;
@@ -203,8 +199,7 @@ export async function callGeminiChat(body: AIChatRequestBody): Promise<AIChatSuc
   let primaryError: GeminiChatError | null = null;
 
   try {
-    const primary = await callModelWithRetries(apiKey, model, systemContent, contents, "primary");
-    devLog("final status: GEMINI LIVE", "model:", primary.model, "retryCount:", primary.retryCount);
+    const primary = await callModelWithRetries(apiKey, model, systemContent, contents);
     return {
       answer: primary.answer,
       model: primary.model,
@@ -216,7 +211,6 @@ export async function callGeminiChat(body: AIChatRequestBody): Promise<AIChatSuc
   } catch (e) {
     if (!(e instanceof GeminiChatError)) throw e;
     primaryError = e;
-    devLog("primary failed", "code:", e.code, "retries:", e.retryCount ?? RETRY_DELAYS_MS.length);
   }
 
   const canUseFallback =
@@ -226,10 +220,8 @@ export async function callGeminiChat(body: AIChatRequestBody): Promise<AIChatSuc
     shouldTryFallbackModel(primaryError);
 
   if (canUseFallback) {
-    devLog("trying fallback model:", fallbackModel);
     try {
-      const fb = await callModelWithRetries(apiKey, fallbackModel, systemContent, contents, "fallback");
-      devLog("final status: GEMINI FALLBACK MODEL", "model:", fb.model, "retryCount:", fb.retryCount);
+      const fb = await callModelWithRetries(apiKey, fallbackModel, systemContent, contents);
       return {
         answer: fb.answer,
         model: fb.model,
@@ -238,8 +230,8 @@ export async function callGeminiChat(body: AIChatRequestBody): Promise<AIChatSuc
         retryCount: (primaryError?.retryCount ?? 0) + fb.retryCount,
         usedContext: summarizeUsedContext(body.context),
       };
-    } catch (e) {
-      devLog("fallback model failed", e instanceof GeminiChatError ? e.code : e);
+    } catch {
+      /* fallback eșuat — se propagă primaryError mai jos */
     }
   }
 

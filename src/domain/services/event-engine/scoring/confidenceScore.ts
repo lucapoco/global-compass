@@ -6,15 +6,27 @@ export interface ConfidenceInput {
   verified?: boolean;
 }
 
-/** Baseline trust per provider when data is live. Authoritative feeds (USGS, REST Countries) score highest. */
+/**
+ * Baseline trust per provider when data is live.
+ * Authoritative institutional feeds (USGS, NASA, World Bank) score highest.
+ * Mirrors the reliability table in src/domain/gpie/scoring/sourceReliability.ts.
+ */
 const PROVIDER_BASE_CONFIDENCE: Record<GlobalEventProvider, number> = {
   usgs: 95,
-  rest_countries: 95,
-  gnews: 78,
+  nasa_eonet: 92,
+  world_bank: 92,
+  gdacs: 90,
+  nasa_firms: 88,
+  acled: 88,
+  rest_countries: 90,
+  reliefweb: 85,
   openweather: 82,
+  gdelt: 70,
+  rss: 74,
   supabase_alerts: 60,
   supabase_intelligence: 60,
-  internal: 70,
+  gnews: 72,
+  internal: 65,
 };
 
 const STATUS_MULTIPLIER: Record<GlobalEventStatus, number> = {

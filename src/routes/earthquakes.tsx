@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Bookmark, ExternalLink } from "lucide-react";
 import { DataBadge } from "@/components/ui/DataBadge";
@@ -8,15 +8,20 @@ import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { SeverityBadge } from "@/components/ui/SeverityBadge";
 import { EarthquakeMagnitudeChart } from "@/components/charts/EarthquakeMagnitudeChart";
 import { getEarthquakes, magnitudeSeverity } from "@/services/earthquakesApi";
+import { getLatestEvents } from "@/domain/store";
+import { toEarthquakes } from "@/domain/adapters/legacyIntelAdapter";
+import { toUserMessage } from "@/lib/userErrorMessage";
 import { supabaseService, isSupabaseConfigured } from "@/services/supabaseService";
 import type { Earthquake } from "@/types";
-
+import { useT } from "@/i18n";
+import en from "@/locales/en.json";
 export const Route = createFileRoute("/earthquakes")({
-  head: () => ({ meta: [{ title: "Earthquakes — Global Pulse" }] }),
+  head: () => ({ meta: [{ title: en.app.pages.earthquakes.metaTitle }] }),
   component: EarthquakesPage,
 });
 
 function EarthquakesPage() {
+  const t = useT();
   const [range, setRange] = useState<"day" | "week">("day");
   const [data, setData] = useState<Earthquake[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -24,11 +29,25 @@ function EarthquakesPage() {
   const [sort, setSort] = useState<"new" | "mag">("new");
   const [highOnly, setHighOnly] = useState(false);
 
-  useEffect(() => {
-    setData(null); setError(null);
-    getEarthquakes(range).then(setData).catch((e) => setError(e.message ?? "Failed"));
-  }, [range]);
+  const load = useCallback(async () => {
+    setData(null);
+    setError(null);
+    try {
+      // 24h window: shared Intelligence Store (same USGS feed as the rest of the platform).
+      // 7d window: direct USGS API — EventEngine currently ingests 24h only.
+      const quakes =
+        range === "day"
+          ? toEarthquakes(await getLatestEvents())
+          : await getEarthquakes("week");
+      setData(quakes);
+    } catch (e) {
+      setError(toUserMessage(e, t("app.pages.earthquakes.loadFailed")));
+    }
+  }, [range, t]);
 
+  useEffect(() => {
+    void load();
+  }, [load]);
   const filtered = useMemo(() => {
     if (!data) return [];
     let arr = data.filter((q) => q.magnitude >= minMag);
@@ -38,30 +57,31 @@ function EarthquakesPage() {
   }, [data, minMag, sort, highOnly]);
 
   async function saveAsAlert(q: Earthquake) {
-    if (!isSupabaseConfigured()) { toast.error("Connect Supabase to save alerts."); return; }
+    if (!isSupabaseConfigured()) { toast.error(t("app.toasts.connectSupabaseAlerts")); return; }
     try {
       await supabaseService.saveAlert({
         title: `M${q.magnitude.toFixed(1)} — ${q.place}`,
         type: "earthquake",
         severity: magnitudeSeverity(q.magnitude),
         location: `${q.latitude.toFixed(3)},${q.longitude.toFixed(3)}`,
-        description: `Depth ${q.depth.toFixed(1)} km · ${new Date(q.time).toLocaleString()}`,
+        description: `${t("app.pages.earthquakes.depth", { depth: q.depth.toFixed(1) })} · ${new Date(q.time).toLocaleString()}`,
         source: "USGS",
       });
-      toast.success("Saved to alerts.");
-    } catch (e: any) { toast.error(e.message ?? "Save failed"); }
+      toast.success(t("app.toasts.savedToAlerts"));
+    } catch (e: unknown) { toast.error(toUserMessage(e, t("app.ui.saveFailed"))); }
   }
 
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Earthquakes</h1>
-          <p className="text-xs text-muted-foreground">Live seismic data from USGS</p>
-        </div>
+          <h1 className="text-2xl font-semibold tracking-tight">{t("app.pages.earthquakes.title")}</h1>
+          <p className="text-xs text-muted-foreground">
+            {t("app.pages.earthquakes.subtitle")}
+          </p>        </div>
         <div className="flex flex-wrap gap-2">
           <DataBadge variant="source">USGS</DataBadge>
-          <DataBadge variant="live">Live</DataBadge>
+          <DataBadge variant="live">{t("app.pages.earthquakes.live")}</DataBadge>
         </div>
       </div>
 
@@ -69,17 +89,17 @@ function EarthquakesPage() {
         <div className="flex rounded-md border border-border/60 p-0.5">
           {(["day", "week"] as const).map((r) => (
             <button key={r} onClick={() => setRange(r)} className={`rounded px-3 py-1 ${range === r ? "bg-primary/10 text-primary" : "text-muted-foreground"}`}>
-              Last {r}
+              {r === "day" ? t("app.pages.earthquakes.lastDay") : t("app.pages.earthquakes.lastWeek")}
             </button>
           ))}
         </div>
         <label className="flex items-center gap-2">
-          Min magnitude
+          {t("app.pages.earthquakes.minMagnitude")}
           <input type="number" step="0.5" value={minMag} onChange={(e) => setMinMag(parseFloat(e.target.value) || 0)} className="w-16 rounded border border-border/60 bg-background/60 px-2 py-1" />
         </label>
-        <button onClick={() => setSort("new")} className={`rounded-md border px-3 py-1 ${sort === "new" ? "border-primary/40 text-primary" : "border-border/60 text-muted-foreground"}`}>Newest</button>
-        <button onClick={() => setSort("mag")} className={`rounded-md border px-3 py-1 ${sort === "mag" ? "border-primary/40 text-primary" : "border-border/60 text-muted-foreground"}`}>Highest magnitude</button>
-        <button onClick={() => setHighOnly((v) => !v)} className={`rounded-md border px-3 py-1 ${highOnly ? "border-amber-glow/40 text-amber-glow" : "border-border/60 text-muted-foreground"}`}>High severity only</button>
+        <button onClick={() => setSort("new")} className={`rounded-md border px-3 py-1 ${sort === "new" ? "border-primary/40 text-primary" : "border-border/60 text-muted-foreground"}`}>{t("app.pages.earthquakes.newest")}</button>
+        <button onClick={() => setSort("mag")} className={`rounded-md border px-3 py-1 ${sort === "mag" ? "border-primary/40 text-primary" : "border-border/60 text-muted-foreground"}`}>{t("app.pages.earthquakes.highestMagnitude")}</button>
+        <button onClick={() => setHighOnly((v) => !v)} className={`rounded-md border px-3 py-1 ${highOnly ? "border-amber-glow/40 text-amber-glow" : "border-border/60 text-muted-foreground"}`}>{t("app.pages.earthquakes.highSeverityOnly")}</button>
       </div>
 
       {error && <ErrorMessage message={error} />}
@@ -88,7 +108,7 @@ function EarthquakesPage() {
       {data && (
         <>
           <div className="glass-card p-4">
-            <div className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">Magnitude distribution</div>
+            <div className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">{t("app.pages.earthquakes.magnitudeDistribution")}</div>
             <EarthquakeMagnitudeChart data={filtered} />
           </div>
 
@@ -104,12 +124,12 @@ function EarthquakesPage() {
                       <span className="truncate text-sm">{q.place}</span>
                     </div>
                     <div className="mt-1 text-[11px] text-muted-foreground">
-                      {new Date(q.time).toLocaleString()} · depth {q.depth.toFixed(1)} km · {q.latitude.toFixed(2)}, {q.longitude.toFixed(2)}
+                      <span suppressHydrationWarning>{new Date(q.time).toLocaleString()}</span> · {t("app.pages.earthquakes.depth", { depth: q.depth.toFixed(1) })} · {q.latitude.toFixed(2)}, {q.longitude.toFixed(2)}
                     </div>
                   </div>
                   <div className="flex gap-2">
                     <button onClick={() => saveAsAlert(q)} className="inline-flex items-center gap-1.5 rounded-md border border-primary/40 bg-primary/10 px-2.5 py-1 text-xs text-primary">
-                      <Bookmark className="h-3 w-3" /> Save alert
+                      <Bookmark className="h-3 w-3" /> {t("app.pages.earthquakes.saveAlert")}
                     </button>
                     {q.url && (
                       <a href={q.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-md border border-border/60 px-2.5 py-1 text-xs">
@@ -120,7 +140,7 @@ function EarthquakesPage() {
                 </div>
               );
             })}
-            {filtered.length === 0 && <div className="text-xs text-muted-foreground">No earthquakes match your filters.</div>}
+            {filtered.length === 0 && <div className="text-xs text-muted-foreground">{t("app.pages.earthquakes.empty")}</div>}
           </div>
         </>
       )}

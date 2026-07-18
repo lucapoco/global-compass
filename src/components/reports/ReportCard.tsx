@@ -3,6 +3,7 @@ import type { GeneratedReport } from "@/types";
 import { reportTypeLabel } from "@/services/reportService";
 import { DataBadge } from "@/components/ui/DataBadge";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/i18n";
 
 interface Props {
   report: GeneratedReport;
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export function ReportCard({ report, onOpen, onDelete, deleting }: Props) {
+  const t = useT();
   const preview = report.content.replace(/^#+\s/gm, "").slice(0, 140);
   return (
     <div className="glass-card flex flex-col gap-2 p-4 transition-colors hover:border-primary/30">
@@ -28,7 +30,7 @@ export function ReportCard({ report, onOpen, onDelete, deleting }: Props) {
       <p className="line-clamp-3 text-xs text-muted-foreground">{preview}…</p>
       <div className="mt-1 flex flex-wrap gap-2">
         <Button type="button" size="sm" variant="secondary" className="h-8 text-xs" onClick={onOpen}>
-          View
+          {t("app.pages.reports.view")}
         </Button>
         <Button
           type="button"
@@ -38,7 +40,7 @@ export function ReportCard({ report, onOpen, onDelete, deleting }: Props) {
           onClick={onDelete}
           disabled={deleting}
         >
-          <Trash2 className="mr-1 h-3.5 w-3.5" /> Delete
+          <Trash2 className="mr-1 h-3.5 w-3.5" /> {t("app.pages.reports.delete")}
         </Button>
       </div>
       {report.created_at ? (

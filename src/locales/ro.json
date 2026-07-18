@@ -1,0 +1,1928 @@
+{
+  "common": {
+    "explore": "Explorează",
+    "skipToContent": "Sari la conținutul principal"
+  },
+  "language": {
+    "select": "Selectează limba",
+    "en": "English",
+    "ro": "Română",
+    "enShort": "EN",
+    "roShort": "RO"
+  },
+  "nav": {
+    "features": "Funcții",
+    "howItWorks": "Cum funcționează",
+    "product": "Produs",
+    "ai": "AI",
+    "pricing": "Prețuri",
+    "faq": "Întrebări",
+    "exploreMap": "Explorează harta",
+    "openDashboard": "Deschide panoul",
+    "openMenu": "Deschide meniul",
+    "closeMenu": "Închide meniul",
+    "homeAria": "Acasă {{brand}}",
+    "mainAria": "Navigare principală"
+  },
+  "hero": {
+    "title": "Înțelege o lume în schimbare",
+    "titleHighlight": "înainte să devină criză",
+    "subtitle": "Global Pulse unifică monitorizarea live, briefing-urile AI și sprijinul decizional — astfel încât echipa ta vede ce contează, acționează mai rapid și raportează cu încredere.",
+    "ctaPrimary": "Începe monitorizarea",
+    "ctaSecondary": "Vezi Mission Control"
+  },
+  "trustedBy": {
+    "label": "Intelligence alimentat de surse globale de încredere"
+  },
+  "features": {
+    "label": "Funcții",
+    "title": "Tot ce ai nevoie pentru a anticipa riscul global",
+    "description": "De la monitorizare live la briefing-uri AI — o singură platformă înlocuiește instrumentele fragmentate și oferă echipei tale o imagine operațională comună.",
+    "items": {
+      "monitoring": {
+        "title": "Vezi lumea cum se schimbă",
+        "description": "Monitorizare globală live pentru cutremure, vreme, știri și semnale umanitare — unificate pe o singură hartă planetară."
+      },
+      "alerts": {
+        "title": "Acționează înainte ca crizele să escaladeze",
+        "description": "Scorul de risc, corelația și prioritizarea alertelor evidențiază ce contează acum — nu zgomotul de ieri."
+      },
+      "briefings": {
+        "title": "Briefing-uri care economisesc ore",
+        "description": "Rezumate AI bazate pe date live oferă claritate executivilor în secunde, nu în foi de calcul."
+      },
+      "graph": {
+        "title": "Înțelege conexiunile ascunse",
+        "description": "Graful de cunoștințe dezvăluie relații între evenimente, regiuni și entități pe care dashboard-urile singure le omit."
+      },
+      "analytics": {
+        "title": "Măsoară ce se schimbă",
+        "description": "Analitica urmărește tendințe, stabilitate și schimbări măsurabile pe țări și intervale de timp."
+      },
+      "decisions": {
+        "title": "Decide cu încredere",
+        "description": "Intelligence pe țări, instrumente de comparație și rapoarte executive sprijină acțiunea strategică informată."
+      }
+    }
+  },
+  "howItWorks": {
+    "label": "Cum funcționează",
+    "title": "De la semnale brute la acțiune decisivă în trei pași",
+    "description": "Global Pulse transformă datele globale fragmentate într-un flux de intelligence coerent în care întreaga echipă poate avea încredere.",
+    "steps": {
+      "ingest": {
+        "title": "Colectează semnale globale",
+        "description": "Pipeline-uri multi-provider normalizează cutremure, știri, vreme și date de conflict într-un singur strat de intelligence."
+      },
+      "analyze": {
+        "title": "Analizează și corelează",
+        "description": "Motorul de Intelligence evaluează severitatea, detectează clustere și mapează relații în timp și spațiu."
+      },
+      "brief": {
+        "title": "Briefing și răspuns",
+        "description": "Mission Control, alertele și briefing-urile AI transformă semnalele brute în insight acționabil pentru echipa ta."
+      }
+    }
+  },
+  "product": {
+    "label": "Produs",
+    "title": "Construit pentru operatori, analiști și executivi",
+    "description": "Fiecare modul este proiectat pentru claritate sub presiune — de la globul interactiv la Mission Control gata de prezentare.",
+    "globeTitle": "Canvas planetar interactiv",
+    "globeDescription": "Experiență de glob condusă de scroll, cu markeri live. Vezi cutremure, știri și semnale umanitare pe un Pământ 3D unificat.",
+    "openMap": "Deschide harta lumii",
+    "loadingGlobe": "Se încarcă globul",
+    "screens": {
+      "map": {
+        "title": "Harta lumii",
+        "description": "Glob interactiv cu evenimente geo-localizate live și straturi de severitate."
+      },
+      "mission": {
+        "title": "Mission Control",
+        "description": "Vedere operațională gata de prezentare pentru monitorizare live și demo-uri."
+      },
+      "analytics": {
+        "title": "Analitica",
+        "description": "Analiză de tendințe și metrici de stabilitate pe regiuni și categorii."
+      }
+    }
+  },
+  "ai": {
+    "label": "Intelligence AI",
+    "title": "AI care înțelege datele tale live — nu web-ul deschis",
+    "description": "Briefing-uri, rapoarte și chat analist ancorate în același motor de intelligence care alimentează dashboard-ul.",
+    "demoLabel": "// Briefing AI · Context live",
+    "demoQuote": "\"Activitate seismică ridicată în estul Mediteranei corelează cu 3 semnale umanitare și 2 evenimente geopolitice în ultimele 6 ore. Recomandare: monitorizarea coridoarelor Cipru și Turcia.\"",
+    "demoCaption": "Rezumatele fac referire la evenimente reale din feed — verificabile, citabile, acționabile.",
+    "cta": "Încearcă briefing-urile AI",
+    "items": {
+      "summaries": {
+        "title": "Rezumate contextuale",
+        "description": "Briefing-uri bazate pe feed-ul tău live — nu căutări generice pe web."
+      },
+      "reports": {
+        "title": "Rapoarte executive",
+        "description": "Rapoarte de intelligence generate automat pentru stakeholderi și prezentări."
+      },
+      "chat": {
+        "title": "Chat analist",
+        "description": "Pune întrebări despre evenimente globale și primește răspunsuri bazate pe datele platformei."
+      },
+      "graph": {
+        "title": "Raționament pe graf",
+        "description": "AI-ul înțelege relațiile dintre entități evidențiate de graful de cunoștințe."
+      }
+    }
+  },
+  "testimonials": {
+    "label": "Testimoniale",
+    "title": "De încredere pentru echipe care nu pot rata semnale critice",
+    "description": "Cercetători, analiști și operatori folosesc Global Pulse pentru briefing mai rapid și răspuns cu încredere.",
+    "items": {
+      "elena": {
+        "quote": "Global Pulse a înlocuit trei dashboard-uri separate pentru echipa noastră. Vedem semnale critice în minute, nu ore.",
+        "role": "Analist operațiuni",
+        "org": "Echipă răspuns umanitar"
+      },
+      "james": {
+        "quote": "Graful de cunoștințe singur a schimbat modul în care brief-uim leadership-ul. Conexiunile pe care le ratau sunt acum evidente.",
+        "role": "Lead intelligence",
+        "org": "Unitate cercetare politică"
+      },
+      "sofia": {
+        "quote": "Mission Control este gata de prezentare din start. Demo-urile noastre se potrivesc în sfârșit cu calitatea produsului.",
+        "role": "Director produs",
+        "org": "Geo-Intelligence Lab"
+      }
+    }
+  },
+  "statistics": {
+    "label": "Metrici live",
+    "title": "Intelligence care pare viu",
+    "description": "Cifre reale din Motorul de Intelligence — reîmprospătate din date live, nu demo-uri hardcodate.",
+    "footnote": "Monitorizare globală 24/7 · Actualizat din feed-ul live",
+    "items": {
+      "countries": "Țări monitorizate",
+      "events": "Evenimente globale active",
+      "critical": "Semnale critice",
+      "earthquakes": "Cutremure urmărite",
+      "weather": "Vreme și dezastre",
+      "reports": "Rapoarte intelligence"
+    }
+  },
+  "pricing": {
+    "label": "Prețuri",
+    "title": "Începe gratuit. Scalează când misiunea crește.",
+    "description": "Planuri transparente pentru echipe de cercetare, operatori și enterprise. Toate includ monitorizarea planetară de bază.",
+    "mostPopular": "Cel mai popular",
+    "tiers": {
+      "community": {
+        "name": "Community",
+        "price": "Gratuit",
+        "period": "",
+        "description": "Pentru studenți, cercetători și proiecte de concurs.",
+        "features": [
+          "Monitorizare live evenimente globale",
+          "Hartă mondială și feed intelligence",
+          "Analitica de bază",
+          "Briefing-uri AI (limitat)"
+        ],
+        "cta": "Începe acum"
+      },
+      "professional": {
+        "name": "Professional",
+        "price": "$49",
+        "period": "/lună",
+        "description": "Pentru echipe — disponibil în curând.",
+        "features": [
+          "Tot din Community",
+          "Mission Control și alerte",
+          "Acces knowledge graph",
+          "Briefing-uri AI nelimitate",
+          "Intelligence pe țări și rapoarte"
+        ],
+        "cta": "În curând"
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "Personalizat",
+        "period": "",
+        "description": "Pentru organizații — disponibil în curând.",
+        "features": [
+          "Tot din Professional",
+          "Provideri de date personalizați",
+          "Suport dedicat",
+          "SSO și jurnale audit",
+          "Deployment on-premise"
+        ],
+        "cta": "În curând"
+      }
+    }
+  },
+  "faq": {
+    "label": "Întrebări",
+    "title": "Întrebări? Avem răspunsuri.",
+    "description": "Tot ce trebuie să știi despre Global Pulse înainte de a intra în platformă.",
+    "items": {
+      "what": {
+        "question": "Ce este Global Pulse?",
+        "answer": "Global Pulse este o platformă de intelligence planetară care monitorizează evenimente globale, analizează riscul și livrează briefing-uri AI — ajutând echipele să înțeleagă o lume în schimbare în timp real."
+      },
+      "data": {
+        "question": "De unde provin datele?",
+        "answer": "Agregăm provideri deschiși și configurați, inclusiv USGS, NASA EONET, ACLED, GNews, API-uri meteo și altele. Toate datele sunt normalizate prin Motorul nostru de Intelligence."
+      },
+      "free": {
+        "question": "Este Global Pulse gratuit?",
+        "answer": "Nivelul Community este gratuit pentru explorare, cercetare și competiții. Mission Control, alertele și AI-ul sunt disponibile acum în Community. Planurile Professional și Enterprise vor adăuga facturare, SSO și opțiuni avansate într-o actualizare viitoare."
+      },
+      "keys": {
+        "question": "Am nevoie de chei API?",
+        "answer": "Unii provideri funcționează out of the box. Chei opționale (Mapbox, Gemini, Supabase) deblochează experiența completă, inclusiv globul 3D, chat AI și rapoarte salvate."
+      },
+      "presentations": {
+        "question": "Pot folosi platforma pentru prezentări?",
+        "answer": "Da. Mission Control este proiectat ca mod flagship de prezentare, cu interfață cinematică pe fundal închis, optimizată pentru demo-uri și monitorizare live."
+      },
+      "different": {
+        "question": "Cu ce diferă de un agregator de știri?",
+        "answer": "Global Pulse corelează evenimente, evaluează riscul, mapează relații între entități și generează sprijin decizional — este o platformă de intelligence, nu un feed de titluri."
+      }
+    }
+  },
+  "finalCta": {
+    "title": "Gata să vezi lumea clar?",
+    "description": "Intră în Global Pulse și pășește într-o platformă de intelligence planetară construită pentru echipe care trebuie să acționeze — nu să reacționeze.",
+    "cta": "Mergi la panou"
+  },
+  "footer": {
+    "tagline": "Intelligence planetar pentru echipe care monitorizează o lume în schimbare.",
+    "product": "Produs",
+    "resources": "Resurse",
+    "explore": "Explorează",
+    "copyright": "© {{year}} {{brand}} · InfoEducație 2026",
+    "status": "Construit pentru intelligence planetar · Toate sistemele operaționale",
+    "links": {
+      "dashboard": "Panou",
+      "worldMap": "Harta lumii",
+      "missionControl": "Mission Control",
+      "analytics": "Analitica",
+      "aiBriefings": "Briefing-uri AI",
+      "knowledgeGraph": "Graf de cunoștințe",
+      "reports": "Rapoarte",
+      "alertCenter": "Centru alerte",
+      "about": "Despre",
+      "countries": "Țări",
+      "compare": "Compară"
+    }
+  },
+  "app": {
+    "nav": {
+      "groups": {
+        "commandCenter": "Centru de comandă",
+        "intelligence": "Intelligence",
+        "dataSources": "Surse de date",
+        "platform": "Platformă",
+        "explore": "Explorează",
+        "library": "Bibliotecă"
+      },
+      "missionControl": "Mission Control",
+      "alertCenter": "Centru alerte",
+      "dashboard": "Panou",
+      "discover": "Descoperă",
+      "trending": "Tendințe",
+      "settings": "Setări",
+      "savedArticles": "Articole salvate",
+      "readingHistory": "Istoric citire",
+      "collections": "Colecții",
+      "notifications": "Notificări",
+      "intelligenceFeed": "Flux intelligence",
+      "watchCenter": "Centru monitorizare",
+      "analytics": "Analitica",
+      "globalPulseAi": "Global Pulse AI",
+      "knowledgeGraph": "Graf de cunoștințe",
+      "intelligenceReports": "Rapoarte intelligence",
+      "compareCountries": "Compară țări",
+      "liveWorldMap": "Harta lumii live",
+      "countries": "Țări",
+      "earthquakes": "Cutremure",
+      "weather": "Vreme",
+      "savedData": "Date salvate",
+      "aboutProject": "Despre proiect",
+      "presentationMode": "Mod prezentare",
+      "mainAria": "Navigare principală",
+      "platformAria": "Navigare platformă",
+      "mobileAria": "Navigare mobilă",
+      "openCommandPalette": "Deschide paleta de comenzi (Ctrl+K)",
+      "searchCommand": "Caută / Comandă…",
+      "pressForShortcuts": "Apasă",
+      "forShortcuts": "pentru scurtături",
+      "projectCredit": "InfoEducație · Proiect educațional"
+    },
+    "auth": {
+      "signIn": "Autentificare",
+      "logout": "Deconectare",
+      "account": "Cont",
+      "lockBadge": "Cont",
+      "continueGoogle": "Continuă cu Google",
+      "continueGitHub": "Continuă cu GitHub",
+      "continueEmail": "Continuă cu email",
+      "continueBrowsing": "Continuă navigarea",
+      "email": "Email",
+      "password": "Parolă",
+      "displayName": "Nume afișat",
+      "createAccount": "Creează cont",
+      "back": "Înapoi",
+      "needAccount": "Nu ai cont? Înregistrează-te",
+      "haveAccount": "Ai deja cont? Autentifică-te",
+      "checkEmail": "Verifică emailul pentru a confirma contul.",
+      "completingSignIn": "Se finalizează autentificarea…",
+      "supabaseNotConfigured": "Supabase nu este configurat. Setează VITE_SUPABASE_URL și VITE_SUPABASE_PUBLISHABLE_KEY.",
+      "modal": {
+        "title": "Creează-ți contul gratuit",
+        "description": "Autentifică-te pentru a salva articole, a sincroniza datele pe dispozitive și a primi recomandări AI personalizate.",
+        "saveTitle": "Salvează articolele pentru totdeauna",
+        "saveDescription": "Creează un cont gratuit pentru a salva articole, a sincroniza pe dispozitive și a construi fluxul tău personalizat."
+      },
+      "reasons": {
+        "save_article": "Salvarea articolelor necesită un cont gratuit.",
+        "reading_history": "Istoricul de citire se sincronizează pe dispozitive după autentificare.",
+        "collections": "Colecțiile îți organizează intelligence — autentifică-te pentru a crea una.",
+        "personalized_feed": "Fluxul personalizat este disponibil după autentificare.",
+        "notifications": "Notificările cloud necesită un cont.",
+        "sync": "Sincronizarea între dispozitive se deblochează după autentificare.",
+        "watchlist": "Centrul de urmărire necesită un cont pentru sincronizare.",
+        "saved_data": "Datele salvate sunt private și necesită autentificare."
+      },
+      "gate": {
+        "savedArticles": "Autentifică-te pentru a salva articole și a le sincroniza pe dispozitive.",
+        "readingHistory": "Autentifică-te pentru a păstra un istoric privat de citire.",
+        "collections": "Autentifică-te pentru a crea și gestiona colecții.",
+        "account": "Autentifică-te pentru a-ți gestiona contul.",
+        "watchlist": "Autentifică-te pentru a-ți gestiona lista de urmărire personală pe toate dispozitivele.",
+        "savedData": "Autentifică-te pentru a vedea țările, alertele și inteligența salvate privat."
+      },
+      "errors": {
+        "generic": "Autentificarea a eșuat. Te rugăm să încerci din nou."
+      },
+      "userProfile": "Profil utilizator"
+    },
+    "badges": {
+      "new": "NOU"
+    },
+    "shell": {
+      "viewMode": {
+        "simple": "Vizualizare simplă",
+        "advanced": "Vizualizare avansată",
+        "simpleShort": "Simplu",
+        "advancedShort": "Avansat",
+        "simpleTooltip": "Afișează doar controalele esențiale.",
+        "advancedTooltip": "Afișează toate filtrele, straturile și instrumentele tehnice.",
+        "toastSimple": "Vizualizare simplă activată",
+        "toastAdvanced": "Vizualizare avansată activată"
+      },
+      "shortcuts": {
+        "title": "Scurtături tastatură",
+        "closeAria": "Închide panoul de scurtături",
+        "aria": "Scurtături tastatură",
+        "categories": {
+          "action": "Acțiuni",
+          "navigation": "Navigare"
+        },
+        "footer": "Apasă {{toggleKey}} pentru comutare · {{escKey}} pentru închidere",
+        "items": {
+          "openCommandPalette": "Deschide paleta de comenzi",
+          "goDashboard": "Mergi la Panou",
+          "goIntelligence": "Mergi la Flux intelligence",
+          "goWatchCenter": "Mergi la Centru monitorizare",
+          "goAnalytics": "Mergi la Analitica",
+          "goCompare": "Compară țări",
+          "goReports": "Rapoarte intelligence",
+          "goAi": "Global Pulse AI",
+          "goMap": "Harta lumii live",
+          "showHelp": "Afișează scurtăturile",
+          "closeOverlay": "Închide overlay / dialog"
+        }
+      },
+      "commandPalette": {
+        "aria": "Paleta de comenzi",
+        "searchPlaceholder": "Caută pagini, acțiuni sau întreabă AI…",
+        "searchAria": "Căutare paletă comenzi",
+        "resultsAria": "Rezultate comenzi",
+        "categories": {
+          "navigate": "Navigare",
+          "action": "Acțiune",
+          "askAi": "Întreabă AI"
+        },
+        "emptyTitle": "Niciun rezultat pentru \"{{query}}\"",
+        "emptyHint": "Încearcă un nume de pagină sau o acțiune",
+        "footerBrand": "Platformă Global Pulse Intelligence",
+        "navigate": "navigare",
+        "select": "selectare",
+        "close": "închidere",
+        "askAiSuffix": "Întreabă Global Pulse AI →",
+        "commands": {
+          "dashboard": {
+            "label": "Panou",
+            "sublabel": "Prezentare generală centru de comandă"
+          },
+          "intelligence": {
+            "label": "Flux intelligence",
+            "sublabel": "Știri live și evenimente globale"
+          },
+          "watchlist": {
+            "label": "Centru monitorizare",
+            "sublabel": "Țări și alerte monitorizate"
+          },
+          "analytics": {
+            "label": "Analitica",
+            "sublabel": "Tendințe și statistici intelligence"
+          },
+          "compare": {
+            "label": "Compară țări",
+            "sublabel": "Intelligence comparativ"
+          },
+          "reports": {
+            "label": "Rapoarte intelligence",
+            "sublabel": "Briefing-uri generate de AI"
+          },
+          "aiNews": {
+            "label": "Global Pulse AI",
+            "sublabel": "Asistent intelligence"
+          },
+          "map": {
+            "label": "Harta lumii live",
+            "sublabel": "Intelligence geospațială"
+          },
+          "countries": {
+            "label": "Țări",
+            "sublabel": "Profiluri intelligence pe țări"
+          },
+          "earthquakes": {
+            "label": "Cutremure",
+            "sublabel": "Monitor activitate seismică"
+          },
+          "weather": {
+            "label": "Vreme",
+            "sublabel": "Prezentare generală vreme globală"
+          },
+          "alerts": {
+            "label": "Alerte globale",
+            "sublabel": "Alerte de amenințare active"
+          },
+          "saved": {
+            "label": "Date salvate",
+            "sublabel": "Intelligence salvată"
+          },
+          "presentation": {
+            "label": "Mod prezentare",
+            "sublabel": "Demo jury InfoEducație"
+          },
+          "about": {
+            "label": "Despre Global Pulse",
+            "sublabel": "Informații proiect"
+          },
+          "openGlobe": {
+            "label": "Deschide globul live",
+            "sublabel": "Hartă interactivă a lumii"
+          },
+          "genReport": {
+            "label": "Generează raport",
+            "sublabel": "Creează raport intelligence AI"
+          }
+        },
+        "aiPrompts": {
+          "situation": "Rezumă situația globală de astăzi",
+          "risks": "Explică riscurile geopolitice actuale",
+          "quakes": "Analizează activitatea seismică recentă",
+          "regions": "Ce regiuni au cel mai mare risc?",
+          "cyber": "Explică incidentele cibernetice actuale",
+          "climate": "Arată amenințările climatice și meteo"
+        }
+      },
+      "notifications": {
+        "title": "Notificări",
+        "unreadAria": "Notificări ({{count}} necitite)",
+        "newCount": "{{count}} noi",
+        "markAllRead": "Marchează toate ca citite",
+        "empty": "Nicio notificare",
+        "openAlertCenter": "Deschide Centrul de alerte",
+        "acknowledge": "Confirmă",
+        "dismiss": "Respinge"
+      },
+      "notFound": {
+        "message": "Semnal pierdut. Această pagină nu este pe hartă.",
+        "backToDashboard": "Înapoi la Panou"
+      }
+    },
+    "ui": {
+      "loading": "Se încarcă…",
+      "loadingAria": "Se încarcă",
+      "refresh": "Reîmprospătează",
+      "retry": "Reîncearcă",
+      "tryAgain": "Încearcă din nou",
+      "close": "Închide",
+      "save": "Salvează",
+      "send": "Trimite",
+      "dismiss": "Respinge",
+      "viewDetails": "Vezi detalii",
+      "openSource": "Deschide sursa",
+      "updated": "Actualizat",
+      "waitSeconds": "Așteaptă {{seconds}}s",
+      "pleaseWaitRefresh": "Te rugăm să aștepți înainte de reîmprospătare.",
+      "notConfigured": "Supabase neconfigurat.",
+      "saveFailed": "Salvare eșuată",
+      "events": "evenimente",
+      "severity": {
+        "critical": "Critic",
+        "high": "Ridicat",
+        "medium": "Mediu",
+        "low": "Scăzut",
+        "ariaLabel": "Severitate: {{level}}"
+      },
+      "stability": {
+        "stable": "Stabil",
+        "elevated": "Ridicat",
+        "highAlert": "Alertă ridicată",
+        "critical": "Critic"
+      },
+      "dataStatus": {
+        "live": "LIVE",
+        "cached": "CACHE",
+        "demo": "DEMO"
+      },
+      "risk": "risc",
+      "confidence": "Încredere",
+      "resolved": "rezolvat",
+      "sourcesCount": "{{count}} surse",
+      "clearSearch": "Șterge căutarea",
+      "searchPlaceholder": "Caută…",
+      "removeItem": "Elimină {{label}}",
+      "time": {
+        "lessThanOneHour": "< 1h în urmă",
+        "hoursAgo": "acum {{count}}h",
+        "daysAgo": "acum {{count}}z",
+        "justNow": "Chiar acum",
+        "minutesAgo": "acum {{count}}m"
+      },
+      "watchTypes": {
+        "country": "Țară",
+        "region": "Regiune",
+        "category": "Categorie",
+        "topic": "Subiect",
+        "keyword": "Cuvânt cheie",
+        "organization": "Organizație"
+      },
+      "watchPlaceholders": {
+        "country": "Franța",
+        "region": "Europa",
+        "category": "militar",
+        "topic": "alegeri",
+        "keyword": "atac cibernetic",
+        "organization": "NATO"
+      },
+      "watchPlaceholderPrefix": "ex. {{example}}",
+      "cancel": "Anulează",
+      "delete": "Șterge"
+    },
+    "errors": {
+      "generic": "Ceva nu a funcționat",
+      "genericWithContext": "Eroare în {{context}}",
+      "unexpected": "A apărut o eroare neașteptată. Te rugăm să încerci din nou.",
+      "providerUnavailable": "Date {{provider}} indisponibile",
+      "dashboardRefreshFailed": "Reîmprospătarea panoului a eșuat",
+      "loadFailed": "Încărcarea datelor a eșuat"
+    },
+    "toasts": {
+      "eventSaved": "Eveniment salvat în bibliotecă.",
+      "eventSavedShort": "Eveniment salvat.",
+      "countrySaved": "{{country}} salvată.",
+      "cacheCleared": "Cache golit",
+      "feedbackThanks": "Mulțumim pentru feedback!",
+      "watchAdded": "Monitorizare activă: {{value}}",
+      "watchRemoved": "Eliminat din lista de monitorizare.",
+      "reportCountryRequired": "Introdu un nume de țară pentru acest tip de raport.",
+      "reportAiFallback": "AI neconfigurat — raport structurat generat din date locale.",
+      "reportGenerationFailed": "Generarea raportului a eșuat.",
+      "reportEventsLoadFailed": "Nu s-au putut încărca evenimentele pentru selecție.",
+      "reportEnterCountry": "Introdu un nume de țară.",
+      "reportSelectEvent": "Selectează un eveniment.",
+      "reportLocalFallback": "Raport generat cu analistul local (Gemini ocupat sau indisponibil).",
+      "reportFallbackModel": "Modelul principal ocupat — s-a folosit modelul Gemini de rezervă.",
+      "reportGenerated": "Raport intelligence generat.",
+      "reportSaved": "Raport salvat.",
+      "reportDeleted": "Raport șters.",
+      "reportLoadFailed": "Încărcarea rapoartelor a eșuat",
+      "reportSchemaMissing": "Rulează docs/legacy-supabase-schema.sql pentru a crea tabela generated_reports.",
+      "supabaseNotConfigured": "Supabase nu este configurat.",
+      "deleteFailed": "Ștergerea a eșuat",
+      "linkCopied": "Link copiat în clipboard.",
+      "aiAnalysisFailed": "Analiza AI a eșuat. Verifică configurația API.",
+      "aiAnalysisFailedShort": "Analiza AI a eșuat",
+      "eventSavedSupabase": "Eveniment salvat în Supabase.",
+      "removed": "Eliminat.",
+      "alreadyWatching": "Deja monitorizezi acest element.",
+      "enterWatchValue": "Introdu o valoare de monitorizat.",
+      "feedLoadFailed": "Nu s-a putut încărca fluxul intelligence.",
+      "aiComparativeGenerated": "Analiză comparativă AI generată.",
+      "aiComparativeFailed": "Analiza AI a eșuat.",
+      "aiUnavailable": "Analiza AI indisponibilă. Verifică configurația Gemini.",
+      "localAnalystBusy": "Se folosește analistul local — Gemini este temporar ocupat sau indisponibil.",
+      "geminiError": "Gemini a returnat o eroare.",
+      "countriesNotFound": "Una sau ambele țări nu au fost găsite.",
+      "savedToAlerts": "Salvat în alerte.",
+      "connectSupabaseAlerts": "Conectează Supabase pentru a salva alerte.",
+      "feedbackMessageRequired": "Te rugăm să scrii un mesaj.",
+      "feedbackMessageTooLong": "Mesajul este prea lung (max 4000 caractere).",
+      "feedbackNameTooLong": "Numele este prea lung (max 200 caractere).",
+      "submitFailed": "Trimiterea a eșuat",
+      "savedDataLoadFailed": "Nu s-au putut încărca datele salvate din Supabase",
+      "supabaseTestFailed": "Testul Supabase a eșuat"
+    },
+    "pages": {
+      "dashboard": {
+        "metaTitle": "Centru operațional — Global Pulse",
+        "metaDescription": "Centru operațional Global Pulse — intelligence în timp real, cutremure, video live și analiză AI.",
+        "ariaMain": "Centru operațional global",
+        "quickLinks": {
+          "globe": "Glob",
+          "ai": "AI",
+          "reports": "Rapoarte",
+          "analytics": "Analitica",
+          "compare": "Compară",
+          "intel": "Intel",
+          "watchlist": "Monitorizare",
+          "alerts": "Alerte"
+        },
+        "sections": {
+          "liveVideoBreaking": "Video live și intelligence de ultimă oră",
+          "operationalPanels": "Panouri intelligence operaționale",
+          "worldActivity": "Analiza activității mondiale",
+          "sectorTrends": "Intelligence pe sectoare și tendințe",
+          "criticalRisk": "Semnale critice și risc pe țări",
+          "analyticsCharts": "Analitica și grafice de distribuție",
+          "fullFeed": "Flux intelligence complet",
+          "systemHealth": "Sănătate sistem și navigare platformă",
+          "platformStats": "Statistici platformă",
+          "quickNavSimple": "Navigare rapidă"
+        },
+        "statusBar": {
+          "title": "Centru operațional mondial",
+          "subtitle": "Monitorizare intelligence globală în timp real",
+          "assistantReady": "Asistent pregătit",
+          "liveMap": "Hartă live",
+          "askAi": "Întreabă AI",
+          "intelEvents": "Evenimente intel",
+          "aiStatus": "Status AI",
+          "aiOnline": "Online",
+          "aiLimited": "Limitat",
+          "globalStabilityIndex": "Indice stabilitate globală — {{tier}}",
+          "computing": "Se calculează…",
+          "refreshTitle": "Reîmprospătează toate datele intelligence",
+          "refreshAriaLoading": "Se încarcă…",
+          "refreshAriaCooldown": "Reîmprospătare disponibilă în {{seconds}}s",
+          "refreshAria": "Reîmprospătează panoul"
+        },
+        "breakingIntel": {
+          "title": "Intelligence de ultimă oră",
+          "subtitleCritical": "{{count}} eveniment critic activ",
+          "subtitleCriticalPlural": "{{count}} evenimente critice active",
+          "subtitleDefault": "Evenimente prioritizate",
+          "loading": "Se încarcă intelligence…",
+          "emptyTitle": "Niciun eveniment intelligence",
+          "emptyHint": "Datele vor apărea când fluxul intelligence se încarcă.",
+          "fullFeed": "Flux intelligence complet"
+        },
+        "stabilityPanel": {
+          "title": "Status intelligence global",
+          "eventsMonitored": "{{count}} evenimente monitorizate",
+          "seismicEvents": "{{count}} evenimente seismice",
+          "topDomain": "Domeniu top"
+        },
+        "aiSummary": {
+          "title": "Rezumat executiv AI",
+          "subtitle": "Analiză situațională Gemini",
+          "analyzing": "Se analizează {{count}} evenimente intelligence…",
+          "openAi": "Deschide Global Pulse AI",
+          "generateReport": "Generează raport"
+        },
+        "activeThreats": {
+          "title": "Amenințări active",
+          "subtitle": "Evenimente pe domenii operaționale",
+          "emptyTitle": "Nicio amenințare activă",
+          "emptyHint": "Domeniile de amenințare apar când evenimentele intelligence se încarcă.",
+          "viewAll": "Vezi toate amenințările"
+        },
+        "timeline": {
+          "title": "Cronologie activitate mondială",
+          "subtitle": "Semnale live combinate — cele mai noi primele",
+          "empty": "Nicio activitate încă.",
+          "quakeSub": "USGS · adâncime {{depth}} km",
+          "savedFallback": "salvat"
+        },
+        "earthquakeWidget": {
+          "title": "Activitate seismică",
+          "subtitle": "{{count}} cutremure astăzi",
+          "emptyTitle": "Nicio dată seismică",
+          "emptyHint": "Se încarcă fluxul USGS…",
+          "fullDashboard": "Panou seismic complet"
+        },
+        "mapPreview": {
+          "title": "Hartă activitate globală",
+          "subtitle": "Evenimente geo-localizate live",
+          "openControlCenter": "Deschide centrul de comandă"
+        },
+        "liveFeed": {
+          "title": "Flux intelligence live",
+          "subtitle": "Până la {{preview}} titluri prioritare · {{total}} încărcate"
+        },
+        "apiHealth": {
+          "title": "Sănătate API",
+          "subtitle": "Status live al tuturor surselor de date integrate"
+        },
+        "countryRiskIndex": {
+          "title": "Indice risc pe țări",
+          "subtitle": "Top 10 după scorul combinat de risc intelligence",
+          "loading": "Se calculează indicele de risc…",
+          "empty": "Nicio dată de risc disponibilă",
+          "fullIndex": "Indice risc complet"
+        },
+        "simpleMode": {
+          "askAi": "Întreabă Global Pulse AI",
+          "generateReport": "Generează raport",
+          "liveMap": "Harta lumii live",
+          "intelFeed": "Flux intelligence"
+        },
+        "metrics": {
+          "stability": "Stabilitate",
+          "critical": "Critic",
+          "intel": "Intel",
+          "earthquakes": "Cutremure",
+          "maxMag": "Mag max"
+        },
+        "earthquakeChart": {
+          "title": "Magnitudini cutremure",
+          "subtitle": "Distribuție pe ultimele 24 de ore"
+        },
+        "platformNav": {
+          "title": "Navigare platformă",
+          "subtitle": "Toate secțiunile Global Pulse",
+          "ai": {
+            "label": "Global Pulse AI",
+            "hint": "Analiză alimentată de Gemini"
+          },
+          "reports": {
+            "label": "Rapoarte intelligence",
+            "hint": "Generează și exportă"
+          },
+          "feed": {
+            "label": "Flux intelligence",
+            "hint": "Flux complet de evenimente"
+          },
+          "map": {
+            "label": "Hartă mondială live",
+            "hint": "Glob interactiv"
+          },
+          "countries": {
+            "label": "Țări",
+            "hint": "Bază de date mondială"
+          },
+          "earthquakes": {
+            "label": "Cutremure",
+            "hint": "Monitor seismic"
+          },
+          "alerts": {
+            "label": "Alerte globale",
+            "hint": "Centru de alerte"
+          },
+          "watchlist": {
+            "label": "Centru monitorizare",
+            "hint": "Entități urmărite"
+          },
+          "analytics": {
+            "label": "Analitica",
+            "hint": "Analiza tendințelor"
+          },
+          "compare": {
+            "label": "Compară țări",
+            "hint": "Comparație intelligence"
+          },
+          "saved": {
+            "label": "Intelligence salvat",
+            "hint": "Bibliotecă"
+          },
+          "askAi": {
+            "label": "Întreabă AI",
+            "hint": "Întrebări rapide"
+          }
+        },
+        "stats": {
+          "intelEvents": "Evenimente intel",
+          "earthquakes": "Cutremure",
+          "highestMagnitude": "Magnitudine maximă",
+          "criticalHigh": "Critic + Ridicat",
+          "countries": "Țări",
+          "savedAlerts": "Alerte salvate",
+          "usgs24h": "USGS · 24h",
+          "usgsFeed": "Feed USGS",
+          "activeThreats": "Amenințări active",
+          "restCountries": "REST Countries",
+          "watchCenter": "Centru monitorizare"
+        },
+        "criticalSignals": {
+          "title": "Semnale critice",
+          "subtitle": "Cele mai urgente evenimente live acum",
+          "empty": "Nu s-au detectat semnale critice sau ridicate.",
+          "openUsgs": "Deschide USGS",
+          "quakeSub": "USGS · cutremur · adâncime {{depth}} km · {{time}}",
+          "savedFallback": "salvat"
+        },
+        "sectors": {
+          "title": "Intelligence pe sectoare",
+          "subtitle": "Evenimente grupate pe domeniu operațional",
+          "fullFeed": "Flux complet →",
+          "emptyTitle": "Nicio intelligence {{sector}}",
+          "emptyHint": "Evenimentele apar aici când datele sunt încărcate de la provideri.",
+          "seeAll": "Vezi toate evenimentele {{sector}} →",
+          "details": "Detalii",
+          "openDetails": "Deschide detalii",
+          "originalSource": "Sursă originală",
+          "fullAnalysis": "Analiză completă",
+          "potentiallyDamaging": "Potențial distructiv.",
+          "quakeTitle": "Cutremur M{{mag}} — {{place}}",
+          "quakeDepth": "Adâncime: {{depth}} km. {{extra}}",
+          "conflicts": "Conflicte",
+          "cyber": "Cyber",
+          "economic": "Economic",
+          "disasters": "Dezastre"
+        },
+        "trending": {
+          "title": "Subiecte în tendință",
+          "subtitle": "Termenii cei mai menționați în fluxul curent",
+          "emptyTitle": "Niciun subiect în tendință",
+          "emptyHint": "Subiectele apar pe măsură ce se încarcă evenimentele.",
+          "aria": "Subiecte intelligence în tendință",
+          "exploreFeed": "Explorează fluxul"
+        },
+        "categoryDistribution": {
+          "title": "Distribuție pe categorii",
+          "subtitle": "Elemente intelligence live grupate pe categorie",
+          "empty": "Nicio dată încă."
+        },
+        "commandVideo": {
+          "aria": "Flux video de monitorizare live",
+          "live": "LIVE",
+          "loading": "SE ÎNCARCĂ",
+          "offline": "OFFLINE",
+          "openNewTab": "Deschide în filă nouă",
+          "openStreamAria": "Deschide streamul într-o filă nouă",
+          "streamUnavailable": "Stream indisponibil",
+          "embedBlocked": "Embed-ul {{provider}} este blocat de provider",
+          "openProvider": "Deschide {{provider}}",
+          "connecting": "Se conectează la {{provider}}…",
+          "categoriesAria": "Categorii canale video",
+          "channelsAria": "Canale {{cat}}",
+          "switchTo": "Comută la {{provider}}",
+          "emptyCategory": "Niciun stream în această categorie.",
+          "news": "Știri",
+          "space": "Spațiu",
+          "weather": "Vreme",
+          "cities": "Orașe",
+          "events": "Evenimente"
+        }
+      },
+      "intelligence": {
+        "metaTitle": "Motor intelligence global — Global Pulse",
+        "title": "Motor intelligence global",
+        "subtitle": "Fiecare titlu este procesat prin extragere entități, scor severitate, clustering și analiză risc.",
+        "refresh": "Reîmprospătează",
+        "clearCache": "Golește cache",
+        "loading": "Motorul intelligence rulează…",
+        "emptyTitle": "Niciun eveniment nu corespunde filtrelor",
+        "emptyHint": "Șterge căutarea sau ajustează filtrele de categorie / severitate.",
+        "metaDescription": "Platformă profesională intelligence: extragere entități, clustering, scoring risc și analiză AI a evenimentelor globale.",
+        "refreshFeed": "Reîmprospătează fluxul",
+        "articles": "{{count}} articole",
+        "events": "{{count}} evenimente",
+        "clustered": "{{count}} clusterizate",
+        "sort": "Sortare",
+        "sortImportance": "Importanță",
+        "sortNewest": "Cele mai noi",
+        "sortSeverity": "Severitate",
+        "sortConfidence": "Încredere",
+        "view": "Vizualizare",
+        "viewTimeline": "Cronologie",
+        "viewGrid": "Grilă",
+        "viewCompact": "Compact",
+        "viewDetailed": "Detaliat",
+        "eventsTitle": "Evenimente intelligence",
+        "processing": "Se procesează…",
+        "processedSubtitle": "{{count}} evenimente după filtrare",
+        "loadMore": "Încarcă mai multe ({{remaining}} rămase)",
+        "globalRiskTitle": "Indice global de risc",
+        "globalRiskSubtitle": "Scor compozit de risc mondial",
+        "countryRiskTitle": "Motor risc pe țări",
+        "countryRiskSubtitle": "Top {{count}} țări după risc",
+        "riskLoadingTitle": "Se încarcă datele de risc…",
+        "riskLoadingHint": "Indicele de risc apare după procesarea evenimentelor.",
+        "statusLive": "LIVE",
+        "statusCached": "CACHE",
+        "statusRateLimited": "LIMITĂ RATĂ",
+        "statusError": "EROARE API",
+        "statusDemo": "DEMO",
+        "statusQuota": "COTĂ ATINSĂ",
+        "sortCountry": "Țară",
+        "sortSource": "Sursă"
+      },
+      "map": {
+        "metaTitle": "Harta lumii live — Global Pulse",
+        "title": "Harta lumii live",
+        "subtitle": "{{visible}} din {{total}} evenimente vizibile",
+        "loading": "Se încarcă datele hărții…",
+        "resetView": "Resetează vizualizarea",
+        "refreshing": "Se reîmprospătează…",
+        "ui": {
+          "reset": "Resetează",
+          "fullscreen": "Ecran complet",
+          "filters": "Filtre",
+          "severity": "Severitate",
+          "category": "Categorie",
+          "riskScore": "Scor de risc",
+          "confidence": "Încredere",
+          "saveToSupabase": "Salvează în Supabase",
+          "closePanel": "Închide panoul",
+          "noEvents": "Niciun eveniment",
+          "noEventsMatch": "Niciun eveniment nu corespunde filtrelor.",
+          "legend": "Legendă",
+          "clusters": "Clustere",
+          "clearFilters": "Șterge filtrele",
+          "clearAll": "Șterge tot",
+          "apply": "Aplică",
+          "searchEvents": "Caută evenimente",
+          "searchPlaceholder": "Caută țară, oraș, cuvânt cheie, furnizor, categorie sau etichetă…",
+          "eventDetails": "Detalii eveniment",
+          "countryInsight": "Insight țară",
+          "status": "Status",
+          "sources": "Surse",
+          "lastUpdated": "Ultima actualizare",
+          "sidePanel": "Panou lateral",
+          "markers": "Markeri",
+          "heatmap": "Hartă termică",
+          "both": "Ambele",
+          "replay": "Reluare",
+          "layers": "Straturi",
+          "layerOpacity": "Opacitate straturi",
+          "riskIndex": "Index de risc",
+          "heatmapOpacityAria": "Opacitate strat hartă termică",
+          "riskIndexOpacityAria": "Opacitate strat index de risc",
+          "riskMin": "Risc ≥",
+          "confidenceMin": "Încredere ≥",
+          "verifiedOnly": "Doar verificate",
+          "liveOnly": "Doar live",
+          "severityMarkerColor": "Severitate (culoare marker)",
+          "activeLayers": "Straturi active",
+          "heatmapSuffix": "(hartă termică)",
+          "clusterHint": "Cluster (N evenimente, colorat după severitatea medie)",
+          "visibleEvents": "Evenimente vizibile",
+          "items": "{{count}} elemente",
+          "locateOnMap": "Localizează pe hartă",
+          "details": "Detalii",
+          "noSourceUrl": "Nicio URL sursă disponibilă",
+          "noCoords": "fără coordonate",
+          "country": "Țară",
+          "time": "Timp",
+          "provider": "Furnizor",
+          "importance": "Importanță",
+          "coordinates": "Coordonate",
+          "verified": "Verificat",
+          "live": "Live",
+          "yes": "Da",
+          "no": "Nu",
+          "relatedEvents": "Evenimente aferente ({{count}})",
+          "aiExplain": "Explică cu AI",
+          "aiExplainFailed": "Explicația AI a eșuat. Se afișează doar datele locale.",
+          "eventsVisible": "{{visible}} / {{total}} evenimente vizibile",
+          "liveProviders": "{{count}} furnizori live",
+          "refreshedAt": "Actualizat {{time}}",
+          "notYetRefreshed": "Neactualizat încă",
+          "activeFilters": "Filtre active",
+          "allEventsVisible": "Toate evenimentele vizibile",
+          "severityChip": "Severitate: {{level}}",
+          "searchChip": "Căutare: \"{{query}}\"",
+          "layerOff": "Strat dezactivat: {{label}}",
+          "extraLayersOn": "+{{count}} straturi extra active",
+          "population": "Populație",
+          "region": "Regiune",
+          "riskScoreRecent": "Scor de risc (evenimente recente)",
+          "noRecentEvents": "Niciun eveniment recent",
+          "savedStatus": "Status salvare",
+          "savedItems": "{{count}} element(e) salvate",
+          "noneSaved": "Nimic salvat",
+          "loadWeather": "Încarcă vremea",
+          "refreshWeather": "Reîmprospătează vremea",
+          "recentEvents": "Evenimente recente",
+          "refreshTitle": "Reîmprospătează datele hărții",
+          "resetViewTitle": "Resetează la vizualizarea globală",
+          "toggleFullscreen": "Comută ecran complet",
+          "toggleSidePanel": "Comută panoul lateral",
+          "showMode": "Afișează {{mode}}",
+          "replayTitle": "Mod reluare cronologică",
+          "clearFiltersTitle": "Șterge toate filtrele",
+          "clear": "șterge",
+          "noMatches": "Nicio potrivire.",
+          "all": "Toate",
+          "timeline": "Cronologie",
+          "customRange": "Interval personalizat",
+          "to": "până la",
+          "play": "Redă",
+          "pause": "Pauză",
+          "speed": "Viteză",
+          "riskWithScore": "risc {{score}}",
+          "categoryFilterTitle": "Filtrează evenimentele hărții după categorie."
+        }
+      },
+      "about": {
+        "metaTitle": "Despre — Global Pulse",
+        "title": "Despre Global Pulse",
+        "subtitle": "Un proiect educațional pentru InfoEducație",
+        "feedbackTitle": "Trimite-ne feedback",
+        "feedbackSend": "Trimite feedback",
+        "feedbackSending": "Se trimite…",
+        "projectInfo": "Info proiect",
+        "feedbackSubtitle": "Stocat în Supabase · user_feedback",
+        "namePlaceholder": "Numele tău (opțional)",
+        "messagePlaceholder": "Mesajul tău",
+        "rating": "Evaluare",
+        "connectHint": "Conectează Supabase pentru a activa trimiterea de feedback.",
+        "sections": {
+          "what": {
+            "title": "Ce este Global Pulse?",
+            "body": "Un tablou educațional de conștientizare situațională în timp real care agregă date planetare publice — cutremure, vreme, țări și alerte — într-o interfață unitară."
+          },
+          "problem": {
+            "title": "Problema pe care o rezolvă",
+            "body": "Datele publice există în multe API-uri fragmentate. Global Pulse demonstrează cum o UI atentă poate transforma feed-uri brute în insight acționabil."
+          },
+          "users": {
+            "title": "Utilizatori țintă",
+            "body": "Studenți, educatori, pasionați de geopolitica, climă sau seismologie și oricine este curios despre date live despre lume."
+          },
+          "tech": {
+            "title": "Tehnologii folosite",
+            "body": "React 19, TypeScript, TanStack Router & Query, Tailwind CSS, MapLibre GL (compatibil Mapbox), Recharts, lucide-react și Lovable Cloud (Supabase)."
+          },
+          "apis": {
+            "title": "API-uri folosite",
+            "body": "REST Countries (țări), USGS (cutremure), OpenWeather (vreme) și Supabase pentru persistență."
+          },
+          "supabase": {
+            "title": "Integrare Supabase",
+            "body": "Patru tabele — saved_countries, saved_alerts, user_feedback, project_logs — cu RLS activat. Toate salvările și ștergerile sunt auditate în project_logs."
+          },
+          "map": {
+            "title": "De ce contează harta",
+            "body": "O hartă profesională dark (MapLibre / compatibilă Mapbox) oferă context spațial datelor seismice și de alertă — un element tipic al dashboard-urilor de monitorizare."
+          },
+          "education": {
+            "title": "Valoare educațională",
+            "body": "Demonstrează fetch async, stări de eroare/încărcare/gol, charting, vizualizare geospatială și CRUD cu RLS — teme comune în cursurile moderne de web."
+          },
+          "future": {
+            "title": "Îmbunătățiri viitoare",
+            "body": "Autentificare, date salvate per utilizator, websocket-uri în timp real, grafice de prognoză, overlay-uri satelitare, internaționalizare."
+          },
+          "limits": {
+            "title": "Limitări ale datelor",
+            "body": "API-urile publice gratuite pot avea rate-limit sau lag; datele demo sunt etichetate clar. Acesta nu este un instrument operațional."
+          },
+          "privacy": {
+            "title": "Confidențialitate și etică",
+            "body": "Nu se colectează date personale fără consimțământ. Formularul de feedback este opțional și la nivel demo."
+          },
+          "credits": {
+            "title": "Credite / surse de date",
+            "body": "USGS Earthquake Hazards Program · REST Countries · OpenWeather · OpenStreetMap (tile-uri basemap via CARTO) · Supabase."
+          }
+        }
+      },
+      "alertCenter": {
+        "metaTitle": "Centru alerte global — Global Pulse",
+        "title": "Centru alerte global",
+        "subtitle": "Evaluare continuă a intelligence platformei — severitate, încredere, corelație și detectare criză.",
+        "emptyTitle": "Nicio alertă în această vizualizare",
+        "emptyHint": "Motorul de alerte evaluează continuu intelligence live — revino în curând sau ajustează filtrele.",
+        "loadError": "Nu s-au putut încărca datele de alertă",
+        "aiCrisisBriefing": "Briefing criză AI",
+        "supportingEvidence": "Dovezi de sprijin",
+        "recommendedInvestigation": "Investigație recomandată",
+        "trend": "Tendință",
+        "watchlist": "Listă de monitorizare",
+        "watchlistHint": "alerte personalizate",
+        "watchlistEmpty": "Niciun element monitorizat. Adaugă o țară, regiune sau cuvânt cheie mai sus.",
+        "addToWatchlist": "Adaugă la monitorizare",
+        "riskScore": "Scor de risc",
+        "priority": "Prioritate",
+        "explanation": "Explicație",
+        "countries": "Țări",
+        "regions": "Regiuni",
+        "notSpecified": "Nespecificat",
+        "investigate": "Investiguează",
+        "dismissCrisis": "Respinge bannerul de criză",
+        "supportingSources": "Surse de sprijin ({{count}})",
+        "relatedEvents": "Evenimente conexe ({{count}})",
+        "viewConnections": "Vezi conexiunile în graful de cunoștințe",
+        "tabs": {
+          "active": "Active",
+          "critical": "Critice",
+          "resolved": "Rezolvate",
+          "regional": "Regionale",
+          "country": "Țară",
+          "timeline": "Cronologie"
+        }
+      },
+      "missionControl": {
+        "metaTitle": "Mission Control — Global Pulse",
+        "ariaMain": "Mission Control",
+        "presentationMode": "Mod prezentare",
+        "forceRefresh": "Reîmprospătare forțată",
+        "toggleFullscreen": "Comută ecran complet",
+        "live": "Live",
+        "events": "Evenimente",
+        "critical": "Critice",
+        "countries": "Țări",
+        "quick": "Rapid",
+        "loading": "Se încarcă…",
+        "operational": "Operațional",
+        "providersOnline": "{{online}}/{{total}} provideri online",
+        "eventsProcessed": "{{count}} evenimente procesate",
+        "countriesMonitored": "{{count}} țări monitorizate",
+        "presentation": "Prezentare",
+        "footerBrand": "Global Pulse Intelligence Platform · InfoEducație 2026",
+        "widgets": {
+          "threatTitle": "Evaluare amenințare globală",
+          "eventsFeed": "Flux intelligence live",
+          "aiBriefing": "Briefing executiv AI",
+          "regional": "Stabilitate regională",
+          "systemStatus": "Status sistem",
+          "liveMedia": "Centru media live",
+          "categoryActivity": "Activitate pe categorii",
+          "confidence": "Încredere",
+          "providers": "Provideri",
+          "active": "activi",
+          "eventSeverity": "Severitate evenimente",
+          "highestRisk": "Risc maxim",
+          "keyFactors": "Factori cheie",
+          "noCriticalHigh": "Niciun eveniment critic sau ridicat",
+          "streamUnavailable": "Flux indisponibil",
+          "openInNewTab": "Deschide în tab nou",
+          "keyFindings": "Constatări cheie",
+          "mostStable": "Cel mai stabil",
+          "mostTense": "Cel mai tensionat",
+          "lastSync": "Ultima sincronizare",
+          "never": "Niciodată",
+          "statProviders": "Provideri",
+          "statEvents": "Evenimente",
+          "statCountries": "Țări"
+        },
+        "commands": {
+          "globe": "Glob",
+          "ai": "AI",
+          "reports": "Rapoarte",
+          "knowledgeGraph": "Graf de cunoștințe",
+          "countries": "Țări",
+          "analytics": "Analitica",
+          "liveMap": "Hartă live",
+          "earthquakes": "Cutremure"
+        },
+        "workspaceSynced": "Spațiul Mission Control este sincronizat în cloud"
+      },
+      "aiNews": {
+        "metaTitle": "Global Pulse AI — Asistent intelligence",
+        "title": "Asistent intelligence",
+        "refreshContext": "Reîmprospătează contextul",
+        "metaDescription": "Centru de comandă intelligence — întreabă Global Pulse AI despre știri, risc pe țări, cutremure și evenimente globale.",
+        "subtitle": "Alimentat de {{model}} · Fuziune date în timp real · {{count}} evenimente încărcate",
+        "ariaMain": "Centru de comandă intelligence Global Pulse AI",
+        "ariaPrompts": "Prompturi intelligence sugerate",
+        "ariaSidebar": "Bară laterală context AI",
+        "askAria": "Întreabă: {{label}}",
+        "loadingContext": "Se încarcă contextul intelligence…",
+        "contextReady": "Context gata · {{count}} evenimente",
+        "knowledgeSources": "Surse de cunoștințe",
+        "quickAnalysis": "Analiză rapidă",
+        "quickNav": "Navigare rapidă",
+        "promptSituation": "Situația globală de azi",
+        "promptRisks": "Riscuri geopolitice curente",
+        "promptBriefing": "Briefing intelligence executiv",
+        "promptQuakes": "Analizează activitatea seismică",
+        "promptRegions": "Regiuni cu risc maxim",
+        "promptCyber": "Peisajul amenințărilor cibernetice",
+        "promptWeather": "Evenimente meteo extreme",
+        "promptBreaking": "Sumar știri de ultimă oră",
+        "sourceLiveNews": "Știri live",
+        "sourceEarthquakes": "Cutremure",
+        "sourceCountryRisk": "Risc pe țări",
+        "sourceSaved": "Intelligence salvat",
+        "navReport": "Generează raport",
+        "navMap": "Deschide harta mondială",
+        "navAnalytics": "Vezi analitica",
+        "navFeed": "Flux intel",
+        "geminiLive": "Gemini Live",
+        "geminiFallback": "Gemini (Fallback)",
+        "localFallback": "Fallback local",
+        "eventsBadge": "{{count}} evenimente",
+        "chatSubtitle": "Global Pulse AI · Google Gemini când este configurat",
+        "thinking": "Global Pulse AI gândește…",
+        "placeholder": "Întreabă Global Pulse AI despre știri, hartă sau platformă…",
+        "saveBriefing": "Salvează briefing",
+        "clearChat": "Șterge chat",
+        "askFirstTitle": "Pune mai întâi o întrebare",
+        "saveTitle": "Salvează ultima Q&A în Supabase",
+        "toastContextFailed": "Nu s-a putut încărca contextul analistului.",
+        "toastLocalFallback": "Se folosește analistul local — Gemini este temporar indisponibil.",
+        "toastFallbackModel": "Modelul principal este ocupat — răspuns cu model Gemini de rezervă.",
+        "toastGeminiError": "Gemini a returnat o eroare.",
+        "toastAiFailed": "Global Pulse AI nu a putut răspunde.",
+        "toastAskFirst": "Pune mai întâi o întrebare pentru a salva un briefing.",
+        "toastBriefingSaved": "Briefing salvat",
+        "toastBriefingTableMissing": "Tabela de salvare briefing nu este configurată încă.",
+        "processError": "Nu am putut procesa cererea: {{message}}"
+      },
+      "productPreview": {
+        "countries": "Țări",
+        "critical": "Critice",
+        "stability": "Stabilitate",
+        "liveFeed": "Flux live"
+      },
+      "analytics": {
+        "metaTitle": "Analitica — Global Pulse",
+        "title": "Analitica intelligence",
+        "subtitle": "Analiza tendințelor din date intelligence observabile. Fără predicții — doar schimbări măsurate.",
+        "loading": "Se rulează analiza tendințelor…",
+        "emptyTitle": "Nicio dată intelligence",
+        "emptyHint": "Așteaptă încărcarea fluxului intelligence, apoi reîmprospătează.",
+        "metaDescription": "Analiza tendințelor intelligence și analitica predictivă pentru evenimente globale.",
+        "eventsLoaded": "{{count}} evenimente încărcate",
+        "window24h": "Fereastră de 24 de ore",
+        "updatedAt": "Actualizat {{time}}",
+        "globalTrend": "Tendință intelligence globală",
+        "globalTrendSubtitle": "Pe baza a {{recent}} evenimente recente vs {{baseline}} baseline",
+        "eventFrequency": "Frecvența evenimentelor",
+        "eventFrequencySubtitle": "Evenimente pe fereastră de 2 ore — ultimele 24 de ore",
+        "countryTrends": "Tendințe pe țări",
+        "countryTrendsSubtitle": "Țări clasificate după numărul de evenimente recente",
+        "severityDist": "Distribuție severitate",
+        "severityDistSubtitle": "Ultimele 6 ore",
+        "sectorTrends": "Tendințe pe sectoare",
+        "sectorTrendsSubtitle": "Pe categorie intelligence",
+        "methodology": "Metodologie",
+        "recentWindow": "Fereastră recentă:",
+        "recentWindowVal": "Ultimele 6 ore",
+        "baselineWindow": "Fereastră baseline:",
+        "baselineWindowVal": "Acum 6–24 de ore",
+        "trendScore": "Scor tendință:",
+        "trendScoreVal": "60% ponderat pe severitate + 40% viteză",
+        "increasingRisk": "Risc în creștere:",
+        "increasingRiskVal": "raport > 1.25",
+        "improving": "Îmbunătățire:",
+        "improvingVal": "raport < 0.75",
+        "stable": "Stabil:",
+        "stableVal": "raport între 0.75–1.25",
+        "methodologyFooter": "Date pe baza a {{count}} evenimente curente. Tendințele nu prezic evenimente viitoare.",
+        "rising": "În creștere",
+        "calming": "În calm",
+        "stableLabel": "Stabil",
+        "recent": "recente"
+      },
+      "watchlist": {
+        "metaTitle": "Centru monitorizare — Global Pulse",
+        "title": "Centru monitorizare",
+        "subtitle": "Monitorizează țări, categorii și cuvinte cheie — reîmprospătare automată la 5 minute",
+        "addTitle": "Adaugă la monitorizare",
+        "watchButton": "Monitorizează",
+        "emptyListTitle": "Niciun element monitorizat",
+        "emptyListHint": "Adaugă o țară, categorie sau cuvânt cheie mai sus pentru a începe monitorizarea.",
+        "addSubtitle": "Monitorizează o țară, categorie, cuvânt cheie sau nivel de severitate",
+        "typeCountry": "Țară",
+        "typeCategory": "Categorie",
+        "typeKeyword": "Cuvânt cheie",
+        "typeSeverity": "Severitate",
+        "phCountry": "ex. Ucraina, Japonia, Germania",
+        "phCategory": "ex. militar, cyber, economie",
+        "phKeyword": "ex. rachetă, sancțiuni, inundație",
+        "phSeverity": "critical, high, medium, low",
+        "pin": "Fixează",
+        "unpin": "Defixează",
+        "favorite": "Favorit",
+        "unfavorite": "Elimină din favorite",
+        "remove": "Elimină",
+        "openDetails": "Deschide detalii",
+        "originalSource": "Sursă originală",
+        "fullAnalysis": "Analiză completă",
+        "selectTitle": "Selectează un element monitorizat",
+        "selectHint": "Alege o țară, categorie sau cuvânt cheie din listă pentru a vedea evenimentele potrivite.",
+        "matchingSubtitle": "{{count}} evenimente potrivite · monitorizare {{type}}",
+        "loadingEvents": "Se încarcă evenimentele…",
+        "noMatchTitle": "Niciun eveniment pentru \"{{label}}\"",
+        "noMatchHint": "Încearcă să reîmprospătezi fluxul sau să extinzi criteriile.",
+        "suggestedTitle": "Monitorizări sugerate",
+        "suggestedSubtitle": "Adaugă rapid interogări populare",
+        "countryIntel": "Intel țară →",
+        "eventsCount": "{{count}} evenimente",
+        "analyze": "Analizează",
+        "filterAll": "toate",
+        "filterPinned": "fixate",
+        "filterFavorites": "favorite",
+        "filterHits": "potriviri",
+        "sortRecent": "recente",
+        "sortAlpha": "alfabetic",
+        "sortHits": "potriviri"
+      },
+      "compare": {
+        "metaTitle": "Compară țări — Global Pulse",
+        "title": "Intelligence comparativ",
+        "subtitle": "Analiză comparativă: date țări, evenimente intelligence, scoruri risc și evaluare AI",
+        "compareButton": "Compară",
+        "loading": "Se încarcă intelligence comparativ…",
+        "countryA": "Țara A",
+        "countryB": "Țara B",
+        "placeholderA": "ex. România, Ucraina",
+        "placeholderB": "ex. Germania, Rusia",
+        "analyzing": "Se analizează…",
+        "aiAnalysis": "Analiză AI",
+        "visualTitle": "Comparație vizuală",
+        "visualSubtitle": "Metrici cheie una lângă alta",
+        "normalized": "0–100 normalizat",
+        "aiComparativeTitle": "Analiză comparativă AI",
+        "aiComparativeSubtitle": "Evaluare intelligence alimentată de Gemini",
+        "timelineTitle": "Cronologie intelligence",
+        "timelineSubtitle": "Frecvența evenimentelor în ultimele 7 zile",
+        "insightTitle": "Perspectivă intelligence rapidă",
+        "generateAi": "Generează analiză comparativă AI",
+        "generatingAi": "Se generează analiza AI…",
+        "noEvents": "Niciun eveniment",
+        "noEventsHint": "Niciun eveniment intelligence pentru această țară în fluxul curent.",
+        "intelSubtitle": "{{count}} evenimente în fluxul curent",
+        "seismicTitle": "Seismic {{country}}",
+        "seismicSubtitle": "{{count}} cutremure în apropiere (24h)",
+        "weatherTitle": "Vreme {{country}}",
+        "economyTitle": "Economie {{country}}",
+        "economySubtitle": "Indicatori World Bank",
+        "intelTitle": "Intelligence {{country}}",
+        "population": "Populație",
+        "area": "Suprafață",
+        "intelEvents": "Evenimente intel",
+        "earthquakes": "Cutremure",
+        "earthquakes24h": "{{count}} (24h)",
+        "riskLevel": "Nivel de risc",
+        "riskScore": "Scor de risc",
+        "populationM": "Populație (M)",
+        "areaK": "Suprafață (k km²)",
+        "condition": "Condiție",
+        "temperature": "Temperatură",
+        "feelsLike": "Se simte ca",
+        "humidity": "Umiditate",
+        "wind": "Vânt",
+        "gdpPerCapita": "PIB / locuitor",
+        "lifeExpectancy": "Speranță de viață",
+        "unemployment": "Șomaj",
+        "capital": "Capitală",
+        "today": "Astăzi",
+        "days2to3": "2–3z",
+        "days4to7": "4–7z",
+        "quick": "Rapid:",
+        "pdf": "PDF",
+        "json": "JSON"
+      },
+      "countries": {
+        "metaTitle": "Țări — Global Pulse",
+        "title": "Țări",
+        "subtitle": "Metadate de referință din REST Countries API",
+        "searchPlaceholder": "Caută țară (ex. Japonia, România)",
+        "emptyTitle": "Caută orice țară pentru a începe"
+      },
+      "earthquakes": {
+        "metaTitle": "Cutremure — Global Pulse",
+        "title": "Cutremure",
+        "subtitle": "Date seismice live de la USGS · 24h prin Intelligence Engine, 7z feed direct",
+        "live": "Live",
+        "lastDay": "Ultima zi",
+        "lastWeek": "Ultima săptămână",
+        "minMagnitude": "Magnitudine minimă",
+        "newest": "Cele mai noi",
+        "highestMagnitude": "Magnitudine maximă",
+        "highSeverityOnly": "Doar severitate ridicată",
+        "magnitudeDistribution": "Distribuție magnitudini",
+        "depth": "adâncime {{depth}} km",
+        "saveAlert": "Salvează alerta",
+        "empty": "Niciun cutremur nu corespunde filtrelor.",
+        "loadFailed": "Nu s-au putut încărca datele seismice."
+      },
+      "weather": {
+        "metaTitle": "Vreme — Global Pulse",
+        "title": "Vreme",
+        "subtitleLive": "Condiții curente live via OpenWeather",
+        "subtitleDemo": "Date demo — adaugă OPENWEATHER_API_KEY pentru live",
+        "searchPlaceholder": "Caută oraș (ex. Cluj-Napoca)",
+        "live": "Live",
+        "demo": "Demo",
+        "feelsLike": "Se simte ca",
+        "humidity": "Umiditate",
+        "wind": "Vânt",
+        "icon": "Iconiță",
+        "outlook": "Prognoză pe 24 de ore",
+        "illustrative": "Ilustrativ",
+        "failed": "Eșuat."
+      },
+      "knowledgeGraph": {
+        "metaTitle": "Graf de cunoștințe — Global Pulse",
+        "title": "Graf global de cunoștințe",
+        "building": "Se construiește…",
+        "searchPlaceholder": "Caută țări, subiecte, evenimente…",
+        "buildingGraph": "Se construiește graful de cunoștințe…",
+        "loadingEvents": "Se încarcă evenimentele de intelligence",
+        "hub": "Hub",
+        "active": "Activ",
+        "trending": "În tendință",
+        "clusters": "Clustere",
+        "confidence": "Încredere",
+        "sourceEvents": "Evenimente sursă",
+        "occurredIn": "A avut loc în",
+        "sameTimeWindow": "Același interval de timp",
+        "relatedTo": "Legat de",
+        "filters": "Filtre",
+        "allTypes": "Toate tipurile",
+        "close": "Închide",
+        "noSelection": "Nicio selecție",
+        "selectNode": "Selectează un nod",
+        "nodesEdges": "{{nodes}} noduri · {{edges}} muchii",
+        "links": "{{count}} legături",
+        "refreshGraph": "Reîmprospătează graful",
+        "severity": "Severitate",
+        "nodeTypes": "Tipuri de noduri",
+        "minRisk": "Risc minim: {{value}}",
+        "resetAllFilters": "Resetează toate filtrele",
+        "density": "densitate {{value}}%",
+        "graphFailed": "Generarea grafului a eșuat",
+        "legend": "Legendă",
+        "legendCountry": "Țară",
+        "legendConflict": "Conflict / Critic",
+        "legendEarthquake": "Cutremur",
+        "legendWeather": "Vreme",
+        "legendEconomy": "Economie",
+        "legendTopic": "Subiect / Categorie",
+        "edges": "Muchii",
+        "intelligenceCorrelation": "Corelație intelligence",
+        "refreshing": "Se reîmprospătează…",
+        "riskScore": "Scor de risc",
+        "severityLabel": "Severitate: {{level}}",
+        "connections": "Conexiuni ({{count}})",
+        "connectedEntities": "Entități conectate",
+        "lastUpdated": "Ultima actualizare",
+        "viewCountryIntel": "Vezi intelligence țară →",
+        "source": "Sursă: {{provider}}",
+        "entityNetwork": "Rețea entități · {{nodes}} noduri · {{edges}} relații",
+        "hubsCount": "{{count}} hub-uri",
+        "countriesCount": "{{count}} țări",
+        "clustersCount": "{{count}} clustere",
+        "error": "Eroare",
+        "ready": "Gata",
+        "nodeType": {
+          "country": "Țări",
+          "conflict": "Conflicte",
+          "earthquake": "Cutremure",
+          "wildfire": "Incendii",
+          "cyber": "Cyber",
+          "economic": "Economie",
+          "political": "Politică",
+          "health": "Sănătate",
+          "weather": "Vreme",
+          "breaking_news": "Știri",
+          "topic": "Subiecte"
+        }
+      },
+      "reports": {
+        "metaTitle": "Rapoarte intelligence — Global Pulse",
+        "metaDescription": "Generează, salvează și exportă rapoarte intelligence pe țări, evenimente și briefinguri globale.",
+        "title": "Rapoarte intelligence",
+        "subtitle": "Generează briefinguri structurate din date live, cache sau demo deja în Global Pulse",
+        "tabs": {
+          "executive": "Rapoarte executive",
+          "executiveBadge": "Nou",
+          "generate": "Raport personalizat",
+          "saved": "Rapoarte salvate",
+          "how": "Cum funcționează"
+        },
+        "preview": "Previzualizare",
+        "previewSubtitle": "Salvează sau exportă după generare",
+        "emptyDraftTitle": "Niciun raport încă",
+        "emptyDraftHint": "Alege un tip de raport și apasă Generează.",
+        "savedTitle": "Rapoarte salvate",
+        "configureSupabase": "Configurează Supabase pentru a salva rapoarte.",
+        "loadingReports": "Se încarcă rapoartele…",
+        "emptySavedTitle": "Niciun raport salvat",
+        "emptySavedHint": "Generează și salvează un raport mai întâi.",
+        "selectReport": "Selectează un raport",
+        "selectReportHint": "Deschide un raport salvat pentru vizualizare sau imprimare.",
+        "view": "Vezi",
+        "delete": "Șterge",
+        "printExportPdf": "Imprimă / Exportă PDF",
+        "saving": "Se salvează…",
+        "saveToSupabase": "Salvează în Supabase",
+        "how": {
+          "title": "Cum funcționează rapoartele intelligence",
+          "dataTitle": "Date folosite",
+          "dataIntro": "Rapoartele sunt generate din Intelligence Store centralizat, care acoperă fiecare provider activ — nu doar titluri:",
+          "dataGnews": "Titluri intelligence GNews, GDELT și RSS",
+          "dataUsgs": "Cutremure USGS (ultimele 24h)",
+          "dataGdacs": "Alerte dezastre / umanitare GDACS și ReliefWeb",
+          "dataAcled": "Evenimente conflict ACLED și detecții incendii NASA FIRMS (unde e configurat)",
+          "dataWorldBank": "Indicatori economici World Bank",
+          "dataRisk": "Indice de risc pe țări (composit multi-sursă)",
+          "dataSupabase": "Alerte și intelligence salvate în Supabase",
+          "dataCountries": "Metadate REST Countries (rapoarte pe țară)",
+          "dataHealth": "Etichete stare API / date (LIVE, CACHED, DEMO)",
+          "genTitle": "Cum se generează rapoartele",
+          "genBody": "Global Pulse construiește un draft structurat din datele din aplicație, apoi îl rafinează opțional cu Global Pulse AI (Google Gemini) când e configurat. Dacă Gemini e ocupat sau indisponibil, se folosește un fallback structurat local — tot pe baza datelor încărcate.",
+          "limitsTitle": "Limitări",
+          "limitInvent": "Rapoartele nu inventează titluri, magnitudini sau țări.",
+          "limitDemo": "Datele DEMO sunt etichetate clar și nu trebuie tratate ca știri live.",
+          "limitCached": "Datele CACHED reflectă titluri live preluate anterior, nu internetul deschis.",
+          "limitRisk": "Scorurile de risc sunt compozite educaționale, nu evaluări oficiale."
+        },
+        "types": {
+          "morning": {
+            "label": "Briefing de dimineață",
+            "description": "Rezumat intelligence de la răsărit — evenimente de top din ultimele 12 ore",
+            "badge": "Zilnic"
+          },
+          "evening": {
+            "label": "Briefing de seară",
+            "description": "Revizuire de sfârșit de zi — evoluții cheie și evaluare amenințări",
+            "badge": "Zilnic"
+          },
+          "daily": {
+            "label": "Sumar zilnic",
+            "description": "Digest intelligence cuprinzător pe 24 de ore cu analiză"
+          },
+          "weekly": {
+            "label": "Sumar săptămânal",
+            "description": "Prezentare strategică pe baza instantaneeului curent de intelligence"
+          },
+          "country": {
+            "label": "Raport pe țară",
+            "description": "Profil intelligence complet pentru o țară specifică"
+          },
+          "conflict": {
+            "label": "Raport conflict",
+            "description": "Conflicte active, mișcări militare, tensiuni geopolitice"
+          },
+          "economic": {
+            "label": "Raport economic",
+            "description": "Semnale economice, evoluții comerciale, stabilitate financiară"
+          },
+          "climate": {
+            "label": "Raport climă",
+            "description": "Evenimente de mediu, dezastre naturale, extreme meteo"
+          },
+          "cyber": {
+            "label": "Raport cyber",
+            "description": "Incidente de securitate cibernetică, amenințări digitale, vulnerabilități tehnologice"
+          },
+          "technology": {
+            "label": "Raport tehnologie",
+            "description": "Evoluții sector tehnologic, economie digitală, inovație"
+          }
+        },
+        "executive": {
+          "title": "Generator rapoarte executive",
+          "subtitle": "Briefinguri AI din date intelligence live",
+          "countryPlaceholder": "Introdu numele țării (ex. Ucraina, Japonia)",
+          "generate": "Generează raport",
+          "generating": "Se generează…",
+          "reportReady": "Raport gata",
+          "generatingLabel": "Se generează {{label}}…",
+          "generatingHint": "Se preiau cele mai recente date intelligence și se rulează analiza AI",
+          "emptyTitle": "Niciun raport generat încă",
+          "emptyHint": "Selectează un tip de raport și apasă Generează raport.",
+          "generatedAt": "Generat {{time}}",
+          "eventsUsed": "{{count}} evenimente folosite",
+          "exportPdf": "Exportă ca PDF",
+          "exportJson": "Exportă ca JSON",
+          "exportTxt": "Exportă ca TXT",
+          "pdf": "PDF",
+          "json": "JSON",
+          "txt": "TXT",
+          "reportTitle": "{{label}} — {{date}}"
+        },
+        "custom": {
+          "globalBriefing": "Briefing global",
+          "globalBriefingHint": "Sumar executiv la nivel planetar",
+          "countryReport": "Raport pe țară",
+          "countryReportHint": "Focalizare pe o țară",
+          "eventReport": "Raport pe eveniment",
+          "eventReportHint": "Analiză detaliată pe un titlu",
+          "countryLabel": "Nume țară",
+          "countryPlaceholder": "ex. România, Ucraina, Statele Unite",
+          "selectHeadline": "Selectează titlul",
+          "loadingEvents": "Se încarcă evenimentele…",
+          "generate": "Generează raport intelligence",
+          "generating": "Se generează raportul…"
+        }
+      },
+      "country": {
+        "metaTitle": "Intelligence țară — Global Pulse",
+        "loading": "Se încarcă profilul intelligence pentru {{country}}…",
+        "ariaMain": "Tablou intelligence {{country}}",
+        "goBack": "Înapoi",
+        "goBackAria": "Mergi înapoi",
+        "flagAlt": "Steagul {{country}}",
+        "riskBadge": "Risc {{label}}",
+        "intelligenceProfile": "Profil intelligence",
+        "restStatus": "REST {{status}}",
+        "kpiIntelEvents": "Evenimente intel",
+        "kpiSeismic": "Seismic (24h)",
+        "kpiCritical": "Critic",
+        "kpiHigh": "Ridicat",
+        "kpiPopulation": "Populație",
+        "viewOnMap": "Vezi pe hartă",
+        "compare": "Compară",
+        "countries": "Țări",
+        "analytics": "Analitica",
+        "googleMaps": "Google Maps",
+        "riskScore": "Scor de risc",
+        "outOf100": "din 100",
+        "riskScoreAria": "Scor de risc: {{score}}/100",
+        "heroAria": "Antet profil țară",
+        "metadataUnavailable": "Metadatele țării nu sunt disponibile pentru \"{{country}}\". Se afișează doar datele intelligence.",
+        "usingBundled": " Se folosesc date de referință locale.",
+        "aiBriefing": {
+          "title": "Briefing AI pe țară",
+          "subtitleLive": "Evaluare intelligence alimentată de Gemini",
+          "subtitleLocal": "Evaluare intelligence locală",
+          "regenerate": "Regenerează briefingul AI",
+          "regenerateTitle": "Regenerează briefingul",
+          "analyzing": "Se analizează intelligence pentru {{country}}…",
+          "situation": "Situație",
+          "riskFactors": "Factori de risc",
+          "outlook": "Perspectivă",
+          "monitor": "Monitorizare",
+          "updating": "Se actualizează analiza…",
+          "loadingData": "Se încarcă datele intelligence…",
+          "deepDive": "Analiză detaliată cu Global Pulse AI →",
+          "aiLive": "AI LIVE",
+          "local": "LOCAL"
+        },
+        "timeline": {
+          "title": "Cronologie intelligence",
+          "subtitle": "{{count}} evenimente",
+          "subtitleFiltered": "{{count}} evenimente în ultimele {{period}}",
+          "filterAria": "Filtru cronologie",
+          "today": "Astăzi",
+          "days7": "7 zile",
+          "days30": "30 zile",
+          "all": "Tot timpul",
+          "emptyTitle": "Niciun eveniment în această perioadă",
+          "emptyHint": "Încearcă să extinzi filtrul. {{count}} evenimente disponibile în total.",
+          "eventsAria": "Evenimente cronologie",
+          "earthquake": "Cutremur M{{mag}} — {{place}}",
+          "viewDetails": "Vezi detalii: {{title}}"
+        },
+        "recentIntel": {
+          "title": "Intelligence recent",
+          "subtitle": "{{count}} evenimente din fluxul intelligence",
+          "emptyTitle": "Niciun eveniment intelligence",
+          "emptyHint": "Nu s-au găsit evenimente care menționează această țară în fluxul curent.",
+          "moreEvents": "+{{count}} evenimente în plus în flux"
+        },
+        "seismic": {
+          "title": "Activitate seismică",
+          "subtitle": "{{count}} cutremure lângă {{country}} — ultimele 24h (USGS)",
+          "depth": "Adâncime {{depth}} km · {{time}}",
+          "viewUsgs": "Vezi pe USGS",
+          "fullDatabase": "Baza de date seismică completă →"
+        },
+        "geoProfile": {
+          "title": "Profil geografic",
+          "capital": "Capitală",
+          "region": "Regiune",
+          "population": "Populație",
+          "area": "Suprafață",
+          "languages": "Limbi",
+          "currency": "Monedă",
+          "timezone": "Fus orar",
+          "areaValue": "{{area}} km²"
+        },
+        "riskAssessment": {
+          "title": "Evaluare risc",
+          "compositeScore": "Scor compozit",
+          "eventDistribution": "Distribuție evenimente",
+          "activeFactors": "Factori activi"
+        },
+        "trending": {
+          "title": "Subiecte în tendință",
+          "subtitle": "Termeni cel mai des menționați",
+          "aria": "Subiecte în tendință pe țară"
+        },
+        "borders": {
+          "title": "Țări de graniță",
+          "subtitle": "Țări adiacente",
+          "viewAria": "Vezi intelligence {{code}}"
+        },
+        "snapshot": {
+          "title": "Instantaneu intelligence",
+          "intelEvents": "Evenimente intel",
+          "seismic24h": "Seismic (24h)",
+          "critical": "Critic",
+          "highPriority": "Prioritate ridicată",
+          "fullFeed": "Flux intelligence complet →"
+        },
+        "viewDetails": "Vezi detalii",
+        "fullAnalysis": "Detalii",
+        "viewItem": "Vezi: {{title}}"
+      },
+      "saved": {
+        "metaTitle": "Date salvate — Global Pulse",
+        "title": "Date salvate",
+        "notConfiguredTitle": "Supabase nu este configurat încă",
+        "notConfiguredHint": "Setează VITE_SUPABASE_URL și VITE_SUPABASE_PUBLISHABLE_KEY în .env, apoi repornește serverul de dezvoltare (Ctrl+C → npm run dev) și reîncarcă forțat.",
+        "subtitle": "Încărcat doar din Supabase — niciodată din date demo locale",
+        "urlHostWarning": "Host-ul URL nu este *.supabase.co — verifică VITE_SUPABASE_URL",
+        "refresh": "Reîmprospătează datele Supabase",
+        "testConnection": "Testează conexiunea Supabase",
+        "countriesTitle": "Țări salvate",
+        "alertsTitle": "Alerte salvate",
+        "intelTitle": "Intelligence salvat",
+        "entries": "{{count}} înregistrări",
+        "emptyCountries": "Nicio țară salvată încă",
+        "emptyAlerts": "Nicio alertă salvată încă",
+        "emptyIntel": "Nicio intelligence salvată încă",
+        "emptyIntelHint": "Deschide Fluxul Intelligence și apasă Salvează pe orice element.",
+        "open": "Deschide"
+      },
+      "presentation": {
+        "metaTitle": "Mod prezentare — Global Pulse",
+        "title": "Mod prezentare",
+        "metaDescription": "Mod prezentare pe ecran complet pentru briefinguri Mission Control Global Pulse."
+      },
+      "eventDetail": {
+        "metaTitle": "Analiză eveniment — Global Pulse",
+        "loading": "Se încarcă evenimentul intelligence…",
+        "back": "Înapoi",
+        "notFoundTitle": "Eveniment negăsit",
+        "notFoundHint": "Acest eveniment poate fi expirat din fluxul live. Evenimentele se reîmprospătează la fiecare 30 de minute.",
+        "browseFeed": "Răsfoiește fluxul intelligence",
+        "returnDashboard": "Înapoi la panou",
+        "live": "Live",
+        "sourceArticle": "Articol sursă",
+        "saveEvent": "Salvează evenimentul",
+        "shareLink": "Distribuie link",
+        "aiTitle": "Analiză AI intelligence",
+        "aiSubtitle": "Briefing contextual alimentat de Gemini",
+        "generateBriefing": "Generează briefing AI",
+        "analyzing": "Se analizează…",
+        "noAnalysis": "Nicio analiză disponibilă.",
+        "actionsTitle": "Acțiuni recomandate",
+        "actionsSubtitle": "Pe baza categoriei și a nivelului de severitate",
+        "relatedTitle": "Intelligence conex",
+        "relatedSubtitle": "Aceeași țară sau categorie",
+        "metaTitleSection": "Metadate eveniment",
+        "metaSubtitle": "Câmpuri obiect intelligence",
+        "metaId": "ID",
+        "metaSource": "Sursă",
+        "metaCategory": "Categorie",
+        "metaSeverity": "Severitate",
+        "metaCountry": "Țară",
+        "metaLive": "Live",
+        "metaYes": "Da",
+        "metaNo": "Nu",
+        "metaCoordinates": "Coordonate",
+        "metaPublished": "Publicat",
+        "countryIntelTitle": "Intelligence țară",
+        "countryIntelHint": "Vezi profilul intelligence complet pentru {{country}}.",
+        "countryIntelLink": "Intelligence {{country}}",
+        "prioritize": "⚡ Prioritizează monitorizarea imediată",
+        "actions": {
+          "military_0": "Monitorizează canalele oficiale guvernamentale",
+          "military_1": "Urmărește surse diplomatice consacrate",
+          "military_2": "Urmărește declarațiile Consiliului de Securitate ONU",
+          "geopolitics_0": "Consultă rapoarte intelligence pe țară",
+          "geopolitics_1": "Revizuiește evaluările de risc geopolitic",
+          "geopolitics_2": "Monitorizează avertismentele ambasadelor",
+          "politics_0": "Urmărește declarațiile oficiale guvernamentale",
+          "politics_1": "Monitorizează evoluțiile legislative",
+          "politics_2": "Revizuiește indicii de risc politic",
+          "economy_0": "Revizuiește indicatorii piețelor financiare",
+          "economy_1": "Urmărește comunicările băncilor centrale",
+          "economy_2": "Monitorizează datele fluxurilor comerciale",
+          "cyber_0": "Verifică avertismentele CERT/CC",
+          "cyber_1": "Revizuiește bazele de vulnerabilități CISA",
+          "cyber_2": "Aplică patch-uri de securitate proactiv",
+          "technology_0": "Monitorizează buletinele de securitate ale vendorilor",
+          "technology_1": "Revizuiește depunerile de reglementare",
+          "technology_2": "Urmărește organismele de patente și standarde",
+          "disaster_0": "Verifică alertele de dezastre GDACS",
+          "disaster_1": "Urmărește agențiile locale de management al urgențelor",
+          "disaster_2": "Monitorizează actualizările Crucii Roșii",
+          "climate_0": "Revizuiește rapoartele IPCC și WMO",
+          "climate_1": "Urmărește datele agențiilor de mediu",
+          "climate_2": "Monitorizează publicațiile științifice climatice",
+          "health_0": "Consultă rapoartele de situație OMS",
+          "health_1": "Urmărește avertismentele sanitare CDC",
+          "health_2": "Monitorizează actualizările autorităților regionale de sănătate",
+          "general_0": "Verifică informațiile din surse multiple",
+          "general_1": "Consultă direct sursele primare",
+          "general_2": "Monitorizează canalele oficiale"
+        }
+      },
+      "countryIntel": {
+        "metaTitle": "Intelligence țară — Global Pulse"
+      },
+      "settings": {
+        "title": "Setări",
+        "subtitle": "Limbă și preferințe de personalizare",
+        "language": "Limbă",
+        "cloudSync": "Sincronizare cloud și personalizare",
+        "cloudSyncHint": "Preferințele se sincronizează pe dispozitive când ești autentificat.",
+        "guestHint": "Poți schimba limba ca oaspete. Autentifică-te pentru a sincroniza preferințele.",
+        "signedInAs": "Autentificat ca {{email}}",
+        "emailNotifications": "Notificări email",
+        "personalizedFeed": "Flux personalizat",
+        "saved": "Setări salvate"
+      },
+      "savedArticles": {
+        "title": "Articole salvate",
+        "subtitle": "Semnele tale din cloud — sincronizate pe dispozitive",
+        "emptyTitle": "Niciun articol salvat",
+        "emptyHint": "Salvează elemente din flux pentru a le găsi aici."
+      },
+      "readingHistory": {
+        "title": "Istoric citire",
+        "subtitle": "Articole și briefing-uri deschise recent",
+        "emptyTitle": "Niciun istoric",
+        "emptyHint": "Deschide un element intelligence autentificat pentru a începe urmărirea.",
+        "clear": "Șterge istoricul"
+      },
+      "collections": {
+        "title": "Colecții",
+        "subtitle": "Organizează inteligența salvată în seturi curate",
+        "emptyTitle": "Nicio colecție încă",
+        "emptyHint": "Creează o colecție pentru a grupa articolele înrudite.",
+        "newName": "Nume colecție",
+        "newPlaceholder": "ex. Monitorizare Europa de Est",
+        "create": "Creează colecție",
+        "createNew": "+ Colecție nouă",
+        "searchPlaceholder": "Caută colecții…",
+        "sortLabel": "Sortează",
+        "sort": {
+          "updated": "Actualizate recent",
+          "newest": "Cele mai noi",
+          "oldest": "Cele mai vechi",
+          "alpha": "Alfabetic"
+        },
+        "noSearchResults": "Nicio colecție nu corespunde căutării",
+        "articleCount": "{{count}} articole",
+        "created": "Creată",
+        "updated": "Actualizată",
+        "actions": "Acțiuni",
+        "rename": "Redenumește",
+        "deleteTitle": "Ștergi colecția?",
+        "deleteDescription": "Această acțiune nu poate fi anulată.",
+        "createdToast": "Colecția „{{name}}” a fost creată",
+        "renamedToast": "Colecție redenumită",
+        "deletedToast": "Colecție ștearsă",
+        "addToTitle": "Adaugă în colecție",
+        "addedToast": "Adăugat în „{{name}}”",
+        "back": "Înapoi la colecții",
+        "notFoundTitle": "Colecție negăsită",
+        "notFoundHint": "Această colecție nu există sau nu ai acces.",
+        "emptyArticlesTitle": "Niciun articol în colecție",
+        "emptyArticlesHint": "Adaugă articole din Saved Articles folosind „Add to Collection”.",
+        "move": "Mută în…",
+        "movedToast": "Articol mutat",
+        "removeArticleTitle": "Elimini din colecție?",
+        "removeArticleDescription": "Articolul va fi eliminat din această colecție.",
+        "removedArticleToast": "Articol eliminat",
+        "addToCollection": "Adaugă în colecție"
+      },
+      "account": {
+        "title": "Cont",
+        "subtitle": "Profilul tău Global Pulse"
+      }
+    },
+    "comingSoon": {
+      "badge": "În curând",
+      "title": "În curând",
+      "description": "Această funcționalitate este în dezvoltare și va fi disponibilă într-o actualizare viitoare.",
+      "gotIt": "Am înțeles",
+      "tooltip": "Ediția Professional va fi disponibilă în curând.",
+      "professionalTooltip": "Ediția Professional va fi disponibilă în curând.",
+      "enterpriseTooltip": "Ediția Enterprise va fi disponibilă în curând.",
+      "professionalDescription": "Planul Professional este în dezvoltare și va fi disponibil într-o actualizare viitoare.",
+      "enterpriseDescription": "Planul Enterprise este în dezvoltare și va fi disponibil într-o actualizare viitoare.",
+      "emailNotificationsTooltip": "Notificările pe email vor fi disponibile în curând.",
+      "professionalTitle": "Ediția Professional",
+      "enterpriseTitle": "Ediția Enterprise"
+    }
+  }
+}

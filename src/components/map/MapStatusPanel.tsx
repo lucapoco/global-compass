@@ -1,4 +1,5 @@
 import type { ProviderStatusSnapshot } from "@/domain/services/event-engine/providers";
+import { useT } from "@/i18n";
 
 interface Props {
   totalEvents: number;
@@ -14,16 +15,17 @@ function statusDot(status: ProviderStatusSnapshot["status"]) {
 
 /** Small live-status panel: total/visible events, per-provider cache freshness, last refresh. */
 export function MapStatusPanel({ totalEvents, visibleEvents, providerStatus, lastUpdated }: Props) {
+  const t = useT();
   const liveCount = providerStatus.filter((p) => p.status === "fresh" && p.itemCount > 0).length;
 
   return (
     <div className="glass-card flex flex-wrap items-center gap-3 p-2 text-[11px]">
       <span className="text-muted-foreground">
-        <strong className="text-foreground">{visibleEvents}</strong> / {totalEvents} events visible
+        {t("app.pages.map.ui.eventsVisible", { visible: visibleEvents, total: totalEvents })}
       </span>
       <span className="hidden h-4 w-px bg-border/60 sm:inline" />
       <span className="text-muted-foreground">
-        <strong className="text-foreground">{liveCount}</strong> live providers
+        {t("app.pages.map.ui.liveProviders", { count: liveCount })}
       </span>
       <span className="hidden h-4 w-px bg-border/60 sm:inline" />
       <div className="flex flex-wrap items-center gap-2">
@@ -34,7 +36,11 @@ export function MapStatusPanel({ totalEvents, visibleEvents, providerStatus, las
         ))}
       </div>
       <span className="hidden h-4 w-px bg-border/60 sm:inline" />
-      <span className="text-muted-foreground">{lastUpdated ? `Refreshed ${lastUpdated.toLocaleTimeString()}` : "Not yet refreshed"}</span>
+      <span suppressHydrationWarning className="text-muted-foreground">
+        {lastUpdated
+          ? t("app.pages.map.ui.refreshedAt", { time: lastUpdated.toLocaleTimeString() })
+          : t("app.pages.map.ui.notYetRefreshed")}
+      </span>
     </div>
   );
 }

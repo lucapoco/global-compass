@@ -100,7 +100,7 @@ export function AINewsMessageBubble({ message }: Props) {
           </div>
         ) : null}
         <div className="whitespace-pre-wrap">{renderContent(message.content)}</div>
-        <div className={`mt-1.5 text-[10px] ${isUser ? "text-primary/70" : "text-muted-foreground"}`}>
+        <div suppressHydrationWarning className={`mt-1.5 text-[10px] ${isUser ? "text-primary/70" : "text-muted-foreground"}`}>
           {new Date(message.createdAt).toLocaleTimeString()}
         </div>
       </div>

@@ -1,5 +1,6 @@
 import { Pause, Play, RotateCcw } from "lucide-react";
 import type { UseReplayResult } from "@/hooks/useReplay";
+import { useT } from "@/i18n";
 
 interface Props {
   replay: UseReplayResult;
@@ -7,25 +8,26 @@ interface Props {
 
 /** Intelligence-replay style controls: Play / Pause / Reset / Speed / Jump-to-date. */
 export function MapReplayControls({ replay }: Props) {
+  const t = useT();
   const { state, play, pause, reset, setSpeed, jumpToProgress, speeds, progress } = replay;
 
   return (
     <div className="glass-card flex flex-wrap items-center gap-2 p-2">
-      <span className="px-1 text-[10px] uppercase tracking-wider text-muted-foreground">Replay</span>
+      <span className="px-1 text-[10px] uppercase tracking-wider text-muted-foreground">{t("app.pages.map.ui.replay")}</span>
       <button
         type="button"
         onClick={() => (state.isPlaying ? pause() : play())}
         className="inline-flex items-center gap-1.5 rounded-md border border-primary/40 bg-primary/10 px-2.5 py-1 text-[11px] text-primary"
       >
         {state.isPlaying ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
-        {state.isPlaying ? "Pause" : "Play"}
+        {state.isPlaying ? t("app.pages.map.ui.pause") : t("app.pages.map.ui.play")}
       </button>
       <button type="button" onClick={reset} className="inline-flex items-center gap-1.5 rounded-md border border-border/60 px-2.5 py-1 text-[11px] text-muted-foreground hover:text-foreground">
-        <RotateCcw className="h-3.5 w-3.5" /> Reset
+        <RotateCcw className="h-3.5 w-3.5" /> {t("app.pages.map.ui.reset")}
       </button>
 
       <div className="flex items-center gap-1">
-        <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Speed</span>
+        <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("app.pages.map.ui.speed")}</span>
         {speeds.map((s) => (
           <button
             key={s}

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { TIMELINE_PRESETS, type TimelineRange } from "@/domain/services/map-engine";
+import { useT } from "@/i18n";
 
 interface Props {
   value: TimelineRange;
@@ -14,12 +15,13 @@ function chip(active: boolean) {
 
 /** Professional timeline — Last 6h/24h/48h/7d/30d or a custom range, filters events instantly. */
 export function MapTimeline({ value, onChange }: Props) {
+  const t = useT();
   const [customFrom, setCustomFrom] = useState("");
   const [customTo, setCustomTo] = useState("");
 
   return (
     <div className="glass-card flex flex-wrap items-center gap-1.5 p-2">
-      <span className="px-1 text-[10px] uppercase tracking-wider text-muted-foreground">Timeline</span>
+      <span className="px-1 text-[10px] uppercase tracking-wider text-muted-foreground">{t("app.pages.map.ui.timeline")}</span>
       {TIMELINE_PRESETS.map((preset) => (
         <button
           key={preset.id}
@@ -45,7 +47,7 @@ export function MapTimeline({ value, onChange }: Props) {
             }}
             className="rounded-md border border-border/60 bg-background/40 px-2 py-1 text-[11px]"
           />
-          <span className="text-[10px] text-muted-foreground">to</span>
+          <span className="text-[10px] text-muted-foreground">{t("app.pages.map.ui.to")}</span>
           <input
             type="datetime-local"
             value={customTo}
@@ -60,7 +62,7 @@ export function MapTimeline({ value, onChange }: Props) {
       )}
       {value.id !== "custom" && (
         <button type="button" onClick={() => onChange({ id: "custom", fromMs: Date.now() - 7 * 86400000, toMs: Date.now() })} className={chip(false)}>
-          Custom range
+          {t("app.pages.map.ui.customRange")}
         </button>
       )}
     </div>
