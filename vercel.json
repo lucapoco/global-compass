@@ -1,8 +1,5 @@
 {
-    "rewrites": [
-      {
-        "source": "/(.*)",
-        "destination": "/index.html"
-      }
-    ]
-  }
+  "framework": "tanstack-start",
+  "buildCommand": "npm run build",
+  "installCommand": "npm install"
+}

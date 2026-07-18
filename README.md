@@ -67,15 +67,25 @@ GEMINI_API_KEY	Cheia API Google Gemini, folosită doar server-side
 GEMINI_MODEL	Modelul principal, implicit gemini-2.5-flash-lite
 GEMINI_FALLBACK_MODEL	Model fallback când modelul principal este ocupat, implicit gemini-2.0-flash-lite
 
-Nu folosi VITE_GEMINI_API_KEY — cheia nu trebuie să ajungă niciodată în browser. Serverul citește variabilele GEMINI_* prin process.env, încărcate din .env la pornire și injectate în worker bundle de Vite.
+Nu folosi VITE_GEMINI_API_KEY — cheia nu trebuie să ajungă niciodată în browser. Serverul citește variabilele GEMINI_* prin process.env.
 
 Dacă GEMINI_API_KEY lipsește, interfața folosește un fallback local bazat pe reguli, cu badge-ul LOCAL FALLBACK. Când Gemini funcționează, răspunsurile afișează GEMINI LIVE.
 
-Pentru Cloudflare production, setează GEMINI_API_KEY ca secret Wrangler:
+## Deploy pe Vercel
 
-wrangler secret put GEMINI_API_KEY
+Proiectul folosește TanStack Start + Nitro. `vercel.json` setează framework-ul `tanstack-start`.
 
-Nu o pune în bundle-ul de client.
+1. Push pe GitHub și importă repo-ul în [vercel.com/new](https://vercel.com/new).
+2. Framework Preset: **TanStack Start** (detectat automat).
+3. Nu seta Output Directory manual — Nitro generează `.vercel/output`.
+4. Adaugă Environment Variables (Production + Preview), cel puțin:
+   - `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`
+   - `VITE_MAPBOX_TOKEN`
+   - `GEMINI_API_KEY`, `GNEWS_API_KEY`, `OPENWEATHER_API_KEY` (server-only)
+5. Redeploy după ce salvezi variabilele.
+
+Local, poți simula build-ul Vercel cu:
+`VERCEL=1 NITRO_PRESET=vercel npm run build`
 
 Supabase
 

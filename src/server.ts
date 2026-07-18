@@ -1,3 +1,8 @@
+/**
+ * Entry server TanStack Start — wrapper SSR cu pagină de eroare branduită.
+ * Compatibil Nitro (Vercel) și Worker (Cloudflare): `env` poate fi gol pe Node;
+ * secretele vin din process.env / Environment Variables.
+ */
 import "dotenv/config";
 import "@/server/loadServerEnv";
 import { setWorkerEnv } from "@/server/workerEnv";
