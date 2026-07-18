@@ -613,7 +613,7 @@
       "reportSaved": "Raport salvat.",
       "reportDeleted": "Raport șters.",
       "reportLoadFailed": "Încărcarea rapoartelor a eșuat",
-      "reportSchemaMissing": "Rulează docs/legacy-supabase-schema.sql pentru a crea tabela generated_reports.",
+      "reportSchemaMissing": "Rulează migrările din supabase/migrations/ pentru a crea tabela generated_reports (și tabelele asociate).",
       "supabaseNotConfigured": "Supabase nu este configurat.",
       "deleteFailed": "Ștergerea a eșuat",
       "linkCopied": "Link copiat în clipboard.",
@@ -1057,51 +1057,55 @@
         "sections": {
           "what": {
             "title": "Ce este Global Pulse?",
-            "body": "Un tablou educațional de conștientizare situațională în timp real care agregă date planetare publice — cutremure, vreme, țări și alerte — într-o interfață unitară."
+            "body": "O platformă educațională de tip Planetary Intelligence care agregă date globale publice — știri, cutremure, vreme, alerte și indicatori pe țări — într-o interfață unitară, cu etichete LIVE / CACHED / DEMO."
           },
           "problem": {
             "title": "Problema pe care o rezolvă",
-            "body": "Datele publice există în multe API-uri fragmentate. Global Pulse demonstrează cum o UI atentă poate transforma feed-uri brute în insight acționabil."
+            "body": "Datele publice există în multe API-uri fragmentate. Global Pulse arată cum o UI atentă poate transforma feed-uri brute în insight clar și transparent, pentru învățare și demo-uri."
           },
           "users": {
             "title": "Utilizatori țintă",
-            "body": "Studenți, educatori, pasionați de geopolitica, climă sau seismologie și oricine este curios despre date live despre lume."
+            "body": "Elevi, educatori, pasionați de geopolitica, climă sau seismologie și oricine este curios despre date live despre lume."
           },
           "tech": {
             "title": "Tehnologii folosite",
-            "body": "React 19, TypeScript, TanStack Router & Query, Tailwind CSS, MapLibre GL (compatibil Mapbox), Recharts, lucide-react și Lovable Cloud (Supabase)."
+            "body": "React 19, TypeScript, Vite, TanStack Start / Router / Query, Tailwind CSS, Mapbox GL, Recharts, XYFlow, Radix UI, Framer Motion, Nitro, Vercel, Supabase (Auth + PostgreSQL + RLS)."
           },
           "apis": {
             "title": "API-uri folosite",
-            "body": "REST Countries (țări), USGS (cutremure), OpenWeather (vreme) și Supabase pentru persistență."
+            "body": "GNews, USGS, OpenWeather, REST Countries, Mapbox, Google Gemini, ACLED, NASA FIRMS, GDACS, GDELT, ReliefWeb, RSS — accesate prin proxy-uri pe server, astfel încât cheile nu ajung în browser."
           },
           "supabase": {
             "title": "Integrare Supabase",
-            "body": "Patru tabele — saved_countries, saved_alerts, user_feedback, project_logs — cu RLS activat. Toate salvările și ștergerile sunt auditate în project_logs."
+            "body": "Auth (email, Google, GitHub) și persistență per utilizator: colecții, articole salvate, istoric, watchlist-uri, preferințe. RLS izolează datele cu user_id = auth.uid(). Schema: supabase/migrations/."
           },
           "map": {
             "title": "De ce contează harta",
-            "body": "O hartă profesională dark (MapLibre / compatibilă Mapbox) oferă context spațial datelor seismice și de alertă — un element tipic al dashboard-urilor de monitorizare."
+            "body": "Un glob Mapbox GL oferă context spațial datelor seismice, de intelligence și de alertă — un element tipic al dashboard-urilor moderne de monitorizare."
           },
           "education": {
             "title": "Valoare educațională",
-            "body": "Demonstrează fetch async, stări de eroare/încărcare/gol, charting, vizualizare geospatială și CRUD cu RLS — teme comune în cursurile moderne de web."
+            "body": "Demonstrează fetch async, stări eroare/încărcare/gol, charting, vizualizare geospatială, rute SSR/API, AI grounded și CRUD cu RLS — teme comune în cursurile moderne de web."
           },
           "future": {
             "title": "Îmbunătățiri viitoare",
-            "body": "Autentificare, date salvate per utilizator, websocket-uri în timp real, grafice de prognoză, overlay-uri satelitare, internaționalizare."
+            "body": "Notificări push mai bogate, overlay-uri satelitare, grafice de prognoză și explicații mai profunde de corelație multi-sursă."
           },
           "limits": {
             "title": "Limitări ale datelor",
-            "body": "API-urile publice gratuite pot avea rate-limit sau lag; datele demo sunt etichetate clar. Acesta nu este un instrument operațional."
+            "body": "API-urile publice gratuite pot avea rate-limit sau lag; datele demo sunt etichetate clar. Acesta nu este un instrument operațional de intelligence."
           },
           "privacy": {
             "title": "Confidențialitate și etică",
-            "body": "Nu se colectează date personale fără consimțământ. Formularul de feedback este opțional și la nivel demo."
+            "body": "Salvările în cloud necesită autentificare. Feedback-ul este opțional. Spațiul personal este izolat per utilizator prin RLS. Oaspeții pot naviga dashboard-urile publice fără cont."
+          },
+          "authors": {
+            "title": "Realizatori",
+            "body": "Pocovnicu Luca · Dobrescu Răzvan — proiect educațional pentru InfoEducație / concurs școlar."
           },
           "credits": {
             "title": "Credite / surse de date",
-            "body": "USGS Earthquake Hazards Program · REST Countries · OpenWeather · OpenStreetMap (tile-uri basemap via CARTO) · Supabase."
+            "body": "USGS · GNews · REST Countries · OpenWeather · Mapbox · Google Gemini · ACLED · NASA FIRMS · GDACS · GDELT · ReliefWeb · Supabase."
           }
         }
       },

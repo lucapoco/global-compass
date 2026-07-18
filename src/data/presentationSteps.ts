@@ -7,6 +7,8 @@ import {
   FileText,
   Bookmark,
   Layers,
+  ShieldAlert,
+  Network,
 } from "lucide-react";
 
 export type PresentationStep = {
@@ -26,14 +28,14 @@ export const PRESENTATION_STEPS: PresentationStep[] = [
     id: "intro",
     title: "Introduction to Global Pulse",
     explanation:
-      "Global Pulse is an educational planetary monitoring dashboard for InfoEducație. It aggregates public intelligence, seismic, weather, and country data into one dark, analyst-style interface — with clear LIVE, CACHED, and DEMO labels so users always know what they are looking at.",
+      "Global Pulse is an educational Planetary Intelligence platform for InfoEducație. It aggregates public intelligence, seismic, weather, and country data into one analyst-style interface — with clear LIVE, CACHED, and DEMO labels so users always know what they are looking at.",
     featureTo: "/dashboard",
     featureLabel: "Open Dashboard",
     icon: Radio,
-    previewTitle: "Mission control overview",
+    previewTitle: "Mission overview",
     previewBullets: [
       "Live KPI cards: earthquakes, alerts, intelligence count",
-      "Critical signals and API health at a glance",
+      "Mission Control and critical signals at a glance",
       "Quick actions to every major feature",
     ],
     previewAccent: "from-primary/25 via-primary/5 to-background",
@@ -42,7 +44,7 @@ export const PRESENTATION_STEPS: PresentationStep[] = [
     id: "intelligence",
     title: "Live Intelligence Feed",
     explanation:
-      "Headlines from GNews flow through a same-origin proxy with caching and demo fallback. Filter by category, severity, and region; open details for source links and context. Nothing is invented — status badges show whether data is live or cached.",
+      "Headlines from GNews flow through a same-origin proxy with caching and demo fallback. Filter by category, severity, and region; open details for source links and context. Status badges show whether data is live, cached, or demo.",
     featureTo: "/intelligence",
     featureLabel: "Open Intelligence Feed",
     icon: Newspaper,
@@ -58,7 +60,7 @@ export const PRESENTATION_STEPS: PresentationStep[] = [
     id: "map",
     title: "Globe Map Control Center",
     explanation:
-      "A professional dark MapLibre world map layers earthquakes, intelligence markers, and country context. Pan, zoom, filter by category, and inspect events in the side panel — the spatial heart of situational awareness.",
+      "A Mapbox GL world map layers earthquakes, intelligence markers, alerts, and country context. Pan, zoom, filter by category, and inspect events in the side panel — the spatial heart of situational awareness.",
     featureTo: "/map",
     featureLabel: "Open Live World Map",
     icon: Globe2,
@@ -69,6 +71,38 @@ export const PRESENTATION_STEPS: PresentationStep[] = [
       "Country focus and event side panel",
     ],
     previewAccent: "from-cyan-500/15 via-background to-background",
+  },
+  {
+    id: "alerts",
+    title: "Alert Center & Watchlists",
+    explanation:
+      "The Alert Center evaluates live intelligence for severity, correlation, and crisis signals. Users can build watchlists and receive a focused operational view of what matters most.",
+    featureTo: "/alert-center",
+    featureLabel: "Open Alert Center",
+    icon: ShieldAlert,
+    previewTitle: "Continuous evaluation",
+    previewBullets: [
+      "Severity and confidence scoring",
+      "Crisis detection and watchlists",
+      "Auth-gated personalization when signed in",
+    ],
+    previewAccent: "from-orange-500/15 via-background to-background",
+  },
+  {
+    id: "graph",
+    title: "Knowledge Graph",
+    explanation:
+      "Explore relationships between events, countries, and themes on an interactive graph (XYFlow). Useful for explaining how signals connect beyond a flat news list.",
+    featureTo: "/knowledge-graph",
+    featureLabel: "Open Knowledge Graph",
+    icon: Network,
+    previewTitle: "Relational exploration",
+    previewBullets: [
+      "Nodes for events, places, and topics",
+      "Search and inspect connected entities",
+      "Complements the map and intelligence feed",
+    ],
+    previewAccent: "from-indigo-500/15 via-background to-background",
   },
   {
     id: "ai",
@@ -104,17 +138,17 @@ export const PRESENTATION_STEPS: PresentationStep[] = [
   },
   {
     id: "saved",
-    title: "Supabase Saved Data",
+    title: "Saved Data & Collections",
     explanation:
-      "Persist bookmarks across sessions: saved countries, alerts, intelligence items, and generated reports. Row-level security with demo policies; project_logs audit trail for educational transparency.",
-    featureTo: "/saved",
-    featureLabel: "Open Saved Data",
+      "Sign in to persist bookmarks across sessions: saved countries, alerts, intelligence, personal collections, and reading history. Row Level Security isolates each user's data (`user_id = auth.uid()`).",
+    featureTo: "/collections",
+    featureLabel: "Open Collections",
     icon: Bookmark,
-    previewTitle: "Cloud persistence layer",
+    previewTitle: "Cloud personal workspace",
     previewBullets: [
-      "saved_countries, saved_alerts, saved_intelligence",
-      "generated_reports from Intelligence Reports",
-      "Debug panel shows Supabase connection status",
+      "Collections with add / rename / delete",
+      "Saved articles and reading history",
+      "Email, Google, and GitHub authentication",
     ],
     previewAccent: "from-rose-500/15 via-background to-background",
   },
@@ -122,14 +156,14 @@ export const PRESENTATION_STEPS: PresentationStep[] = [
     id: "architecture",
     title: "Architecture and data sources",
     explanation:
-      "React 19 + TanStack Router on Cloudflare Workers, MapLibre for maps, Recharts for analytics. Public APIs: GNews (proxy), USGS, REST Countries, OpenWeather; Supabase for storage; Gemini for optional AI — all with explicit limitation labels.",
+      "React 19 + TanStack Start (SSR & API routes) on Nitro / Vercel, Mapbox GL for maps, Recharts for analytics. Public APIs: GNews, USGS, REST Countries, OpenWeather, plus ACLED, FIRMS, GDACS, GDELT, ReliefWeb; Supabase for auth & storage; Gemini for optional AI — all with explicit limitation labels.",
     featureTo: "/about",
     featureLabel: "Open About & Sources",
     icon: Layers,
     previewTitle: "Stack and ethics",
     previewBullets: [
-      "TanStack Start · Vite · Tailwind · TypeScript",
-      "Server routes for AI and GNews proxy",
+      "TanStack Start · Vite · Tailwind · TypeScript · Nitro",
+      "Server proxies keep API keys off the client",
       "Educational use only — not operational intelligence",
     ],
     previewAccent: "from-slate-500/20 via-background to-background",

@@ -22,7 +22,7 @@ function weightFor(event: GlobalEvent, mode: HeatmapWeightMode): number {
 
 /**
  * Builds a GeoJSON point FeatureCollection weighted for density / risk / severity
- * heatmap rendering (consumed by a native Mapbox/MapLibre `heatmap` layer).
+ * heatmap rendering (consumed by a native Mapbox `heatmap` layer).
  */
 export function buildHeatmapGeoJSON(events: GlobalEvent[], mode: HeatmapWeightMode = "density"): HeatmapFeatureCollection {
   const features: HeatmapPointFeature[] = events.filter((e) => hasCoordinates(e.coordinates)).map((e) => ({

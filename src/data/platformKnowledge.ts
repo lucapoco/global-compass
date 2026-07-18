@@ -1,63 +1,52 @@
 /**
- * Compact platform knowledge for Global Pulse AI (sent to Gemini as static context).
+ * Cunoștințe compacte despre platformă pentru Global Pulse AI (context static Gemini).
  */
 export const PLATFORM_KNOWLEDGE = `
 ## Global Pulse — platform overview
-Global Pulse is an educational planetary monitoring / situational awareness dashboard built for InfoEducație. It aggregates public feeds and optional Supabase persistence into one interface: live headlines, earthquakes, a world map, country risk scores, and saved bookmarks.
+Global Pulse is an educational Planetary Intelligence dashboard for InfoEducație. It aggregates public feeds and optional Supabase persistence into one interface: live headlines, earthquakes, world map, country risk, alerts, knowledge graph, AI briefing, collections, and saved bookmarks.
 
-**Stack:** React, TypeScript, Vite, TanStack Router/Start, Tailwind, Mapbox GL (with fallback), Supabase (optional), USGS, GNews via same-origin proxy, REST Countries, OpenWeather (optional demo fallback).
+**Stack:** React 19, TypeScript, Vite, TanStack Start / Router / Query, Tailwind, Mapbox GL, Recharts, XYFlow, Supabase (Auth + RLS), Nitro / Vercel. Data via same-origin server proxies: GNews, USGS, REST Countries, OpenWeather, ACLED, NASA FIRMS, GDACS, GDELT, ReliefWeb, RSS. Optional Google Gemini for AI.
 
 ## Main pages
-- **Dashboard** — stats, live intelligence preview, map preview, country risk top 5, API health (advanced), activity timeline.
-- **Intelligence Feed** (/intelligence) — normalized GNews headlines with category/severity filters, search, sort, country risk sidebar.
-- **Global Pulse AI** (/ai-news) — this assistant; explains news and how to use the app using in-app data only.
-- **Live World Map** (/map) — Mapbox globe with layers: earthquakes, intelligence, saved alerts, weather demo, capitals; filters by severity/category/search.
-- **Countries** — REST Countries reference data; save countries to Supabase.
-- **Earthquakes** — USGS last 24h / week feeds.
-- **Weather** — OpenWeather when keyed; otherwise demo.
-- **Global Alerts** — combines USGS + high/critical intelligence + demo alerts.
-- **Compare Countries** — side-by-side country metrics.
-- **Saved Data** — Supabase saved_countries, saved_alerts, saved_intelligence.
-- **About** — project info.
+- **Dashboard** — stats, live intelligence, map preview, country risk, API health (advanced), timeline.
+- **Mission Control** (/mission-control) — command-center operational view.
+- **Intelligence Feed** (/intelligence) — GNews headlines with category/severity filters.
+- **Global Pulse AI** (/ai-news) — this assistant; explains news and the app using in-app data only.
+- **Live World Map** (/map) — Mapbox globe: earthquakes, intelligence, alerts, weather, capitals.
+- **Alert Center** (/alert-center) — severity, correlation, crisis detection, watchlists.
+- **Knowledge Graph** (/knowledge-graph) — relationships between events, countries, topics.
+- **Countries / Compare / Earthquakes / Weather** — reference and live feeds.
+- **Reports** — country / event / global briefings (Gemini optional).
+- **Saved Articles, Collections, Reading History, Saved Data** — auth-gated cloud persistence.
+- **About** — project info, sources, feedback.
 
 ## Data status labels (critical)
-- **LIVE** — fresh upstream data (GNews proxy or USGS).
-- **CACHED LIVE DATA** — previously fetched live data from localStorage cache (still real headlines, not invented).
-- **DEMO** — sample/fallback data when API missing, rate-limited, or error; must never be presented as live breaking news.
-- **RATE LIMITED / API ERROR** — GNews quota or network issues; app may show cache or demo.
+- **LIVE** — fresh upstream data.
+- **CACHED** — previously fetched live data (still real, not invented).
+- **DEMO** — illustrative fallback when API missing/rate-limited; never present as live breaking news.
+- **GEMINI LIVE / LOCAL FALLBACK** — AI status (model vs rule-based fallback).
 
 ## Intelligence feed
-Headlines come from **GNews through /api/public/gnews-proxy** (server holds the API key). Items are classified locally into categories (geopolitics, military, economy, technology, energy, climate, disaster, cyber, health, general) and severities (low, medium, high, critical). Never call gnews.io from the browser.
+Headlines from **GNews through /api/public/gnews-proxy** (server holds the key). Local classification into categories and severities. Never call gnews.io from the browser.
 
 ## Globe Map
-Markers only for events with coordinates. Layers can be toggled. Heatmap mode shows density. Clusters may be unavailable depending on map mode. Filters: layers, severity, categories, search, high-severity-only.
+Mapbox GL. Markers only for events with coordinates. Layers and filters: severity, categories, search.
 
 ## Country Risk Index
-Explainable score 0–100 from weighted factors: critical/high/medium/low intelligence per country, M6+/M5+ earthquakes near place names, saved critical alerts. Shown on Dashboard, Intelligence page, and AI context. Not a prediction model.
+Explainable score 0–100 from intelligence severity, nearby earthquakes, and related signals. Not a prediction model.
 
-## Saved Data (Supabase)
-When configured: saved_countries, saved_alerts, saved_intelligence, user_feedback, project_logs. Save actions from intelligence cards, map, alerts. Requires VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY.
-
-## Simple View vs Advanced View
-Toggle in sidebar/header; persisted in localStorage. **Simple View** hides advanced panels (API health, some map filters, category chips). **Advanced View** shows full controls.
-
-## API Health panel (advanced Dashboard)
-Probes REST Countries, USGS, GNews proxy, OpenWeather, Supabase, Mapbox token presence.
-
-## Severity meanings
-- **critical** — war, major attacks, M6+ quake context, mass casualties keywords, etc.
-- **high** — crisis, major conflict, M5+ context.
-- **medium** — protests, storms, economic stress.
-- **low** — background items.
+## Auth & Saved Data (Supabase)
+Email / Google / GitHub. Per-user RLS (\`user_id = auth.uid()\`) for collections, saved articles, reading history, watchlists, preferences. Requires VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY. Schema via supabase/migrations/.
 
 ## Limitations
-- No real-time access outside data provided in context.
-- GNews free tier may cap articles per request; cache reduces API calls.
-- Demo weather and demo alerts exist for teaching when APIs are off.
-- AI must not invent headlines, coordinates, or risk scores not in context.
+- No data outside the provided context.
+- Free API tiers may rate-limit; cache reduces calls.
+- DEMO data is labeled for teaching when APIs are off.
+- AI must not invent headlines, coordinates, or scores not in context.
+- Educational project — not an operational intelligence tool.
 
 ## InfoEducație presentation tips
-Demonstrate: Dashboard live feed → Map layers → Intelligence filters → Save to Supabase → explain LIVE vs DEMO badges → Country Risk explanation.
+Demonstrate: Dashboard → Map layers → Intelligence filters → Alert Center → Knowledge Graph → Global Pulse AI (LIVE vs FALLBACK) → Collections (sign-in) → explain LIVE vs DEMO badges.
 `.trim();
 
 export function getPlatformKnowledgeCompact(): string {

@@ -19,12 +19,12 @@ dist-ssr
 
 # Environment (secrets) — never commit
 .env
-.env.local
-.env.*.local
-
-# Wrangler / Cloudflare
-.wrangler/
+.env.*
+!.env.example
 .dev.vars
+
+# Wrangler / Cloudflare (optional local tooling)
+.wrangler/
 
 # Editor directories and files
 .vscode/*

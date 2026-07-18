@@ -13,7 +13,7 @@ export const Route = createFileRoute("/about")({
 
 const SECTION_IDS = [
   "what", "problem", "users", "tech", "apis", "supabase",
-  "map", "education", "future", "limits", "privacy", "credits",
+  "map", "education", "authors", "future", "limits", "privacy", "credits",
 ] as const;
 
 function AboutPage() {

@@ -219,7 +219,7 @@ function MapPage() {
         badges={
           <>
             <DataBadge variant="live">Live</DataBadge>
-            {isAdvanced && <DataBadge variant="neutral">{hasMapbox ? "Mapbox GL" : "MapLibre"}</DataBadge>}
+            {isAdvanced && <DataBadge variant="neutral">{hasMapbox ? "Mapbox GL" : "Map token"}</DataBadge>}
             <DataBadge variant="neutral">{engine.enabledLayerGroups.length} layers active</DataBadge>
           </>
         }

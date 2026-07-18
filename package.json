@@ -1,5 +1,6 @@
 {
   "name": "global-compass",
+  "description": "Global Pulse — educational Planetary Intelligence platform",
   "private": true,
   "sideEffects": false,
   "type": "module",

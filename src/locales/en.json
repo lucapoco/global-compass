@@ -613,7 +613,7 @@
       "reportSaved": "Report saved.",
       "reportDeleted": "Report deleted.",
       "reportLoadFailed": "Failed to load reports",
-      "reportSchemaMissing": "Run docs/legacy-supabase-schema.sql to create generated_reports table.",
+      "reportSchemaMissing": "Run the SQL migrations in supabase/migrations/ to create generated_reports (and related tables).",
       "supabaseNotConfigured": "Supabase is not configured.",
       "deleteFailed": "Delete failed",
       "linkCopied": "Link copied to clipboard.",
@@ -1057,11 +1057,11 @@
         "sections": {
           "what": {
             "title": "What is Global Pulse?",
-            "body": "An educational real-time situational awareness dashboard that aggregates public planetary data — earthquakes, weather, countries and alerts — into a single polished interface."
+            "body": "An educational Planetary Intelligence platform that aggregates public global data — news, earthquakes, weather, alerts, and country indicators — into one polished interface with LIVE / CACHED / DEMO labels."
           },
           "problem": {
             "title": "The problem it solves",
-            "body": "Public data exists across many fragmented APIs. Global Pulse demonstrates how a thoughtful UI can turn raw feeds into actionable, glanceable insight."
+            "body": "Public data exists across many fragmented APIs. Global Pulse shows how a thoughtful UI can turn raw feeds into glanceable, transparent insight for learning and demos."
           },
           "users": {
             "title": "Target users",
@@ -1069,39 +1069,43 @@
           },
           "tech": {
             "title": "Technologies used",
-            "body": "React 19, TypeScript, TanStack Router & Query, Tailwind CSS, MapLibre GL (Mapbox-ready), Recharts, lucide-react, and Lovable Cloud (Supabase)."
+            "body": "React 19, TypeScript, Vite, TanStack Start / Router / Query, Tailwind CSS, Mapbox GL, Recharts, XYFlow, Radix UI, Framer Motion, Nitro, Vercel, Supabase (Auth + PostgreSQL + RLS)."
           },
           "apis": {
             "title": "APIs used",
-            "body": "REST Countries (countries), USGS (earthquakes), OpenWeather (weather), and Supabase for persistence."
+            "body": "GNews, USGS, OpenWeather, REST Countries, Mapbox, Google Gemini, ACLED, NASA FIRMS, GDACS, GDELT, ReliefWeb, RSS — accessed via server proxies so keys stay off the client."
           },
           "supabase": {
             "title": "Supabase integration",
-            "body": "Four tables — saved_countries, saved_alerts, user_feedback, project_logs — with RLS enabled. All saves and deletes are audited into project_logs."
+            "body": "Auth (email, Google, GitHub) and per-user persistence: collections, saved articles, reading history, watchlists, preferences. Row Level Security isolates data with user_id = auth.uid(). Schema lives in supabase/migrations/."
           },
           "map": {
             "title": "Why the map matters",
-            "body": "A professional dark map (MapLibre / Mapbox-compatible) gives spatial context to seismic and alert data — a hallmark of monitoring dashboards."
+            "body": "A Mapbox GL globe gives spatial context to seismic, intelligence, and alert data — a core pattern of modern monitoring dashboards."
           },
           "education": {
             "title": "Educational value",
-            "body": "Demonstrates async data fetching, error/loading/empty states, charting, geospatial visualization, and database CRUD with RLS — all common topics in modern web courses."
+            "body": "Demonstrates async data fetching, error/loading/empty states, charting, geospatial visualization, SSR/API routes, AI grounding, and database CRUD with RLS — common topics in modern web courses."
           },
           "future": {
             "title": "Future improvements",
-            "body": "Authentication, per-user saved data, real-time websockets, forecast charts, satellite imagery overlays, internationalization."
+            "body": "Richer real-time push notifications, satellite imagery overlays, forecast charts, and deeper multi-source correlation explanations."
           },
           "limits": {
             "title": "Data limitations",
-            "body": "Free public APIs may rate-limit or lag; demo data is clearly labeled. This is not an operational tool."
+            "body": "Free public APIs may rate-limit or lag; demo data is clearly labeled. This is not an operational intelligence tool."
           },
           "privacy": {
             "title": "Privacy and ethics",
-            "body": "No personal data is collected without consent. The feedback form is optional and demo-grade."
+            "body": "Cloud saves require sign-in. Feedback is optional. Personal workspace data is isolated per user via RLS. Guests can browse public dashboards without an account."
+          },
+          "authors": {
+            "title": "Authors",
+            "body": "Pocovnicu Luca · Dobrescu Răzvan — educational project for InfoEducație / school competition."
           },
           "credits": {
             "title": "Credits / data sources",
-            "body": "USGS Earthquake Hazards Program · REST Countries · OpenWeather · OpenStreetMap (basemap tiles via CARTO) · Supabase."
+            "body": "USGS · GNews · REST Countries · OpenWeather · Mapbox · Google Gemini · ACLED · NASA FIRMS · GDACS · GDELT · ReliefWeb · Supabase."
           }
         }
       },
