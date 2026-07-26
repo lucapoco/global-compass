@@ -8,7 +8,7 @@ Transformă informații din surse multiple (geopolitice, climatice, economice, s
 |---|---|
 | **Demo** | https://www.global-pulse.app/ |
 | **GitHub** | https://github.com/lucapoco/global-compass |
-| **DOCUMENTATIE | https://global-pulse1.my.canva.site/ |
+| **DOCUMENTATIE** | https://global-pulse1.my.canva.site/ |
 
 
 ---
