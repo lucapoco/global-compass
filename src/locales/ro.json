@@ -337,6 +337,8 @@
       "haveAccount": "Ai deja cont? Autentifică-te",
       "checkEmail": "Verifică emailul pentru a confirma contul.",
       "completingSignIn": "Se finalizează autentificarea…",
+      "callbackHint": "Dacă autentificarea Google tot eșuează, verifică în Supabase că Redirect URLs includ /auth/callback pentru acest site (și că providerul Google e activ).",
+      "tryAgain": "Încearcă din nou",
       "supabaseNotConfigured": "Supabase nu este configurat. Setează VITE_SUPABASE_URL și VITE_SUPABASE_PUBLISHABLE_KEY.",
       "modal": {
         "title": "Creează-ți contul gratuit",

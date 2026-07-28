@@ -44,6 +44,7 @@ export function AuthModal() {
     try {
       if (provider === "google") await signInWithGoogle();
       else await signInWithGitHub();
+      // Full-page redirect follows — keep busy until navigation completes.
     } catch (e) {
       setError(e instanceof Error ? e.message : t("app.auth.errors.generic"));
       setBusy(false);
@@ -110,6 +111,7 @@ export function AuthModal() {
 
           {authModal.view === "providers" && (
             <>
+              {error && <p className="text-xs text-destructive">{error}</p>}
               <Button
                 type="button"
                 variant="outline"
@@ -117,7 +119,7 @@ export function AuthModal() {
                 disabled={busy || !configured}
                 onClick={() => void handleOAuth("google")}
               >
-                <GoogleIcon className="h-5 w-5" />
+                {busy ? <Loader2 className="h-5 w-5 animate-spin" /> : <GoogleIcon className="h-5 w-5" />}
                 {t("app.auth.continueGoogle")}
               </Button>
               <Button

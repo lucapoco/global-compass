@@ -35,10 +35,13 @@ function getClient(): SupabaseClient<Database> {
   const ref = extractSupabaseProjectRef(creds.url) ?? "unknown";
   _client = createClient<Database>(creds.url, creds.key, {
     auth: {
+      // Browser-only storage so the PKCE code_verifier survives the Google redirect.
       storage: typeof window !== "undefined" ? window.localStorage : undefined,
       persistSession: true,
       autoRefreshToken: true,
-      detectSessionInUrl: true,
+      // Keep true for magic-link / hash landings; /auth/callback also handles
+      // an already-exchanged code without failing the user.
+      detectSessionInUrl: typeof window !== "undefined",
       flowType: "pkce",
       // Isolate auth storage per Supabase project so switching `VITE_SUPABASE_URL` does not reuse old session keys.
       storageKey: `gc-sb-${ref}-auth`,
@@ -48,7 +51,13 @@ function getClient(): SupabaseClient<Database> {
 }
 
 export const supabase = new Proxy({} as SupabaseClient<Database>, {
-  get(_, prop, receiver) {
-    return Reflect.get(getClient(), prop, receiver);
+  get(_, prop) {
+    const client = getClient();
+    const value = Reflect.get(client, prop, client);
+    // Bind methods to the real client (Proxy receiver would break `this`).
+    if (typeof value === "function") {
+      return (value as (...args: unknown[]) => unknown).bind(client);
+    }
+    return value;
   },
 });

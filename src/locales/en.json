@@ -337,6 +337,8 @@
       "haveAccount": "Already have an account? Sign in",
       "checkEmail": "Check your email to confirm your account.",
       "completingSignIn": "Completing sign-in…",
+      "callbackHint": "If Google sign-in keeps failing, confirm Supabase Redirect URLs include this site’s /auth/callback (and that Google provider is enabled).",
+      "tryAgain": "Try again",
       "supabaseNotConfigured": "Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY.",
       "modal": {
         "title": "Create your free account",

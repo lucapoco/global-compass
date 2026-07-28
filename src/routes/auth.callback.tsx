@@ -8,6 +8,47 @@ export const Route = createFileRoute("/auth/callback")({
   component: AuthCallbackPage,
 });
 
+function cleanAuthParamsFromUrl() {
+  if (typeof window === "undefined") return;
+  const url = new URL(window.location.href);
+  url.searchParams.delete("code");
+  url.searchParams.delete("state");
+  url.searchParams.delete("error");
+  url.searchParams.delete("error_code");
+  url.searchParams.delete("error_description");
+  // Strip legacy implicit-flow hash tokens if present
+  const clean = `${url.pathname}${url.search}`;
+  window.history.replaceState({}, document.title, clean || "/auth/callback");
+}
+
+function oauthErrorFromUrl(url: URL): string | null {
+  const description = url.searchParams.get("error_description");
+  if (description) return description.replace(/\+/g, " ");
+  const code = url.searchParams.get("error_code") ?? url.searchParams.get("error");
+  return code ? code.replace(/\+/g, " ") : null;
+}
+
+/** Wait until Supabase finishes auto-detect / session restore (max ~timeoutMs). */
+async function waitForSession(timeoutMs = 4_000) {
+  const existing = await supabase.auth.getSession();
+  if (existing.data.session) return existing.data.session;
+
+  return new Promise<NonNullable<typeof existing.data.session> | null>((resolve) => {
+    const timer = window.setTimeout(() => {
+      sub.subscription.unsubscribe();
+      void supabase.auth.getSession().then(({ data }) => resolve(data.session));
+    }, timeoutMs);
+
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session && (event === "SIGNED_IN" || event === "INITIAL_SESSION" || event === "TOKEN_REFRESHED")) {
+        window.clearTimeout(timer);
+        sub.subscription.unsubscribe();
+        resolve(session);
+      }
+    });
+  });
+}
+
 function AuthCallbackPage() {
   const t = useT();
   const navigate = useNavigate();
@@ -24,23 +65,44 @@ function AuthCallbackPage() {
     void (async () => {
       try {
         const url = new URL(window.location.href);
+
+        const oauthError = oauthErrorFromUrl(url);
+        if (oauthError) {
+          throw new Error(oauthError);
+        }
+
         const code = url.searchParams.get("code");
+
         if (code) {
+          // Prefer an explicit PKCE exchange. If detectSessionInUrl already
+          // consumed the code (race with AuthProvider init), fall back to session.
           const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
-          if (exchangeError) throw exchangeError;
+          if (exchangeError) {
+            const session = await waitForSession(2_500);
+            if (!session) throw exchangeError;
+          }
         } else {
-          const { data, error: sessionError } = await supabase.auth.getSession();
-          if (sessionError) throw sessionError;
-          if (!data.session) {
+          // No ?code= — magic-link / hash flow / already-processed redirect.
+          const session = await waitForSession(4_000);
+          if (!session) {
             throw new Error(t("app.auth.errors.generic"));
           }
         }
+
+        cleanAuthParamsFromUrl();
+
         if (!cancelled) {
           void navigate({ to: "/dashboard", replace: true });
         }
       } catch (e) {
         if (!cancelled) {
-          setError(e instanceof Error ? e.message : t("app.auth.errors.generic"));
+          const message =
+            e && typeof e === "object" && "message" in e && typeof (e as { message: unknown }).message === "string"
+              ? (e as { message: string }).message
+              : e instanceof Error
+                ? e.message
+                : t("app.auth.errors.generic");
+          setError(message);
         }
       }
     })();
@@ -54,14 +116,29 @@ function AuthCallbackPage() {
     <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3 px-4">
       {error ? (
         <>
-          <p className="text-sm text-destructive">{error}</p>
-          <button
-            type="button"
-            className="text-sm text-primary hover:underline"
-            onClick={() => void navigate({ to: "/dashboard" })}
-          >
-            {t("app.shell.notFound.backToDashboard")}
-          </button>
+          <p className="max-w-md text-center text-sm text-destructive">{error}</p>
+          <p className="max-w-md text-center text-xs text-muted-foreground">
+            {t("app.auth.callbackHint")}
+          </p>
+          <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
+            <button
+              type="button"
+              className="text-sm font-medium text-primary hover:underline"
+              onClick={() => void navigate({ to: "/dashboard" })}
+            >
+              {t("app.shell.notFound.backToDashboard")}
+            </button>
+            <button
+              type="button"
+              className="text-sm text-muted-foreground hover:underline"
+              onClick={() => {
+                setError(null);
+                window.location.assign(`${window.location.origin}/dashboard`);
+              }}
+            >
+              {t("app.auth.tryAgain")}
+            </button>
+          </div>
         </>
       ) : (
         <>
