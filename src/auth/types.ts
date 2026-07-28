@@ -33,7 +33,11 @@ export interface AuthContextValue {
   signInWithGoogle: () => Promise<void>;
   signInWithGitHub: () => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<{ error?: string }>;
-  signUpWithEmail: (email: string, password: string, displayName?: string) => Promise<{ error?: string }>;
+  signUpWithEmail: (
+    email: string,
+    password: string,
+    displayName?: string,
+  ) => Promise<{ error?: string; signedIn?: boolean; needsEmailConfirmation?: boolean }>;
   signOut: () => Promise<void>;
   /**
    * If authenticated, runs `action`. Otherwise opens the auth modal and returns false.

@@ -336,6 +336,7 @@
       "needAccount": "Nu ai cont? Înregistrează-te",
       "haveAccount": "Ai deja cont? Autentifică-te",
       "checkEmail": "Verifică emailul pentru a confirma contul.",
+      "orEmail": "sau email",
       "completingSignIn": "Se finalizează autentificarea…",
       "supabaseNotConfigured": "Supabase nu este configurat. Setează VITE_SUPABASE_URL și VITE_SUPABASE_PUBLISHABLE_KEY.",
       "modal": {

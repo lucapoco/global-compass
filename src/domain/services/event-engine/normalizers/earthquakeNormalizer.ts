@@ -2,10 +2,16 @@ import type { Earthquake } from "@/types";
 import { createGlobalEvent, type GlobalEvent } from "@/domain/models/GlobalEvent";
 import { toIsoOrNow } from "@/domain/utils/time";
 import { tokenize } from "@/domain/utils/text";
+import { detectPrimaryCountry } from "@/services/intelligence/nlp/entityExtractor";
 
 function countryFromPlace(place: string): string | undefined {
+  const detected = detectPrimaryCountry(place);
+  if (detected) return detected;
   const tail = place.split(",").pop()?.trim();
-  return tail || undefined;
+  if (!tail || tail.length < 3) return undefined;
+  // Skip bare US state / region codes (e.g. "CA", "OK") — not countries.
+  if (/^[A-Z]{2}$/.test(tail)) return undefined;
+  return tail;
 }
 
 /** USGS earthquake feed → GlobalEvent. Always treated as live + verified (authoritative feed). */

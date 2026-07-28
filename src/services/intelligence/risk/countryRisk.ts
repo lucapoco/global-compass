@@ -11,6 +11,7 @@
 import type { IntelligenceEvent, CountryRiskV2 } from "../types";
 import type { Earthquake, SavedAlert } from "@/types";
 import { SEVERITY_NUMERIC } from "../ranking/severityEngine";
+import { detectPrimaryCountry } from "../nlp/entityExtractor";
 
 interface BuildCountryRiskArgs {
   events: IntelligenceEvent[];
@@ -81,13 +82,18 @@ export function buildCountryRiskV2({
     }
   }
 
-  // Earthquakes
+  // Earthquakes — NLP country match over raw place tails ("CA", regions)
   for (const q of quakes) {
-    const tail = q.place?.split(",").pop()?.trim();
-    if (!tail) continue;
-    if (q.magnitude >= 7) bump(tail, "M7+ earthquake", 30, true);
-    else if (q.magnitude >= 6) bump(tail, "M6+ earthquake", 22);
-    else if (q.magnitude >= 5) bump(tail, "M5+ earthquake", 12);
+    const place = q.place ?? "";
+    if (!place.trim()) continue;
+    const tail = place.split(",").pop()?.trim();
+    const country =
+      detectPrimaryCountry(place) ??
+      (tail && tail.length >= 3 && !/^[A-Z]{2}$/.test(tail) ? tail : undefined);
+    if (!country) continue;
+    if (q.magnitude >= 7) bump(country, "M7+ earthquake", 30, true);
+    else if (q.magnitude >= 6) bump(country, "M6+ earthquake", 22);
+    else if (q.magnitude >= 5) bump(country, "M5+ earthquake", 12);
   }
 
   // Saved alerts

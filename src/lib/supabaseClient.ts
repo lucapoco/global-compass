@@ -38,7 +38,9 @@ function getClient(): SupabaseClient<Database> {
       storage: typeof window !== "undefined" ? window.localStorage : undefined,
       persistSession: true,
       autoRefreshToken: true,
-      detectSessionInUrl: true,
+      // Dedicated `/auth/callback` exchanges the PKCE code. Auto-detect would race
+      // with that exchange and often break Google / GitHub sign-in ("code already used").
+      detectSessionInUrl: false,
       flowType: "pkce",
       // Isolate auth storage per Supabase project so switching `VITE_SUPABASE_URL` does not reuse old session keys.
       storageKey: `gc-sb-${ref}-auth`,

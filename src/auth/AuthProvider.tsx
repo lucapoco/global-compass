@@ -151,7 +151,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!isSupabaseConfigured()) throw new Error("Supabase is not configured");
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: oauthRedirectTo() },
+      options: {
+        redirectTo: oauthRedirectTo(),
+        queryParams: { access_type: "online", prompt: "select_account" },
+      },
     });
     if (error) throw error;
   }, []);
@@ -173,7 +176,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signUpWithEmail = useCallback(async (email: string, password: string, displayName?: string) => {
     if (!isSupabaseConfigured()) return { error: "Supabase is not configured" };
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -181,7 +184,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         data: displayName ? { full_name: displayName } : undefined,
       },
     });
-    return error ? { error: error.message } : {};
+    if (error) return { error: error.message };
+    // When email confirmation is disabled, Supabase returns a session immediately.
+    if (data.session) return { signedIn: true as const };
+    return { needsEmailConfirmation: true as const };
   }, []);
 
   const signOut = useCallback(async () => {

@@ -5,6 +5,7 @@ import { attachRelatedEvents, resolveRelatedEvents, type CorrelationOptions } fr
 import { filterEvents, type EventFilterOptions } from "./filters/eventFilters";
 import { searchEvents } from "./search/searchEvents";
 import { defaultEventProviders, type EventProvider, type ProviderStatusSnapshot } from "./providers";
+import { detectPrimaryCountry } from "@/services/intelligence/nlp/entityExtractor";
 
 export interface LoadAllOptions {
   /** Restrict to a subset of providers (defaults to every registered bulk provider). */
@@ -18,6 +19,16 @@ export interface LoadAllOptions {
 
 function sortByRecency(events: GlobalEvent[]): GlobalEvent[] {
   return [...events].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+}
+
+/** Fill missing `country` from title/description/location so risk rankings are not empty. */
+function enrichCountry(event: GlobalEvent): GlobalEvent {
+  if (event.country?.trim()) return event;
+  const blob = [event.title, event.description, event.summary, event.locationName]
+    .filter(Boolean)
+    .join(" ");
+  const country = detectPrimaryCountry(blob);
+  return country ? { ...event, country, locationName: event.locationName ?? country } : event;
 }
 
 /**
@@ -52,7 +63,7 @@ export class EventEngine {
     );
 
     let events = dedupeEvents(results.flat());
-    events = events.map((e) => scoreEvent(e));
+    events = events.map((e) => scoreEvent(enrichCountry(e)));
 
     if (options.correlate ?? true) {
       events = attachRelatedEvents(events, options.correlationOptions);

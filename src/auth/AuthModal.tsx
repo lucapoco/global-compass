@@ -1,12 +1,13 @@
 /**
  * AuthModal — premium gate for cloud / personalization features.
  */
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { Github, Loader2, Mail, X } from "lucide-react";
 import { useAuth } from "./AuthProvider";
 import { useT } from "@/i18n";
 import { isSupabaseConfigured } from "@/lib/supabaseClient";
 import { Button } from "@/components/ui/button";
+import type { AuthView } from "./types";
 
 function GoogleIcon({ className }: { className?: string }) {
   return (
@@ -37,9 +38,17 @@ export function AuthModal() {
   if (!authModal.open) return null;
 
   const configured = isSupabaseConfigured();
+  const isEmailView = authModal.view === "email" || authModal.view === "email-signup";
+
+  function switchView(view: AuthView) {
+    setError(null);
+    setInfo(null);
+    setAuthView(view);
+  }
 
   async function handleOAuth(provider: "google" | "github") {
     setError(null);
+    setInfo(null);
     setBusy(true);
     try {
       if (provider === "google") await signInWithGoogle();
@@ -50,7 +59,7 @@ export function AuthModal() {
     }
   }
 
-  async function handleEmailSubmit(e: React.FormEvent) {
+  async function handleEmailSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
     setInfo(null);
@@ -59,7 +68,8 @@ export function AuthModal() {
       if (authModal.view === "email-signup") {
         const res = await signUpWithEmail(email.trim(), password, displayName.trim() || undefined);
         if (res.error) setError(res.error);
-        else setInfo(t("app.auth.checkEmail"));
+        else if (res.needsEmailConfirmation) setInfo(t("app.auth.checkEmail"));
+        else closeAuthModal();
       } else {
         const res = await signInWithEmail(email.trim(), password);
         if (res.error) setError(res.error);
@@ -108,6 +118,12 @@ export function AuthModal() {
             </div>
           )}
 
+          {error && !isEmailView && (
+            <p className="rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-xs text-destructive">
+              {error}
+            </p>
+          )}
+
           {authModal.view === "providers" && (
             <>
               <Button
@@ -117,7 +133,7 @@ export function AuthModal() {
                 disabled={busy || !configured}
                 onClick={() => void handleOAuth("google")}
               >
-                <GoogleIcon className="h-5 w-5" />
+                {busy ? <Loader2 className="h-5 w-5 animate-spin" /> : <GoogleIcon className="h-5 w-5" />}
                 {t("app.auth.continueGoogle")}
               </Button>
               <Button
@@ -135,7 +151,7 @@ export function AuthModal() {
                 variant="outline"
                 className="h-11 w-full justify-start gap-3 rounded-xl"
                 disabled={busy || !configured}
-                onClick={() => setAuthView("email")}
+                onClick={() => switchView("email")}
               >
                 <Mail className="h-5 w-5 text-primary" />
                 {t("app.auth.continueEmail")}
@@ -150,21 +166,37 @@ export function AuthModal() {
             </>
           )}
 
-          {(authModal.view === "email" || authModal.view === "email-signup") && (
+          {isEmailView && (
             <form onSubmit={(e) => void handleEmailSubmit(e)} className="space-y-3">
               {authModal.view === "email-signup" && (
-                <div>
-                  <label className="mb-1 block text-xs font-medium text-muted-foreground" htmlFor="auth-name">
-                    {t("app.auth.displayName")}
-                  </label>
-                  <input
-                    id="auth-name"
-                    value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value)}
-                    className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
-                    autoComplete="name"
-                  />
-                </div>
+                <>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="h-11 w-full justify-start gap-3 rounded-xl"
+                    disabled={busy || !configured}
+                    onClick={() => void handleOAuth("google")}
+                  >
+                    {busy ? <Loader2 className="h-5 w-5 animate-spin" /> : <GoogleIcon className="h-5 w-5" />}
+                    {t("app.auth.continueGoogle")}
+                  </Button>
+                  <div className="relative py-1 text-center text-[11px] uppercase tracking-wide text-muted-foreground">
+                    <span className="relative z-10 bg-card px-2">{t("app.auth.orEmail")}</span>
+                    <span className="absolute inset-x-0 top-1/2 h-px bg-border" aria-hidden="true" />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-xs font-medium text-muted-foreground" htmlFor="auth-name">
+                      {t("app.auth.displayName")}
+                    </label>
+                    <input
+                      id="auth-name"
+                      value={displayName}
+                      onChange={(e) => setDisplayName(e.target.value)}
+                      className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+                      autoComplete="name"
+                    />
+                  </div>
+                </>
               )}
               <div>
                 <label className="mb-1 block text-xs font-medium text-muted-foreground" htmlFor="auth-email">
@@ -208,14 +240,14 @@ export function AuthModal() {
                 <button
                   type="button"
                   className="text-muted-foreground hover:text-foreground"
-                  onClick={() => setAuthView("providers")}
+                  onClick={() => switchView("providers")}
                 >
                   {t("app.auth.back")}
                 </button>
                 <button
                   type="button"
                   className="font-medium text-primary hover:underline"
-                  onClick={() => setAuthView(authModal.view === "email" ? "email-signup" : "email")}
+                  onClick={() => switchView(authModal.view === "email" ? "email-signup" : "email")}
                 >
                   {authModal.view === "email" ? t("app.auth.needAccount") : t("app.auth.haveAccount")}
                 </button>

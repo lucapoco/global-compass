@@ -336,6 +336,7 @@
       "needAccount": "Need an account? Sign up",
       "haveAccount": "Already have an account? Sign in",
       "checkEmail": "Check your email to confirm your account.",
+      "orEmail": "or email",
       "completingSignIn": "Completing sign-in…",
       "supabaseNotConfigured": "Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY.",
       "modal": {

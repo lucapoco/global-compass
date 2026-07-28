@@ -89,10 +89,14 @@ export function toCountryRisk(entry: TopRiskCountry): CountryRisk {
   factors.push(`${entry.eventCount} tracked event${entry.eventCount > 1 ? "s" : ""}`);
   factors.push(`Dominant category: ${entry.topCategory}`);
 
+  const score = entry.riskScore;
+  const labelKey =
+    score >= 65 ? "critical" : score >= 40 ? "high" : score >= 20 ? "medium" : "low";
+
   return {
     country: entry.country,
-    score: entry.riskScore,
-    label: SEVERITY_LABELS[entry.riskScore >= 75 ? "critical" : entry.riskScore >= 50 ? "high" : entry.riskScore >= 25 ? "medium" : "low"],
+    score,
+    label: SEVERITY_LABELS[labelKey],
     factors: factors.slice(0, 3),
   };
 }

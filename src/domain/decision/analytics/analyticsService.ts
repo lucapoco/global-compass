@@ -55,20 +55,31 @@ const PROVIDER_LABELS: Record<string, string> = {
 
 // ─── Top risk countries ────────────────────────────────────────────────────────
 
+/**
+ * Rank countries by composite risk (0–100).
+ *
+ * Pure average of event riskScores under-ranks busy conflict zones (many medium
+ * events) and over-ranks one-off spikes. Blend average risk with volume and
+ * critical/high counts so the dashboard Country Risk Index stays informative.
+ */
 export function computeTopRiskCountries(events: GlobalEvent[], topN = 10): TopRiskCountry[] {
   const byCountry = new Map<string, GlobalEvent[]>();
   for (const e of filterIntelligenceSignals(events)) {
-    if (!e.country) continue;
-    const arr = byCountry.get(e.country) ?? [];
+    const country = e.country?.trim();
+    if (!country) continue;
+    const arr = byCountry.get(country) ?? [];
     arr.push(e);
-    byCountry.set(e.country, arr);
+    byCountry.set(country, arr);
   }
 
   const entries = [...byCountry.entries()].map(([country, countryEvents]) => {
-    const riskScore = Math.round(
-      countryEvents.reduce((s, e) => s + e.riskScore, 0) / countryEvents.length,
-    );
+    const avgRisk =
+      countryEvents.reduce((s, e) => s + e.riskScore, 0) / Math.max(1, countryEvents.length);
     const criticalCount = countryEvents.filter((e) => e.severity === "critical").length;
+    const highCount = countryEvents.filter((e) => e.severity === "high").length;
+    const volumeFactor = Math.min(28, Math.log2(countryEvents.length + 1) * 9);
+    const severityBoost = criticalCount * 8 + highCount * 3;
+    const riskScore = Math.min(100, Math.round(avgRisk * 0.55 + volumeFactor + severityBoost));
 
     // Dominant category
     const catCounts = new Map<GlobalEventCategory, number>();
@@ -87,7 +98,7 @@ export function computeTopRiskCountries(events: GlobalEvent[], topN = 10): TopRi
   });
 
   return entries
-    .sort((a, b) => b.riskScore - a.riskScore || b.criticalCount - a.criticalCount)
+    .sort((a, b) => b.riskScore - a.riskScore || b.criticalCount - a.criticalCount || b.eventCount - a.eventCount)
     .slice(0, topN)
     .map((e, i) => ({ ...e, rank: i + 1 }));
 }

@@ -24,6 +24,12 @@ function AuthCallbackPage() {
     void (async () => {
       try {
         const url = new URL(window.location.href);
+        const oauthError = url.searchParams.get("error");
+        const oauthDesc = url.searchParams.get("error_description");
+        if (oauthError) {
+          throw new Error(oauthDesc?.replace(/\+/g, " ") || oauthError);
+        }
+
         const code = url.searchParams.get("code");
         if (code) {
           const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
@@ -36,6 +42,8 @@ function AuthCallbackPage() {
           }
         }
         if (!cancelled) {
+          // Drop OAuth params from the address bar before entering the app.
+          window.history.replaceState({}, document.title, "/auth/callback");
           void navigate({ to: "/dashboard", replace: true });
         }
       } catch (e) {
@@ -54,7 +62,7 @@ function AuthCallbackPage() {
     <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3 px-4">
       {error ? (
         <>
-          <p className="text-sm text-destructive">{error}</p>
+          <p className="max-w-md text-center text-sm text-destructive">{error}</p>
           <button
             type="button"
             className="text-sm text-primary hover:underline"

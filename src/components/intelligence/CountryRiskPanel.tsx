@@ -59,9 +59,10 @@ export function CountryRiskPanel({ risks, initialLimit = 10 }: Props) {
             <div className="flex items-center gap-2">
               <span className="w-5 text-right text-[11px] tabular-nums text-muted-foreground">#{idx + 1}</span>
           <Link
-            to="/countries"
-            search={{ q: r.country } as { q: string }}
+            to="/country/$name"
+            params={{ name: encodeURIComponent(r.country) }}
             className="text-sm font-semibold hover:text-primary hover:underline"
+            title={`Intelligence profile: ${r.country}`}
           >
             {r.country}
           </Link>
