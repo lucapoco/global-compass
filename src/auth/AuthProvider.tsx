@@ -40,6 +40,8 @@ function mapProfile(row: {
 
 function oauthRedirectTo(): string {
   if (typeof window === "undefined") return "";
+  // Must match Supabase Auth → URL Configuration → Redirect URLs
+  // (e.g. http://localhost:8080/auth/callback and https://www.global-pulse.app/auth/callback).
   return `${window.location.origin}/auth/callback`;
 }
 
@@ -149,20 +151,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = useCallback(async () => {
     if (!isSupabaseConfigured()) throw new Error("Supabase is not configured");
-    const { error } = await supabase.auth.signInWithOAuth({
+    const redirectTo = oauthRedirectTo();
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: oauthRedirectTo() },
+      options: {
+        redirectTo,
+        // Let the user pick an account (sign-up and returning sign-in).
+        queryParams: { prompt: "select_account" },
+        // We navigate explicitly so redirect always happens (and PKCE verifier is already stored).
+        skipBrowserRedirect: true,
+      },
     });
     if (error) throw error;
+    if (!data?.url) throw new Error("Google sign-in did not return a redirect URL");
+    window.location.assign(data.url);
   }, []);
 
   const signInWithGitHub = useCallback(async () => {
     if (!isSupabaseConfigured()) throw new Error("Supabase is not configured");
-    const { error } = await supabase.auth.signInWithOAuth({
+    const redirectTo = oauthRedirectTo();
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "github",
-      options: { redirectTo: oauthRedirectTo() },
+      options: {
+        redirectTo,
+        skipBrowserRedirect: true,
+      },
     });
     if (error) throw error;
+    if (!data?.url) throw new Error("GitHub sign-in did not return a redirect URL");
+    window.location.assign(data.url);
   }, []);
 
   const signInWithEmail = useCallback(async (email: string, password: string) => {
