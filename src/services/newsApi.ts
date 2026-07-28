@@ -324,7 +324,7 @@ export function getNewsDebugSnapshot(): NewsDebugSnapshot {
 }
 
 function emitDebugUpdate() {
-  if (!DEV || typeof window === "undefined") return;
+  if (!import.meta.env.DEV || typeof window === "undefined") return;
   window.dispatchEvent(new CustomEvent(NEWS_DEBUG_EVENT, { detail: getNewsDebugSnapshot() }));
 }
 
